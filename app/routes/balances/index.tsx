@@ -8,7 +8,7 @@ import { requireUserId } from "~/session.server";
 
 export function meta(): ReturnType<MetaFunction> {
   return {
-    title: "Savings - Balances",
+    title: "Balances",
   };
 }
 

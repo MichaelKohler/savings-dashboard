@@ -1,11 +1,17 @@
 import invariant from "tiny-invariant";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import AccountForm from "~/components/forms/account";
 import { getAccount, updateAccount } from "~/models/accounts.server";
 import { requireUserId } from "~/session.server";
+
+export function meta(): ReturnType<MetaFunction> {
+  return {
+    title: "Edit account",
+  };
+}
 
 export async function loader({ request, params }: LoaderArgs) {
   const userId = await requireUserId(request);

@@ -1,6 +1,12 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { requireUserId } from "~/session.server";
+
+export function meta(): ReturnType<MetaFunction> {
+  return {
+    title: "Dashboard",
+  };
+}
 
 export async function loader({ request }: LoaderArgs) {
   await requireUserId(request);
