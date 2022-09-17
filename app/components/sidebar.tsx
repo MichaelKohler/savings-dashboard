@@ -44,6 +44,18 @@ export default function Sidebar() {
                       isActive ? "bg-white" : ""
                     }`
                   }
+                  to="/balances"
+                >
+                  💰&nbsp;Balances
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  className={({ isActive }) =>
+                    `align-items text-l block flex w-full flex-row gap-1 border-b p-4 ${
+                      isActive ? "bg-white" : ""
+                    }`
+                  }
                   to="/user"
                 >
                   👤&nbsp;Add User

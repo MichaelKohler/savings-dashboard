@@ -1,11 +1,11 @@
 import invariant from "tiny-invariant";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 
 import AccountForm from "~/components/forms/account";
 import { getAccount, updateAccount } from "~/models/accounts.server";
 import { requireUserId } from "~/session.server";
-import { useLoaderData } from "@remix-run/react";
 
 export async function loader({ request, params }: LoaderArgs) {
   const userId = await requireUserId(request);
@@ -23,7 +23,6 @@ export async function action({ request }: ActionArgs) {
   const id = formData.get("id");
 
   const errors = {
-    generic: null,
     name: null,
     color: null,
     id: null,

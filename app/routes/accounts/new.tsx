@@ -18,7 +18,6 @@ export async function action({ request }: ActionArgs) {
   const color = formData.get("color");
 
   const errors = {
-    generic: null,
     name: null,
     color: null,
   };
