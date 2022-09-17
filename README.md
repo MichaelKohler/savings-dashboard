@@ -4,6 +4,12 @@ Simple savings dashboard. This is loosely based on the [Remix Indie Stack](https
 
 ## Development
 
+- Copy the environment file and adjust it:
+
+```sh
+cp .env.example .env
+```
+
 - Initial setup:
 
   ```sh
