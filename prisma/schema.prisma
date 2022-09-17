@@ -1,10 +1,13 @@
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  shadowDatabaseUrl    = env("SHADOW_DATABASE_URL")
+  referentialIntegrity = "prisma"
 }
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
 }
 
 model User {
@@ -38,6 +41,8 @@ model Account {
   userId String
 
   balances  Balance[]
+
+  @@index([userId])
 }
 
 model Balance {
@@ -53,4 +58,6 @@ model Balance {
 
   account   Account @relation(fields: [accountId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   accountId String
+
+  @@index([userId])
 }
