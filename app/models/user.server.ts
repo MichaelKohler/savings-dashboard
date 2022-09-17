@@ -1,12 +1,9 @@
 import type { Password, User } from "@prisma/client";
 import bcrypt from "@node-rs/bcrypt";
-import { createHash } from "crypto";
 
 import { prisma } from "~/db.server";
 
 export type { User } from "@prisma/client";
-
-const ONE_HOUR_MS = 1 * 60 * 60 * 1000;
 
 export async function getUserById(id: User["id"]) {
   return prisma.user.findUnique({ where: { id } });
@@ -35,15 +32,11 @@ export async function createUser(email: User["email"], password: string) {
   });
 }
 
-export async function changePassword(
-  email: User["email"],
-  password: string,
-  token: string
-) {
+export async function changePassword(email: User["email"], password: string) {
   let userEmail = email;
 
-  if (!email && !token) {
-    throw new Error("NO_EMAIL_OR_TOKEN_PASSED");
+  if (!email) {
+    throw new Error("NO_EMAIL_PASSED");
   }
 
   const existingUser = await getUserByEmail(userEmail);

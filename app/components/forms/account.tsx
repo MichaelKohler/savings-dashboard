@@ -1,99 +1,29 @@
 import * as React from "react";
-import {
-  Form,
-  useActionData,
-  useMatches,
-  useLoaderData,
-  useTransition,
-} from "@remix-run/react";
+import { Form, useActionData, useTransition } from "@remix-run/react";
 
-import type { TripClientResponse } from "~/models/trip.server";
+import Button from "~/components/button";
+import type { Account } from "~/models/accounts.server";
 
-export default function TripForm({
+export default function AccountForm({
   initialData,
 }: {
-  initialData?: TripClientResponse;
+  initialData?: Account;
 }) {
   const actionData = useActionData();
-  const data = useLoaderData();
   const transition = useTransition();
-  const [lat, setLatitude] = React.useState<number>(0);
-  const [long, setLongitude] = React.useState<number>(0);
-  const [showHideUpcomingCheckbox, setShowHideUpcomingCheckbox] =
-    React.useState(initialData?.hideUpcoming || false);
-  const matches = useMatches();
 
-  const fromRef = React.useRef<HTMLInputElement>(null);
-  const toRef = React.useRef<HTMLInputElement>(null);
-  const destinationRef = React.useRef<HTMLInputElement>(null);
-  const countryRef = React.useRef<HTMLInputElement>(null);
-  const descriptionRef = React.useRef<HTMLTextAreaElement>(null);
-  const flightsRef = React.useRef<HTMLInputElement>(null);
+  const nameRef = React.useRef<HTMLInputElement>(null);
+  const colorRef = React.useRef<HTMLInputElement>(null);
 
   const isEdit = !!initialData?.id;
 
-  const parentRouteData = matches.find(
-    (match) => match.id === "routes/trips"
-  )?.data;
-  const trips = parentRouteData?.tripListItems;
-
-  const handleLocationCopy = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    if (event.target.value === "") {
-      return;
-    }
-
-    const [lat, long] = event.target.value.split(";");
-    setLatitude(parseFloat(lat));
-    setLongitude(parseFloat(long));
-  };
-
-  const setLocation = (event: MarkerDragEvent | MapLayerMouseEvent) => {
-    setLatitude(event.lngLat.lat);
-    setLongitude(event.lngLat.lng);
-  };
-
-  const decideToShowHideUpcomingCheckbox = (date: Date) => {
-    const today = new Date();
-    if (date > today) {
-      setShowHideUpcomingCheckbox(true);
-      return;
-    }
-
-    setShowHideUpcomingCheckbox(false);
-  };
-
-  const handleUntilDateChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (event.target && event.target.value) {
-      decideToShowHideUpcomingCheckbox(new Date(event.target.value));
-    }
-  };
-
   React.useEffect(() => {
-    if (actionData?.errors?.to) {
-      toRef.current?.focus();
-    } else if (actionData?.errors?.from) {
-      fromRef.current?.focus();
-    } else if (actionData?.errors?.destination) {
-      destinationRef.current?.focus();
-    } else if (actionData?.errors?.country) {
-      countryRef.current?.focus();
-    } else if (actionData?.errors?.description) {
-      descriptionRef.current?.focus();
-    } else if (actionData?.errors?.flights) {
-      flightsRef.current?.focus();
+    if (actionData?.errors?.name) {
+      nameRef.current?.focus();
+    } else if (actionData?.errors?.color) {
+      colorRef.current?.focus();
     }
   }, [actionData]);
-
-  React.useEffect(() => {
-    if (initialData) {
-      setLatitude(initialData.lat);
-      setLongitude(initialData.long);
-
-      decideToShowHideUpcomingCheckbox(new Date(initialData.to));
-    }
-  }, [initialData]);
 
   return (
     <Form
@@ -107,213 +37,48 @@ export default function TripForm({
     >
       <div>
         <label className="flex w-full flex-col gap-1">
-          <span>From: </span>
+          <span>Name: </span>
           <input
-            ref={fromRef}
-            type="date"
-            name="from"
+            ref={nameRef}
+            type="text"
+            name="name"
             className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
-            aria-invalid={actionData?.errors.from ? true : undefined}
+            aria-invalid={actionData?.errors.name ? true : undefined}
             aria-errormessage={
-              actionData?.errors.from ? "from-error" : undefined
+              actionData?.errors.name ? "name-error" : undefined
             }
-            data-testid="new-trip-from-input"
-            defaultValue={initialData?.from?.substring(0, 10)}
+            data-testid="new-account-name-input"
+            defaultValue={initialData?.name}
           />
         </label>
-        {actionData?.errors.from && (
-          <div className="pt-1 text-red-700" id="from=error">
-            {actionData.errors.from}
+        {actionData?.errors.name && (
+          <div className="pt-1 text-red-700" id="name=error">
+            {actionData.errors.name}
           </div>
         )}
       </div>
 
       <div>
         <label className="flex w-full flex-col gap-1">
-          <span>Until: </span>
+          <span>Color: </span>
           <input
-            ref={toRef}
-            type="date"
-            name="to"
-            onChange={handleUntilDateChange}
-            className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
-            aria-invalid={actionData?.errors.to ? true : undefined}
-            aria-errormessage={actionData?.errors.to ? "to-error" : undefined}
-            data-testid="new-trip-to-input"
-            defaultValue={initialData?.to?.substring(0, 10)}
-          />
-        </label>
-        {actionData?.errors.to && (
-          <div className="pt-1 text-red-700" id="to=error">
-            {actionData.errors.to}
-          </div>
-        )}
-      </div>
-
-      <div>
-        <label className="flex w-full flex-col gap-1">
-          <span>Destination: </span>
-          <input
-            ref={destinationRef}
-            name="destination"
-            className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
-            aria-invalid={actionData?.errors.destination ? true : undefined}
+            ref={colorRef}
+            type="color"
+            name="color"
+            aria-invalid={actionData?.errors.color ? true : undefined}
             aria-errormessage={
-              actionData?.errors.destination ? "destination-error" : undefined
+              actionData?.errors.color ? "color-error" : undefined
             }
-            defaultValue={initialData?.destination}
+            data-testid="new-account-color-input"
+            defaultValue={initialData?.color}
           />
         </label>
-        {actionData?.errors.destination && (
-          <div className="pt-1 text-red-700" id="destination=error">
-            {actionData.errors.destination}
+        {actionData?.errors.color && (
+          <div className="pt-1 text-red-700" id="color=error">
+            {actionData.errors.color}
           </div>
         )}
       </div>
-
-      <div>
-        <label className="flex w-full flex-col gap-1">
-          <span>Country: </span>
-          <input
-            ref={countryRef}
-            name="country"
-            className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
-            aria-invalid={actionData?.errors.country ? true : undefined}
-            aria-errormessage={
-              actionData?.errors.country ? "country-error" : undefined
-            }
-            defaultValue={initialData?.country}
-          />
-        </label>
-        {actionData?.errors.country && (
-          <div className="pt-1 text-red-700" id="country=error">
-            {actionData.errors.country}
-          </div>
-        )}
-      </div>
-
-      <div>
-        <label className="flex w-full flex-col gap-1">
-          <span>Copy location from previous trip: </span>
-          <select
-            name="usedOnClientOnlyPreviousTripCopyLocation"
-            className="flex-1 rounded-md border-2 border-blue-500 px-3 py-2 leading-loose"
-            onChange={handleLocationCopy}
-          >
-            <option value="">Select a trip to copy from</option>
-            {trips?.map((trip: TripClientResponse) => (
-              <option key={trip.id} value={`${trip.lat};${trip.long}`}>
-                {new Date(trip.from).toLocaleDateString()} - {trip.destination},{" "}
-                {trip.country}
-              </option>
-            ))}
-          </select>
-        </label>
-        {actionData?.errors.country && (
-          <div className="pt-1 text-red-700" id="country=error">
-            {actionData.errors.country}
-          </div>
-        )}
-      </div>
-
-      <div className="mt-2">
-        <Map
-          initialViewState={{
-            longitude: 0,
-            latitude: 0,
-            zoom: 1,
-          }}
-          style={{ width: "100%", height: 400 }}
-          mapStyle="mapbox://styles/mapbox/light-v10"
-          mapboxAccessToken={data.mapboxToken}
-          renderWorldCopies={false}
-          onClick={setLocation}
-        >
-          <Marker
-            longitude={long}
-            latitude={lat}
-            anchor="center"
-            draggable={true}
-            onDragEnd={setLocation}
-          ></Marker>
-        </Map>
-        {actionData?.errors?.lat && (
-          <div className="pt-1 text-red-700" id="lat=error">
-            {actionData.errors.lat}
-          </div>
-        )}
-        {actionData?.errors?.long && (
-          <div className="pt-1 text-red-700" id="long=error">
-            {actionData.errors.long}
-          </div>
-        )}
-      </div>
-
-      <div>
-        <label className="flex w-full flex-col gap-1">
-          <span>Description: </span>
-          <textarea
-            ref={descriptionRef}
-            name="description"
-            className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
-            aria-invalid={actionData?.errors.description ? true : undefined}
-            aria-errormessage={
-              actionData?.errors.description ? "description-error" : undefined
-            }
-            defaultValue={initialData?.description}
-          />
-        </label>
-        {actionData?.errors.description && (
-          <div className="pt-1 text-red-700" id="description=error">
-            {actionData.errors.description}
-          </div>
-        )}
-      </div>
-
-      <div>
-        <label className="flex w-full flex-col gap-1">
-          <span>Flights: </span>
-          <input
-            ref={flightsRef}
-            type="number"
-            name="flights"
-            className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
-            aria-invalid={actionData?.errors.flights ? true : undefined}
-            aria-errormessage={
-              actionData?.errors.flights ? "flights-error" : undefined
-            }
-            defaultValue={initialData?.flights}
-          />
-        </label>
-        {actionData?.errors.flights && (
-          <div className="pt-1 text-red-700" id="flights=error">
-            {actionData.errors.flights}
-          </div>
-        )}
-      </div>
-
-      <label className="my-4 flex w-full flex-row gap-1">
-        <input
-          type="checkbox"
-          name="secret"
-          defaultChecked={initialData?.secret || false}
-        />
-        <span>Private (no one else can see this!)</span>
-      </label>
-
-      {showHideUpcomingCheckbox && (
-        <label className="mb-4 flex w-full flex-row gap-1">
-          <input
-            type="checkbox"
-            name="hideUpcoming"
-            defaultChecked={initialData?.hideUpcoming || false}
-          />
-          <span>Do not show on public profile until trip is over</span>
-        </label>
-      )}
-
-      <input type="hidden" name="lat" value={lat} />
-      <input type="hidden" name="long" value={long} />
 
       {isEdit && <input type="hidden" name="id" value={initialData?.id} />}
 
@@ -323,11 +88,7 @@ export default function TripForm({
         </div>
       )}
 
-      <button
-        type="submit"
-        className="rounded bg-slate-600 py-2 px-4 text-white hover:bg-slate-500 active:bg-slate-500"
-        disabled={!!transition.submission}
-      >
+      <Button isSubmit isDisabled={!!transition.submission}>
         {transition.submission ? (
           <div
             className="spinner-border inline-block h-4 w-4 animate-spin rounded-full border-2"
@@ -336,7 +97,7 @@ export default function TripForm({
         ) : (
           "Save"
         )}
-      </button>
+      </Button>
     </Form>
   );
 }

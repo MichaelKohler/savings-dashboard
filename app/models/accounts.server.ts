@@ -24,7 +24,10 @@ export async function getAccounts({ userId }: { userId: User["id"] }) {
   return accounts;
 }
 
-export function createAccount(account: Account[], userId: User["id"]) {
+export function createAccount(
+  account: Pick<Account, "name" | "color">,
+  userId: User["id"]
+) {
   return prisma.account.create({
     data: {
       name: account.name,
@@ -38,11 +41,18 @@ export function createAccount(account: Account[], userId: User["id"]) {
   });
 }
 
-export function updateTrip({
+export async function updateAccount({
   id,
+  userId,
   name,
   color,
-}: Pick<Account, "id" | "name" | "color">) {
+}: Pick<Account, "id" | "name" | "color" | "userId">) {
+  const account = await getAccount({ id, userId });
+
+  if (!account) {
+    throw new Error("ACCOUNT_NOT_FOUND");
+  }
+
   return prisma.account.update({
     where: { id },
     data: {

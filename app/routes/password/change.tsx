@@ -1,23 +1,26 @@
 import * as React from "react";
-import type { ActionArgs, MetaFunction } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Form, useActionData, useSearchParams } from "@remix-run/react";
+import { Form, useActionData } from "@remix-run/react";
 
 import { changePassword, verifyLogin } from "~/models/user.server";
 import { requireUser } from "~/session.server";
+
+export async function loader({ request }: LoaderArgs) {
+  await requireUser(request);
+  return null;
+}
 
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData();
   const currentPassword = formData.get("password");
   const newPassword = formData.get("newPassword");
   const confirmPassword = formData.get("confirmPassword");
-  const token = formData.get("token") || "";
 
   const errors = {
     password: null,
     newPassword: null,
     confirmPassword: null,
-    token: null,
     generic: null,
   };
 
@@ -51,52 +54,32 @@ export async function action({ request }: ActionArgs) {
     );
   }
 
-  let user = { email: "" };
-  if (!token) {
-    // We do not want to go further if there is no token and the
-    // user is not logged in. This check here is crucial to not allow
-    // for password changes without token. We also want to verify
-    // the current password before going on.
-    user = await requireUser(request);
+  const user = await requireUser(request);
 
-    if (typeof currentPassword !== "string" || currentPassword === "") {
-      return json(
-        {
-          errors: { ...errors, password: "Current password is required." },
-          done: false,
-        },
-        { status: 400 }
-      );
-    }
+  if (typeof currentPassword !== "string" || currentPassword === "") {
+    return json(
+      {
+        errors: { ...errors, password: "Current password is required." },
+        done: false,
+      },
+      { status: 400 }
+    );
+  }
 
-    const isValid = await verifyLogin(user.email, currentPassword);
-    if (!isValid) {
-      return json(
-        {
-          errors: { ...errors, password: "Current password is wrong." },
-          done: false,
-        },
-        { status: 400 }
-      );
-    }
+  const isValid = await verifyLogin(user.email, currentPassword);
+  if (!isValid) {
+    return json(
+      {
+        errors: { ...errors, password: "Current password is wrong." },
+        done: false,
+      },
+      { status: 400 }
+    );
   }
 
   try {
-    await changePassword(user.email, newPassword, token.toString());
+    await changePassword(user.email, newPassword);
   } catch (error) {
-    if (error instanceof Error && error.message === "PASSWORD_RESET_EXPIRED") {
-      return json(
-        {
-          errors: {
-            ...errors,
-            token: "Password reset link expired. Please try again.",
-          },
-          done: false,
-        },
-        { status: 400 }
-      );
-    }
-
     return json(
       {
         errors: {
@@ -123,7 +106,6 @@ export default function ChangePassword() {
   const currentPasswordRef = React.useRef<HTMLInputElement>(null);
   const newPasswordRef = React.useRef<HTMLInputElement>(null);
   const passwordConfirmRef = React.useRef<HTMLInputElement>(null);
-  const [searchParams] = useSearchParams();
 
   React.useEffect(() => {
     if (actionData?.errors.password) {
@@ -149,11 +131,6 @@ export default function ChangePassword() {
   return (
     <main className="my-12 mx-auto flex min-h-full w-full max-w-md flex-col px-8">
       <Form method="post" className="space-y-6">
-        {actionData?.errors.token && (
-          <div className="pt-1 text-red-700" id="password-token-error">
-            {actionData.errors.token}
-          </div>
-        )}
         {actionData?.errors.generic && (
           <div className="pt-1 text-red-700" id="password-generic-error">
             {actionData.errors.generic}
