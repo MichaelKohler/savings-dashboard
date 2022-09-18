@@ -6,8 +6,8 @@ export default function Sidebar() {
   const user = useOptionalUser();
 
   return (
-    <div className="flex h-screen bg-white">
-      <div className="h-full w-40 border-r bg-slate-100 md:w-80">
+    <div className="flex bg-white">
+      <div className="min-h-screen w-40 border-r bg-slate-100 md:w-80">
         <ul>
           {!user && (
             <li>
@@ -47,6 +47,18 @@ export default function Sidebar() {
                   to="/balances"
                 >
                   💰&nbsp;Balances
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  className={({ isActive }) =>
+                    `align-items text-l block flex w-full flex-row gap-1 border-b p-4 ${
+                      isActive ? "bg-white" : ""
+                    }`
+                  }
+                  to="/charts"
+                >
+                  📈&nbsp;Charts
                 </NavLink>
               </li>
               <li>

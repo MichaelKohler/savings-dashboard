@@ -9,7 +9,6 @@ import {
   useCatch,
 } from "@remix-run/react";
 
-import Footer from "./components/footer";
 import Header from "./components/header";
 import Sidebar from "./components/sidebar";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
@@ -55,7 +54,6 @@ function App({ children }: { children?: React.ReactNode }) {
         <Header />
         <Sidebar />
         {children}
-        <Footer />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

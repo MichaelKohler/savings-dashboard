@@ -4,6 +4,12 @@ import { prisma } from "~/db.server";
 
 export type { Balance } from "@prisma/client";
 
+type ChartDataEntry = {
+  [key: string]: Balance["balance"] | string;
+  date: string;
+  total: number;
+};
+
 export function getBalance({
   id,
   userId,
@@ -25,6 +31,38 @@ export async function getBalances({ userId }: { userId: User["id"] }) {
   });
 
   return balances;
+}
+
+export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
+  const balances = await getBalances({ userId });
+  const groupedBalances = balances.reduce(
+    (series: ChartDataEntry[], balance) => {
+      const date = balance.date.toISOString().substring(0, 10);
+      let dateEntry = series.find(
+        (entry: ChartDataEntry) => entry.date === date
+      );
+
+      if (!dateEntry) {
+        dateEntry = {
+          date,
+          total: 0,
+        };
+        series.push(dateEntry);
+      }
+
+      dateEntry[balance.accountId] = balance.balance;
+      dateEntry.total += balance.balance;
+
+      return series;
+    },
+    []
+  );
+
+  const sortedBalances = groupedBalances.sort((a, b) => {
+    return a.date.localeCompare(b.date);
+  });
+
+  return sortedBalances;
 }
 
 export function createBalance(
