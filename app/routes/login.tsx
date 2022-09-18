@@ -1,7 +1,7 @@
 import * as React from "react";
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import { Form, useActionData, useSearchParams } from "@remix-run/react";
 
 import { verifyLogin } from "~/models/user.server";
 import { createUserSession, getUserId } from "~/session.server";
@@ -155,18 +155,6 @@ export default function LoginPage() {
             >
               Remember me
             </label>
-          </div>
-          <div className="text-center text-sm text-gray-500">
-            Don't have an account?{" "}
-            <Link
-              className="text-blue-500 underline"
-              to={{
-                pathname: "/join",
-                search: searchParams.toString(),
-              }}
-            >
-              Sign up
-            </Link>
           </div>
         </div>
       </Form>
