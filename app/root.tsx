@@ -1,5 +1,4 @@
-import type { LinksFunction, LoaderArgs, MetaFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -12,7 +11,6 @@ import {
 import Header from "./components/header";
 import Sidebar from "./components/sidebar";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
-import { getUser } from "./session.server";
 import React from "react";
 
 export function links(): ReturnType<LinksFunction> {
@@ -25,12 +23,6 @@ export function meta(): ReturnType<MetaFunction> {
     title: "savings.michaelkohler.info",
     viewport: "width=device-width,initial-scale=1",
   };
-}
-
-export async function loader({ request }: LoaderArgs) {
-  return json({
-    user: await getUser(request),
-  });
 }
 
 function App({ children }: { children?: React.ReactNode }) {
