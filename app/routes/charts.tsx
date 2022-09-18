@@ -52,6 +52,22 @@ export default function ChartsPage() {
         </LineChart>
       </ResponsiveContainer>
 
+      <h2 className="mt-8 text-2xl">Total (not zero-based)</h2>
+      <ResponsiveContainer width={"100%"} height={500} className="mt-8">
+        <LineChart width={500} height={300} data={data.balances}>
+          <CartesianGrid strokeDasharray="1 1" />
+          <XAxis dataKey="date" />
+          <YAxis type="number" domain={["dataMin - 1000", "dataMax + 1000"]} />
+          <Line
+            name="Total"
+            type="monotoneX"
+            dataKey="total"
+            stroke="#0099CC"
+          />
+          <Tooltip />
+        </LineChart>
+      </ResponsiveContainer>
+
       <h2 className="mt-8 text-2xl">Per Account</h2>
       <ResponsiveContainer width={"100%"} height={500} className="mt-8">
         <LineChart width={500} height={300} data={data.balances}>
