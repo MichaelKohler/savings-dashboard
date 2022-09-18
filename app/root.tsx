@@ -1,4 +1,6 @@
-import type { LinksFunction, MetaFunction } from "@remix-run/node";
+import React from "react";
+import type { LinksFunction, LoaderArgs, MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -11,7 +13,7 @@ import {
 import Header from "./components/header";
 import Sidebar from "./components/sidebar";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
-import React from "react";
+import { getUser } from "./session.server";
 
 export function links(): ReturnType<LinksFunction> {
   return [{ rel: "stylesheet", href: tailwindStylesheetUrl }];
@@ -23,6 +25,14 @@ export function meta(): ReturnType<MetaFunction> {
     title: "savings.michaelkohler.info",
     viewport: "width=device-width,initial-scale=1",
   };
+}
+
+export async function loader({ request }: LoaderArgs) {
+  // This is used in the `getUser` function through `useMatchesData("root")`
+  // Do not remove this, even though it's not used in this file!
+  return json({
+    user: await getUser(request),
+  });
 }
 
 function App({ children }: { children?: React.ReactNode }) {
