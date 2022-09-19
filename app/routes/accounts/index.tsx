@@ -31,31 +31,30 @@ export default function AccountsPage() {
       <table className="mt-5 min-w-full">
         <thead className="border-b text-left">
           <tr>
-            <th>Name</th>
-            <th>Color</th>
-            <th>Actions</th>
+            <th className="pr-2">Name</th>
+            <th className="pr-2">Color</th>
+            <th className="pr-2">Actions</th>
           </tr>
         </thead>
         <tbody>
           {data.accounts.map((account) => {
             return (
               <tr className="border-b" key={account.id}>
-                <td>{account.name}</td>
-                <td>
+                <td className="pr-2">{account.name}</td>
+                <td className="pr-2">
                   <Swatch color={account.color} />
-                  <span className="ml-4 inline-block">{account.color}</span>
                 </td>
-                <td>
+                <td className="pr-2">
                   <Link
                     to={`/accounts/${account.id}/edit`}
-                    className="inline-block"
+                    className="mr-4 inline-block"
                   >
                     <Button>Edit</Button>
                   </Link>
                   <Form
                     action={`/accounts/${account.id}/delete`}
                     method="post"
-                    className="ml-4 inline-block"
+                    className="inline-block"
                   >
                     <Button isDanger isSubmit>
                       Delete

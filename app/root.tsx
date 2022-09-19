@@ -11,7 +11,7 @@ import {
 } from "@remix-run/react";
 
 import Header from "./components/header";
-import Sidebar from "./components/sidebar";
+import Main from "./components/main";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
 import { getUser } from "./session.server";
 
@@ -54,7 +54,7 @@ function App({ children }: { children?: React.ReactNode }) {
       </head>
       <body className="h-full">
         <Header />
-        <Sidebar />
+        <Main />
         {children}
         <ScrollRestoration />
         <Scripts />
