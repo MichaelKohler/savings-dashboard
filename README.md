@@ -2,6 +2,10 @@
 
 Simple savings dashboard. This is loosely based on the [Remix Indie Stack](https://github.com/remix-run/indie-stack).
 
+![Screenshot - Charts](./screenshot-charts.png)
+
+![Screenshot - Balances](./screenshot-balances.png)
+
 ## Development
 
 - Copy the environment file and adjust it:
