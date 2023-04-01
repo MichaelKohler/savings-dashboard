@@ -1,14 +1,16 @@
-import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 
 import AccountForm from "~/components/forms/account";
 import { createAccount } from "~/models/accounts.server";
 import { requireUserId } from "~/session.server";
 
-export function meta(): ReturnType<MetaFunction> {
-  return {
-    title: "New account",
-  };
+export function meta(): ReturnType<V2_MetaFunction> {
+  return [
+    {
+      title: "New account",
+    },
+  ];
 }
 
 export async function loader({ request }: LoaderArgs) {

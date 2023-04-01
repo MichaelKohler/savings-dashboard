@@ -10,7 +10,7 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
-import type { LoaderArgs, MetaFunction } from "@remix-run/node";
+import type { LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
@@ -18,10 +18,12 @@ import { getAccounts } from "~/models/accounts.server";
 import { getBalancesForCharts } from "~/models/balances.server";
 import { requireUserId } from "~/session.server";
 
-export function meta(): ReturnType<MetaFunction> {
-  return {
-    title: "Charts",
-  };
+export function meta(): ReturnType<V2_MetaFunction> {
+  return [
+    {
+      title: "Charts",
+    },
+  ];
 }
 
 export async function loader({ request }: LoaderArgs) {
