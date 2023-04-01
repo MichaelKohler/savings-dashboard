@@ -1,5 +1,9 @@
 import React from "react";
-import type { LinksFunction, LoaderArgs, MetaFunction } from "@remix-run/node";
+import type {
+  LinksFunction,
+  LoaderArgs,
+  V2_MetaFunction,
+} from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
   Links,
@@ -19,12 +23,12 @@ export function links(): ReturnType<LinksFunction> {
   return [{ rel: "stylesheet", href: tailwindStylesheetUrl }];
 }
 
-export function meta(): ReturnType<MetaFunction> {
-  return {
-    charset: "utf-8",
-    title: "savings.michaelkohler.info",
-    viewport: "width=device-width,initial-scale=1",
-  };
+export function meta(): ReturnType<V2_MetaFunction> {
+  return [
+    {
+      title: "savings.michaelkohler.info",
+    },
+  ];
 }
 
 export async function loader({ request }: LoaderArgs) {
@@ -49,6 +53,8 @@ function App({ children }: { children?: React.ReactNode }) {
           href="https://fonts.googleapis.com/css2?family=Dosis:wght@700&family=Raleway&display=swap"
           rel="stylesheet"
         />
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
       </head>
