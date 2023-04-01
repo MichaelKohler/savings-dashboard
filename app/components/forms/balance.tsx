@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Form, useActionData, useTransition } from "@remix-run/react";
+import { Form, useActionData, useNavigation } from "@remix-run/react";
 
 import Button from "~/components/button";
 import type { Account } from "~/models/accounts.server";
@@ -13,7 +13,7 @@ export default function BalanceForm({
   accounts?: Account[];
 }) {
   const actionData = useActionData();
-  const transition = useTransition();
+  const navigation = useNavigation();
 
   const dateRef = React.useRef<HTMLInputElement>(null);
   const accountRef = React.useRef<HTMLInputElement>(null);
@@ -122,8 +122,8 @@ export default function BalanceForm({
         </div>
       )}
 
-      <Button isSubmit isDisabled={!!transition.submission}>
-        {transition.submission ? (
+      <Button isSubmit isDisabled={!!navigation.formData}>
+        {navigation.formData ? (
           <div
             className="spinner-border inline-block h-4 w-4 animate-spin rounded-full border-2"
             role="status"

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Form, useActionData, useTransition } from "@remix-run/react";
+import { Form, useActionData, useNavigation } from "@remix-run/react";
 
 import Button from "~/components/button";
 import type { Account } from "~/models/accounts.server";
@@ -10,7 +10,7 @@ export default function AccountForm({
   initialData?: Account;
 }) {
   const actionData = useActionData();
-  const transition = useTransition();
+  const navigation = useNavigation();
 
   const nameRef = React.useRef<HTMLInputElement>(null);
   const colorRef = React.useRef<HTMLInputElement>(null);
@@ -88,8 +88,8 @@ export default function AccountForm({
         </div>
       )}
 
-      <Button isSubmit isDisabled={!!transition.submission}>
-        {transition.submission ? (
+      <Button isSubmit isDisabled={!!navigation.formData}>
+        {navigation.formData ? (
           <div
             className="spinner-border inline-block h-4 w-4 animate-spin rounded-full border-2"
             role="status"
