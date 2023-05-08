@@ -17,7 +17,21 @@ export function getAccount({
 
 export async function getAccounts({ userId }: { userId: User["id"] }) {
   const accounts = await prisma.account.findMany({
-    where: { userId },
+    where: {
+      userId,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return accounts;
+}
+
+export async function getAccountsForCharts({ userId }: { userId: User["id"] }) {
+  const accounts = await prisma.account.findMany({
+    where: {
+      userId,
+      showInGraphs: true,
+    },
     orderBy: { createdAt: "desc" },
   });
 
@@ -25,13 +39,14 @@ export async function getAccounts({ userId }: { userId: User["id"] }) {
 }
 
 export function createAccount(
-  account: Pick<Account, "name" | "color">,
+  account: Pick<Account, "name" | "color" | "showInGraphs">,
   userId: User["id"]
 ) {
   return prisma.account.create({
     data: {
       name: account.name,
       color: account.color,
+      showInGraphs: account.showInGraphs,
       user: {
         connect: {
           id: userId,
@@ -46,7 +61,8 @@ export async function updateAccount({
   userId,
   name,
   color,
-}: Pick<Account, "id" | "name" | "color" | "userId">) {
+  showInGraphs,
+}: Pick<Account, "id" | "name" | "color" | "showInGraphs" | "userId">) {
   const account = await getAccount({ id, userId });
 
   if (!account) {
@@ -58,6 +74,7 @@ export async function updateAccount({
     data: {
       name,
       color,
+      showInGraphs,
     },
   });
 }

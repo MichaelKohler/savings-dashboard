@@ -24,6 +24,7 @@ export async function action({ request }: ActionArgs) {
   const formData = await request.formData();
   const name = formData.get("name");
   const color = formData.get("color");
+  const showInGraphs = formData.has("showInGraphs");
 
   const errors = {
     name: null,
@@ -48,6 +49,7 @@ export async function action({ request }: ActionArgs) {
     {
       name,
       color,
+      showInGraphs,
     },
     userId
   );

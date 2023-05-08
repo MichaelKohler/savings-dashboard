@@ -28,6 +28,7 @@ export async function action({ request }: ActionArgs) {
   const formData = await request.formData();
   const name = formData.get("name");
   const color = formData.get("color");
+  const showInGraphs = formData.has("showInGraphs");
   const id = formData.get("id");
 
   const errors = {
@@ -57,7 +58,7 @@ export async function action({ request }: ActionArgs) {
     );
   }
 
-  await updateAccount({ id, userId, name, color });
+  await updateAccount({ id, userId, name, color, showInGraphs });
 
   return redirect("/accounts");
 }

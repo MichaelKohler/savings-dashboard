@@ -14,7 +14,7 @@ import type { LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
-import { getAccounts } from "~/models/accounts.server";
+import { getAccountsForCharts } from "~/models/accounts.server";
 import { getBalancesForCharts } from "~/models/balances.server";
 import { requireUserId } from "~/session.server";
 
@@ -28,7 +28,7 @@ export function meta(): ReturnType<V2_MetaFunction> {
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await requireUserId(request);
-  const accounts = await getAccounts({ userId });
+  const accounts = await getAccountsForCharts({ userId });
   const balances = await getBalancesForCharts({ userId });
   return json({ accounts, balances });
 }

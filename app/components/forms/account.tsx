@@ -80,6 +80,18 @@ export default function AccountForm({
         )}
       </div>
 
+      <div>
+        <label className="flex w-full flex-row gap-2">
+          <input
+            type="checkbox"
+            name="showInGraphs"
+            data-testid="new-account-graph-input"
+            defaultChecked={initialData?.showInGraphs}
+          />
+          <span>Show in graphs</span>
+        </label>
+      </div>
+
       {isEdit && <input type="hidden" name="id" value={initialData?.id} />}
 
       {actionData?.errors.generic && (
