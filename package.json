@@ -20,7 +20,9 @@
     "typecheck": "tsc -b",
     "validate": "run-p \"test -- --run\" lint typecheck"
   },
-  "prettier": {},
+  "prettier": {
+    "trailingComma": "es5"
+  },
   "eslintIgnore": [
     "/node_modules",
     "/build",
