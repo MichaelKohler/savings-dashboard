@@ -1,5 +1,9 @@
 import invariant from "tiny-invariant";
-import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
@@ -7,7 +11,7 @@ import AccountForm from "~/components/forms/account";
 import { getAccount, updateAccount } from "~/models/accounts.server";
 import { requireUserId } from "~/session.server";
 
-export function meta(): ReturnType<V2_MetaFunction> {
+export function meta(): ReturnType<MetaFunction> {
   return [
     {
       title: "Edit account",
@@ -15,14 +19,14 @@ export function meta(): ReturnType<V2_MetaFunction> {
   ];
 }
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
   invariant(params.accountId, "accountId not found");
   const account = await getAccount({ id: params.accountId, userId });
   return json({ account });
 }
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const userId = await requireUserId(request);
 
   const formData = await request.formData();
@@ -64,11 +68,11 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function EditAccountPage() {
-  const data = useLoaderData();
+  const data = useLoaderData<typeof loader>();
 
   return (
     <>
-      <h1 className="pb-4 text-3xl">Edit account - {data.account.name}</h1>
+      <h1 className="pb-4 text-3xl">Edit account - {data.account?.name}</h1>
       <AccountForm initialData={data.account} />
     </>
   );

@@ -1,11 +1,11 @@
 import invariant from "tiny-invariant";
-import type { ActionArgs } from "@remix-run/node";
+import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 
 import { deleteBalance } from "~/models/balances.server";
 import { requireUserId } from "~/session.server";
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request);
   invariant(params.balanceId, "balanceId not found");
 

@@ -1,8 +1,8 @@
 import React from "react";
 import type {
   LinksFunction,
-  LoaderArgs,
-  V2_MetaFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
 } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
@@ -24,7 +24,7 @@ export function links(): ReturnType<LinksFunction> {
   return [{ rel: "stylesheet", href: tailwindStylesheetUrl }];
 }
 
-export function meta(): ReturnType<V2_MetaFunction> {
+export function meta(): ReturnType<MetaFunction> {
   return [
     {
       title: "savings.michaelkohler.info",
@@ -32,7 +32,7 @@ export function meta(): ReturnType<V2_MetaFunction> {
   ];
 }
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   // This is used in the `getUser` function through `useMatchesData("root")`
   // Do not remove this, even though it's not used in this file!
   return json({
