@@ -1,6 +1,9 @@
 import type { User, Account } from "@prisma/client";
+import type { SerializeFrom } from "@remix-run/node";
 
 import { prisma } from "~/db.server";
+
+export type SerializedAccount = SerializeFrom<Account>;
 
 export type { Account } from "@prisma/client";
 

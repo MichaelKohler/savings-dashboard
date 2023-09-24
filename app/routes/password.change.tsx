@@ -1,17 +1,21 @@
 import * as React from "react";
-import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 
 import { changePassword, verifyLogin } from "~/models/user.server";
 import { requireUser } from "~/session.server";
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   await requireUser(request);
   return null;
 }
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const currentPassword = formData.get("password");
   const newPassword = formData.get("newPassword");
@@ -95,7 +99,7 @@ export async function action({ request }: ActionArgs) {
   return json({ done: true, errors }, { status: 200 });
 }
 
-export function meta(): ReturnType<V2_MetaFunction> {
+export function meta(): ReturnType<MetaFunction> {
   return [
     {
       title: "Change Password",

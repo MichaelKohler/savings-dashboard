@@ -2,17 +2,26 @@ import * as React from "react";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 
 import Button from "~/components/button";
-import type { Account } from "~/models/accounts.server";
-import type { Balance } from "~/models/balances.server";
+import type { SerializedAccount } from "~/models/accounts.server";
+import type { SerializedBalance } from "~/models/balances.server";
+
+type ActionDataResponse = {
+  errors: {
+    date?: string;
+    accountId?: string;
+    balance?: string;
+    generic?: string;
+  };
+};
 
 export default function BalanceForm({
   initialData,
   accounts = [],
 }: {
-  initialData?: Balance & { date: string };
-  accounts?: Account[];
+  initialData?: SerializedBalance | null;
+  accounts?: SerializedAccount[];
 }) {
-  const actionData = useActionData();
+  const actionData = useActionData<ActionDataResponse>();
   const navigation = useNavigation();
 
   const dateRef = React.useRef<HTMLInputElement>(null);
@@ -77,7 +86,7 @@ export default function BalanceForm({
             defaultValue={initialData?.accountId}
           >
             <option value="">Select account</option>
-            {accounts?.map((account: Account) => (
+            {accounts?.map((account: SerializedAccount) => (
               <option key={account.id} value={account.id}>
                 {account.name}
               </option>

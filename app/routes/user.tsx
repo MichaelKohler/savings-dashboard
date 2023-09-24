@@ -1,5 +1,9 @@
 import * as React from "react";
-import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 
@@ -7,14 +11,14 @@ import { createUser, getUserByEmail } from "~/models/user.server";
 import { requireUserId } from "~/session.server";
 import { validateEmail } from "~/utils";
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   // Note that any registered user can create more users
   // There is no concept such as an admin role!
   await requireUserId(request);
   return json({ errors: null });
 }
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
@@ -58,7 +62,7 @@ export async function action({ request }: ActionArgs) {
   return redirect("/");
 }
 
-export function meta(): ReturnType<V2_MetaFunction> {
+export function meta(): ReturnType<MetaFunction> {
   return [
     {
       title: "Create User",

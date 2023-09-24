@@ -1,5 +1,9 @@
 import invariant from "tiny-invariant";
-import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
@@ -8,7 +12,7 @@ import { getAccounts } from "~/models/accounts.server";
 import { getBalance, updateBalance } from "~/models/balances.server";
 import { requireUserId } from "~/session.server";
 
-export function meta(): ReturnType<V2_MetaFunction> {
+export function meta(): ReturnType<MetaFunction> {
   return [
     {
       title: "Edit Balance",
@@ -16,7 +20,7 @@ export function meta(): ReturnType<V2_MetaFunction> {
   ];
 }
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
   invariant(params.balanceId, "balanceId not found");
   const accounts = await getAccounts({ userId });
@@ -24,7 +28,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ accounts, balance });
 }
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const userId = await requireUserId(request);
 
   const formData = await request.formData();
@@ -105,7 +109,7 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function EditBalancePage() {
-  const data = useLoaderData();
+  const data = useLoaderData<typeof loader>();
 
   return (
     <>

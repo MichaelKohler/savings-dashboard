@@ -2,14 +2,22 @@ import * as React from "react";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 
 import Button from "~/components/button";
-import type { Account } from "~/models/accounts.server";
+import type { SerializedAccount } from "~/models/accounts.server";
+
+type ActionDataResponse = {
+  errors: {
+    name?: string;
+    color?: string;
+    generic?: string;
+  };
+};
 
 export default function AccountForm({
   initialData,
 }: {
-  initialData?: Account;
+  initialData?: SerializedAccount | null;
 }) {
-  const actionData = useActionData();
+  const actionData = useActionData<ActionDataResponse>();
   const navigation = useNavigation();
 
   const nameRef = React.useRef<HTMLInputElement>(null);
