@@ -89,7 +89,7 @@ export default function CreateUserPage() {
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-mk-text"
           >
             Email address
           </label>
@@ -107,7 +107,7 @@ export default function CreateUserPage() {
               className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
             />
             {actionData?.errors.email && (
-              <div className="pt-1 text-red-700" id="email-error">
+              <div className="pt-1 text-mkerror" id="email-error">
                 {actionData.errors.email}
               </div>
             )}
@@ -117,7 +117,7 @@ export default function CreateUserPage() {
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-mk-text"
           >
             Password
           </label>
@@ -133,7 +133,7 @@ export default function CreateUserPage() {
               className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
             />
             {actionData?.errors.password && (
-              <div className="pt-1 text-red-700" id="password-error">
+              <div className="pt-1 text-mkerror" id="password-error">
                 {actionData.errors.password}
               </div>
             )}
@@ -142,7 +142,7 @@ export default function CreateUserPage() {
 
         <button
           type="submit"
-          className="w-full rounded bg-slate-600 px-4 py-2 text-white hover:bg-slate-500 focus:bg-slate-500"
+          className="w-full rounded bg-mk px-4 py-2 text-white hover:bg-mk-secondary focus:bg-mk-secondary"
         >
           Create User
         </button>

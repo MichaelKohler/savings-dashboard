@@ -89,7 +89,7 @@ export default function LoginPage() {
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-mk-text"
           >
             Email address
           </label>
@@ -107,7 +107,7 @@ export default function LoginPage() {
               className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
             />
             {actionData?.errors.email && (
-              <div className="pt-1 text-red-700" id="email-error">
+              <div className="pt-1 text-mkerror" id="email-error">
                 {actionData.errors.email}
               </div>
             )}
@@ -117,7 +117,7 @@ export default function LoginPage() {
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-mk-text"
           >
             Password
           </label>
@@ -133,7 +133,7 @@ export default function LoginPage() {
               className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
             />
             {actionData?.errors.password && (
-              <div className="pt-1 text-red-700" id="password-error">
+              <div className="pt-1 text-mkerror" id="password-error">
                 {actionData.errors.password}
               </div>
             )}
@@ -143,7 +143,7 @@ export default function LoginPage() {
         <input type="hidden" name="redirectTo" value={redirectTo} />
         <button
           type="submit"
-          className="w-full rounded bg-slate-600 px-4 py-2 text-white hover:bg-slate-500 focus:bg-slate-500"
+          className="w-full rounded bg-mk px-4 py-2 text-white hover:bg-mk-secondary focus:bg-mk-secondary"
         >
           Log in
         </button>
@@ -153,11 +153,11 @@ export default function LoginPage() {
               id="remember"
               name="remember"
               type="checkbox"
-              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4 rounded border-gray-300 text-mk focus:ring-mk"
             />
             <label
               htmlFor="remember"
-              className="ml-2 block text-sm text-gray-900"
+              className="ml-2 block text-sm text-mk-text"
             >
               Remember me
             </label>

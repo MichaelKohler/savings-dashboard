@@ -61,7 +61,7 @@ export default function BalanceForm({
             ref={dateRef}
             type="date"
             name="date"
-            className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
+            className="flex-1 rounded-md border-2 border-mk px-3 text-lg leading-loose"
             aria-invalid={actionData?.errors.date ? true : undefined}
             aria-errormessage={
               actionData?.errors.date ? "date-error" : undefined
@@ -71,7 +71,7 @@ export default function BalanceForm({
           />
         </label>
         {actionData?.errors.date && (
-          <div className="pt-1 text-red-700" id="date=error">
+          <div className="pt-1 text-mkerror" id="date=error">
             {actionData.errors.date}
           </div>
         )}
@@ -82,7 +82,7 @@ export default function BalanceForm({
           <span>Account: </span>
           <select
             name="accountId"
-            className="flex-1 rounded-md border-2 border-blue-500 px-3 py-2 leading-loose"
+            className="flex-1 rounded-md border-2 border-mk px-3 py-2 leading-loose"
             defaultValue={initialData?.accountId}
           >
             <option value="">Select account</option>
@@ -94,7 +94,7 @@ export default function BalanceForm({
           </select>
         </label>
         {actionData?.errors.accountId && (
-          <div className="pt-1 text-red-700" id="accountId=error">
+          <div className="pt-1 text-mkerror" id="accountId=error">
             {actionData.errors.accountId}
           </div>
         )}
@@ -107,7 +107,7 @@ export default function BalanceForm({
             ref={balanceRef}
             type="number"
             name="balance"
-            className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
+            className="flex-1 rounded-md border-2 border-mk px-3 text-lg leading-loose"
             aria-invalid={actionData?.errors.balance ? true : undefined}
             aria-errormessage={
               actionData?.errors.balance ? "balance-error" : undefined
@@ -117,7 +117,7 @@ export default function BalanceForm({
           />
         </label>
         {actionData?.errors.balance && (
-          <div className="pt-1 text-red-700" id="balance=error">
+          <div className="pt-1 text-mkerror" id="balance=error">
             {actionData.errors.balance}
           </div>
         )}
@@ -126,7 +126,7 @@ export default function BalanceForm({
       {isEdit && <input type="hidden" name="id" value={initialData?.id} />}
 
       {actionData?.errors.generic && (
-        <div className="pt-1 text-red-700" id="generic=error">
+        <div className="pt-1 text-mkerror" id="generic=error">
           {actionData.errors.generic}
         </div>
       )}

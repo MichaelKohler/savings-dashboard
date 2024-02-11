@@ -12,8 +12,8 @@ export default function Button({
   children,
 }: Props) {
   const colorClasses = isDanger
-    ? "bg-red-400 hover:bg-red-500 active:bg-red-500"
-    : "bg-slate-200 hover:bg-slate-300 active:bg-slate-300";
+    ? "bg-mkerror hover:bg-mkerror-muted active:bg-mkerror-muted"
+    : "bg-mk hover:bg-mk-tertiary active:bg-mk-tertiary text-white";
   const classes = `text-white-100 rounded py-2 px-4 mt-1 mb-1 transition duration-300 ${colorClasses}`;
 
   return (

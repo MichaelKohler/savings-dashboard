@@ -50,7 +50,7 @@ export default function AccountForm({
             ref={nameRef}
             type="text"
             name="name"
-            className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
+            className="flex-1 rounded-md border-2 border-mk px-3 text-lg leading-loose"
             aria-invalid={actionData?.errors.name ? true : undefined}
             aria-errormessage={
               actionData?.errors.name ? "name-error" : undefined
@@ -60,7 +60,7 @@ export default function AccountForm({
           />
         </label>
         {actionData?.errors.name && (
-          <div className="pt-1 text-red-700" id="name=error">
+          <div className="pt-1 text-mkerror" id="name=error">
             {actionData.errors.name}
           </div>
         )}
@@ -82,7 +82,7 @@ export default function AccountForm({
           />
         </label>
         {actionData?.errors.color && (
-          <div className="pt-1 text-red-700" id="color=error">
+          <div className="pt-1 text-mkerror" id="color=error">
             {actionData.errors.color}
           </div>
         )}
@@ -103,7 +103,7 @@ export default function AccountForm({
       {isEdit && <input type="hidden" name="id" value={initialData?.id} />}
 
       {actionData?.errors.generic && (
-        <div className="pt-1 text-red-700" id="generic=error">
+        <div className="pt-1 text-mkerror" id="generic=error">
           {actionData.errors.generic}
         </div>
       )}

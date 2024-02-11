@@ -138,7 +138,7 @@ export default function ChangePassword() {
     <main className="mx-auto my-12 flex min-h-full w-full max-w-md flex-col px-8">
       <Form method="post" className="space-y-6">
         {actionData?.errors.generic && (
-          <div className="pt-1 text-red-700" id="password-generic-error">
+          <div className="pt-1 text-mkerror" id="password-generic-error">
             {actionData.errors.generic}
           </div>
         )}
@@ -146,7 +146,7 @@ export default function ChangePassword() {
         <div>
           <label
             htmlFor="currentPassword"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-mk-text"
           >
             Current Password
           </label>
@@ -163,7 +163,7 @@ export default function ChangePassword() {
               className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
             />
             {actionData?.errors.password && (
-              <div className="pt-1 text-red-700" id="password-error">
+              <div className="pt-1 text-mkerror" id="password-error">
                 {actionData.errors.password}
               </div>
             )}
@@ -173,7 +173,7 @@ export default function ChangePassword() {
         <div>
           <label
             htmlFor="newPassword"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-mk-text"
           >
             New Password
           </label>
@@ -190,7 +190,7 @@ export default function ChangePassword() {
               className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
             />
             {actionData?.errors.newPassword && (
-              <div className="pt-1 text-red-700" id="new-password-error">
+              <div className="pt-1 text-mkerror" id="new-password-error">
                 {actionData.errors.newPassword}
               </div>
             )}
@@ -200,7 +200,7 @@ export default function ChangePassword() {
         <div>
           <label
             htmlFor="confirmPassword"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-mk-text"
           >
             Confirm Password
           </label>
@@ -219,7 +219,7 @@ export default function ChangePassword() {
               className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
             />
             {actionData?.errors.confirmPassword && (
-              <div className="pt-1 text-red-700" id="password-confirm-error">
+              <div className="pt-1 text-mkerror" id="password-confirm-error">
                 {actionData.errors.confirmPassword}
               </div>
             )}
@@ -228,7 +228,7 @@ export default function ChangePassword() {
 
         <button
           type="submit"
-          className="w-full rounded bg-slate-600 px-4 py-2 text-white hover:bg-slate-500 focus:bg-slate-500"
+          className="w-full rounded bg-mk px-4 py-2 text-white hover:bg-mk-secondary focus:bg-mk-secondary"
         >
           Change password
         </button>

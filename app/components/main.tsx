@@ -10,7 +10,7 @@ export default function Sidebar() {
       <div
         className={`${
           !user && "hidden"
-        } min-h-screen w-10 border-r bg-slate-100 md:block md:w-80`}
+        } min-h-screen w-10 border-r bg-mklight-100 md:block md:w-80`}
       >
         <ul>
           {!user && (
