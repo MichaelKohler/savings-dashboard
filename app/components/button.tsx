@@ -3,12 +3,14 @@ type Props = {
   isDanger?: boolean;
   isDisabled?: boolean;
   children: React.ReactNode;
+  onClick?: () => void;
 };
 
 export default function Button({
   isSubmit = false,
   isDanger = false,
   isDisabled = false,
+  onClick,
   children,
 }: Props) {
   const colorClasses = isDanger
@@ -21,6 +23,7 @@ export default function Button({
       type={isSubmit ? "submit" : "button"}
       className={classes}
       disabled={isDisabled}
+      {...(onClick ? { onClick } : {})}
     >
       {children}
     </button>

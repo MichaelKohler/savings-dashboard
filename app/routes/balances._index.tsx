@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
@@ -22,6 +23,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function BalancesPage() {
   const data = useLoaderData<typeof loader>();
+  const [markedForDeletion, setMarkedForDeletion] = useState<
+    Record<string, boolean>
+  >({});
+
+  const markForDeletion = (id: string) => () => {
+    setMarkedForDeletion((prev) => ({ ...prev, [id]: true }));
+  };
 
   return (
     <main>
@@ -52,15 +60,22 @@ export default function BalancesPage() {
                   >
                     <Button>Edit</Button>
                   </Link>
-                  <Form
-                    action={`/balances/${balance.id}/delete`}
-                    method="post"
-                    className="inline-block"
-                  >
-                    <Button isDanger isSubmit>
-                      Delete
+                  {!markedForDeletion[balance.id] && (
+                    <Button isDanger onClick={markForDeletion(balance.id)}>
+                      Mark for deletion
                     </Button>
-                  </Form>
+                  )}
+                  {markedForDeletion[balance.id] && (
+                    <Form
+                      action={`/balances/${balance.id}/delete`}
+                      method="post"
+                      className="inline-block"
+                    >
+                      <Button isDanger isSubmit>
+                        Delete
+                      </Button>
+                    </Form>
+                  )}
                 </td>
               </tr>
             );
