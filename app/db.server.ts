@@ -13,7 +13,13 @@ declare global {
 // create a new connection to the DB with every change either.
 // in production we'll have a single connection to the DB.
 if (process.env.NODE_ENV === "production") {
-  prisma = new PrismaClient();
+  const libsql = createClient({
+    url: `${process.env.TURSO_DATABASE_URL}`,
+    authToken: `${process.env.TURSO_AUTH_TOKEN}`,
+  });
+
+  const adapter = new PrismaLibSQL(libsql);
+  prisma = new PrismaClient({ adapter });
 } else {
   if (!global.__db__) {
     const libsql = createClient({
