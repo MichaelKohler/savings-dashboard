@@ -8,7 +8,6 @@ import type {
 import { json } from "@remix-run/node";
 import {
   Links,
-  LiveReload,
   Meta,
   Scripts,
   ScrollRestoration,
@@ -19,7 +18,7 @@ import { Analytics } from "@vercel/analytics/react";
 
 import Header from "./components/header";
 import Main from "./components/main";
-import tailwindStylesheetUrl from "./styles/tailwind.css";
+import tailwindStylesheetUrl from "./styles/tailwind.css?url";
 import { getUser } from "./session.server";
 
 export function headers(): ReturnType<HeadersFunction> {
@@ -78,7 +77,6 @@ function App({ children }: { children?: React.ReactNode }) {
         <ScrollRestoration />
         <Scripts />
         <Analytics />
-        <LiveReload />
       </body>
     </html>
   );
