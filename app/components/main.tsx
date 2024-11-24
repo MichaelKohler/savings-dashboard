@@ -65,18 +65,6 @@ export default function Sidebar() {
                   📈<span className="ml-2 hidden md:inline">Charts</span>
                 </NavLink>
               </li>
-              <li>
-                <NavLink
-                  className={({ isActive }) =>
-                    `align-items text-l block flex w-full flex-row justify-center gap-1 border-b py-4 md:justify-start md:p-4 ${
-                      isActive ? "bg-white" : ""
-                    }`
-                  }
-                  to="/user"
-                >
-                  👤<span className="ml-2 hidden md:inline">Add User</span>
-                </NavLink>
-              </li>
 
               {/* We show the button on desktop view, and just the lock on mobile */}
               <li className="hidden md:block">
