@@ -83,6 +83,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   try {
     await changePassword(user.email, newPassword);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return json(
       {
@@ -157,7 +158,6 @@ export default function ChangePassword() {
               required
               name="password"
               type="password"
-              autoComplete="password"
               aria-invalid={actionData?.errors.password ? true : undefined}
               aria-describedby="password-error"
               className="w-full rounded border border-gray-500 px-2 py-1 text-lg"

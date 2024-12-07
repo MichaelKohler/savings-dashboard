@@ -33,7 +33,7 @@ export async function createUser(email: User["email"], password: string) {
 }
 
 export async function changePassword(email: User["email"], password: string) {
-  let userEmail = email;
+  const userEmail = email;
 
   if (!email) {
     throw new Error("NO_EMAIL_PASSED");
@@ -88,6 +88,10 @@ export async function verifyLogin(
     return null;
   }
 
+  // Do not trust linting here, we do not want to expose the password,
+  // therefore we explicitly do not want it to be part of the return value.
+  // This variable is unused, but intentionally.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: _password, ...userWithoutPassword } = userWithPassword;
 
   return userWithoutPassword;

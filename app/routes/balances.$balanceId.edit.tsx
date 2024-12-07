@@ -73,6 +73,7 @@ export async function action({ request }: ActionFunctionArgs) {
   let parsedBalance = 0;
   try {
     parsedBalance = parseInt(balance);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return json(
       {
