@@ -29,7 +29,7 @@ jobs:
 
       - name: ✨ Create backup
         run: |
-          /usr/lib/postgresql/17/bin/pg_dump ${{ secrets.DATABASE_URL }} | gzip > "tv-tracker-${TIMESTAMP}.sql.gz"
+          /usr/lib/postgresql/17/bin/pg_dump ${{ secrets.DATABASE_URL }} | gzip > "savings-${TIMESTAMP}.sql.gz"
           cat savings-${TIMESTAMP}.sql.gz | gpg --passphrase "${{ secrets.ENCRYPTION_STRING }}" --batch --yes -c -o savings-${TIMESTAMP}.sql.gz.gpg
           rm savings-${TIMESTAMP}.sql.gz
 
