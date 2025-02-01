@@ -24,10 +24,16 @@ export function getBalance({
   });
 }
 
-export async function getBalances({ userId }: { userId: User["id"] }) {
+export async function getBalances({
+  userId,
+  order = "desc",
+}: {
+  userId: User["id"];
+  order?: "desc" | "asc";
+}) {
   const balances = await prisma.balance.findMany({
     where: { userId },
-    orderBy: { date: "desc" },
+    orderBy: { date: order },
     include: {
       account: true,
     },
@@ -37,7 +43,7 @@ export async function getBalances({ userId }: { userId: User["id"] }) {
 }
 
 export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
-  const balances = await getBalances({ userId });
+  const balances = await getBalances({ userId, order: "desc" });
   const groupedBalances = balances.reduce(
     (series: ChartDataEntry[], balance) => {
       const date = balance.date.toISOString().substring(0, 10);
