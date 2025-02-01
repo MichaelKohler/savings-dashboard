@@ -24,10 +24,16 @@ export function getBalance({
   });
 }
 
-export async function getBalances({ userId }: { userId: User["id"] }) {
+export async function getBalances({
+  userId,
+  order = "desc",
+}: {
+  userId: User["id"];
+  order?: "desc" | "asc";
+}) {
   const balances = await prisma.balance.findMany({
     where: { userId },
-    orderBy: { date: "desc" },
+    orderBy: { date: order },
     include: {
       account: true,
     },
@@ -36,36 +42,57 @@ export async function getBalances({ userId }: { userId: User["id"] }) {
   return balances;
 }
 
+function getMonthKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}`;
+}
+
 export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
-  const balances = await getBalances({ userId });
-  const groupedBalances = balances.reduce(
-    (series: ChartDataEntry[], balance) => {
-      const date = balance.date.toISOString().substring(0, 10);
-      let dateEntry = series.find(
-        (entry: ChartDataEntry) => entry.date === date
-      );
+  const allBalances = await getBalances({ userId, order: "asc" });
 
-      if (!dateEntry) {
-        dateEntry = {
-          date,
-          total: 0,
-        };
-        series.push(dateEntry);
-      }
+  if (!allBalances.length) {
+    return [];
+  }
 
-      dateEntry[balance.accountId] = balance.balance;
-      dateEntry.total += balance.balance;
-
-      return series;
-    },
-    []
+  const earliestDate = new Date(
+    allBalances[0].date.getFullYear(),
+    allBalances[0].date.getMonth(),
+    1
   );
+  const today = new Date();
+  const currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-  const sortedBalances = groupedBalances.sort((a, b) => {
-    return a.date.localeCompare(b.date);
-  });
+  const result: ChartDataEntry[] = [];
+  const monthCursor = new Date(earliestDate);
+  const lastKnownBalances: Record<string, number> = {};
 
-  return sortedBalances;
+  while (monthCursor <= currentMonth) {
+    const monthKey = getMonthKey(monthCursor);
+    const accountsMap: Record<string, number> = {};
+
+    for (const balance of allBalances) {
+      const balMonthKey = getMonthKey(balance.date);
+      if (balMonthKey === monthKey) {
+        lastKnownBalances[balance.accountId] = balance.balance;
+      }
+    }
+
+    for (const accId in lastKnownBalances) {
+      accountsMap[accId] = lastKnownBalances[accId];
+    }
+
+    result.push({
+      date: monthKey,
+      total: Object.values(accountsMap).reduce((a, b) => a + b, 0),
+      ...accountsMap,
+    });
+
+    monthCursor.setMonth(monthCursor.getMonth() + 1);
+  }
+
+  return result;
 }
 
 export function createBalance(
