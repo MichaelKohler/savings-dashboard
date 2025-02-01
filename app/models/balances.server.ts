@@ -42,6 +42,13 @@ export async function getBalances({
   return balances;
 }
 
+function getMonthKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}`;
+}
+
 export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
   const allBalances = await getBalances({ userId, order: "asc" });
 
@@ -59,31 +66,26 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
 
   const result: ChartDataEntry[] = [];
   const monthCursor = new Date(earliestDate);
+  const lastKnownBalances: Record<string, number> = {};
 
   while (monthCursor <= currentMonth) {
-    const monthKey = `${monthCursor.getFullYear()}-${String(
-      monthCursor.getMonth() + 1
-    ).padStart(2, "0")}`;
+    const monthKey = getMonthKey(monthCursor);
     const accountsMap: Record<string, number> = {};
 
     for (const balance of allBalances) {
-      const balMonthKey = `${balance.date.getFullYear()}-${String(
-        balance.date.getMonth() + 1
-      ).padStart(2, "0")}`;
+      const balMonthKey = getMonthKey(balance.date);
       if (balMonthKey === monthKey) {
-        accountsMap[balance.accountId] = balance.balance;
+        lastKnownBalances[balance.accountId] = balance.balance;
       }
     }
 
-    let total = 0;
-
-    for (const accId in accountsMap) {
-      total += accountsMap[accId];
+    for (const accId in lastKnownBalances) {
+      accountsMap[accId] = lastKnownBalances[accId];
     }
 
     result.push({
       date: monthKey,
-      total,
+      total: Object.values(accountsMap).reduce((a, b) => a + b, 0),
       ...accountsMap,
     });
 
