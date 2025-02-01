@@ -43,35 +43,54 @@ export async function getBalances({
 }
 
 export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
-  const balances = await getBalances({ userId, order: "desc" });
-  const groupedBalances = balances.reduce(
-    (series: ChartDataEntry[], balance) => {
-      const date = balance.date.toISOString().substring(0, 10);
-      let dateEntry = series.find(
-        (entry: ChartDataEntry) => entry.date === date
-      );
+  const allBalances = await getBalances({ userId, order: "asc" });
 
-      if (!dateEntry) {
-        dateEntry = {
-          date,
-          total: 0,
-        };
-        series.push(dateEntry);
-      }
+  if (!allBalances.length) {
+    return [];
+  }
 
-      dateEntry[balance.accountId] = balance.balance;
-      dateEntry.total += balance.balance;
-
-      return series;
-    },
-    []
+  const earliestDate = new Date(
+    allBalances[0].date.getFullYear(),
+    allBalances[0].date.getMonth(),
+    1
   );
+  const today = new Date();
+  const currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-  const sortedBalances = groupedBalances.sort((a, b) => {
-    return a.date.localeCompare(b.date);
-  });
+  const result: ChartDataEntry[] = [];
+  const monthCursor = new Date(earliestDate);
 
-  return sortedBalances;
+  while (monthCursor <= currentMonth) {
+    const monthKey = `${monthCursor.getFullYear()}-${String(
+      monthCursor.getMonth() + 1
+    ).padStart(2, "0")}`;
+    const accountsMap: Record<string, number> = {};
+
+    for (const balance of allBalances) {
+      const balMonthKey = `${balance.date.getFullYear()}-${String(
+        balance.date.getMonth() + 1
+      ).padStart(2, "0")}`;
+      if (balMonthKey === monthKey) {
+        accountsMap[balance.accountId] = balance.balance;
+      }
+    }
+
+    let total = 0;
+
+    for (const accId in accountsMap) {
+      total += accountsMap[accId];
+    }
+
+    result.push({
+      date: monthKey,
+      total,
+      ...accountsMap,
+    });
+
+    monthCursor.setMonth(monthCursor.getMonth() + 1);
+  }
+
+  return result;
 }
 
 export function createBalance(
