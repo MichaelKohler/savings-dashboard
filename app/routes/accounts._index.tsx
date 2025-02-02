@@ -41,8 +41,8 @@ export default function AccountsPage() {
       <table className="mt-5 min-w-full">
         <thead className="border-b text-left">
           <tr>
+            <th className="w-10 pr-2"></th>
             <th className="pr-2">Name</th>
-            <th className="pr-2">Color</th>
             <th className="text-right">Actions</th>
           </tr>
         </thead>
@@ -53,6 +53,9 @@ export default function AccountsPage() {
                 className={`border-b ${account.archived ? "text-gray-300" : ""}`}
                 key={account.id}
               >
+                <td className="w-10 pr-2">
+                  <Swatch color={account.color} />
+                </td>
                 <td className="pr-2">
                   <span className="block">
                     {account.name}
@@ -64,10 +67,7 @@ export default function AccountsPage() {
                     </span>
                   ) : null}
                 </td>
-                <td className="pr-2">
-                  <Swatch color={account.color} />
-                </td>
-                <td className="text-right">
+                <td className="text-right text-black">
                   <Link
                     to={`/accounts/${account.id}/edit`}
                     className="mr-4 inline-block"
