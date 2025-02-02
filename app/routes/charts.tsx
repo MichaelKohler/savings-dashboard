@@ -80,7 +80,7 @@ export default function ChartsPage() {
             return (
               <Line
                 key={account.id}
-                name={account.name}
+                name={`${account.name}${account.group?.name ? ` (${account.group.name})` : ""}`}
                 type="monotoneX"
                 dataKey={account.id}
                 stroke={account.color}
@@ -102,7 +102,7 @@ export default function ChartsPage() {
             return (
               <Bar
                 key={account.id}
-                name={account.name}
+                name={`${account.name}${account.group?.name ? ` (${account.group.name})` : ""}`}
                 type="monotoneX"
                 dataKey={account.id}
                 stackId="STACK_ALL"

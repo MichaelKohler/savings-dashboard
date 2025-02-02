@@ -47,6 +47,10 @@ export async function getAccountsForCharts({ userId }: { userId: User["id"] }) {
       showInGraphs: true,
     },
     orderBy: { createdAt: "desc" },
+    include: {
+      group: true,
+      type: true,
+    },
   });
 
   return accounts;
