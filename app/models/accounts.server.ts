@@ -49,7 +49,10 @@ export async function getAccountsForCharts({ userId }: { userId: User["id"] }) {
 }
 
 export function createAccount(
-  account: Pick<Account, "name" | "color" | "showInGraphs" | "groupId">,
+  account: Pick<
+    Account,
+    "name" | "color" | "showInGraphs" | "groupId" | "typeId"
+  >,
   userId: User["id"]
 ) {
   return prisma.account.create({
@@ -62,6 +65,15 @@ export function createAccount(
             group: {
               connect: {
                 id: account.groupId,
+              },
+            },
+          }
+        : {}),
+      ...(account.typeId
+        ? {
+            type: {
+              connect: {
+                id: account.typeId,
               },
             },
           }
@@ -83,9 +95,17 @@ export async function updateAccount({
   showInGraphs,
   groupId,
   archived,
+  typeId,
 }: Pick<
   Account,
-  "id" | "name" | "color" | "showInGraphs" | "userId" | "groupId" | "archived"
+  | "id"
+  | "name"
+  | "color"
+  | "showInGraphs"
+  | "userId"
+  | "groupId"
+  | "archived"
+  | "typeId"
 >) {
   const account = await getAccount({ id, userId });
 
@@ -101,6 +121,7 @@ export async function updateAccount({
       showInGraphs,
       groupId,
       archived,
+      typeId,
     },
   });
 }

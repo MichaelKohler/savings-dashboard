@@ -11,6 +11,7 @@ import AccountForm from "~/components/forms/account";
 import { getAccount, updateAccount } from "~/models/accounts.server";
 import { requireUserId } from "~/session.server";
 import { getGroups } from "~/models/groups.server";
+import { getTypes } from "~/models/types.server";
 
 export function meta(): ReturnType<MetaFunction> {
   return [
@@ -25,7 +26,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   invariant(params.accountId, "accountId not found");
   const account = await getAccount({ id: params.accountId, userId });
   const groups = await getGroups({ userId });
-  return json({ account, groups });
+  const types = await getTypes({ userId });
+  return json({ account, groups, types });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -38,12 +40,14 @@ export async function action({ request }: ActionFunctionArgs) {
   const showInGraphs = formData.has("showInGraphs");
   const id = formData.get("id");
   const archived = formData.has("archived");
+  const typeId = formData.get("typeId");
 
   const errors = {
     name: null,
     color: null,
     id: null,
     groudId: null,
+    typeId: null,
   };
 
   if (typeof id !== "string" || id.length === 0) {
@@ -79,6 +83,18 @@ export async function action({ request }: ActionFunctionArgs) {
     );
   }
 
+  if (typeof typeId !== "undefined" && typeof typeId !== "string") {
+    return json(
+      {
+        errors: {
+          ...errors,
+          groupId: "Type ID must be a string",
+        },
+      },
+      { status: 400 }
+    );
+  }
+
   await updateAccount({
     id,
     userId,
@@ -87,6 +103,7 @@ export async function action({ request }: ActionFunctionArgs) {
     showInGraphs,
     groupId,
     archived,
+    typeId,
   });
 
   return redirect("/accounts");
@@ -98,7 +115,11 @@ export default function EditAccountPage() {
   return (
     <>
       <h1 className="pb-4 text-3xl">Edit account - {data.account?.name}</h1>
-      <AccountForm initialData={data.account} groups={data.groups} />
+      <AccountForm
+        initialData={data.account}
+        groups={data.groups}
+        types={data.types}
+      />
     </>
   );
 }

@@ -5,6 +5,7 @@ import { Form, useActionData, useNavigation } from "@remix-run/react";
 import Button from "~/components/button";
 import type { SerializedAccount } from "~/models/accounts.server";
 import type { SerializedGroup } from "~/models/groups.server";
+import type { SerializedType } from "~/models/types.server";
 
 type ActionDataResponse = {
   errors: {
@@ -12,15 +13,18 @@ type ActionDataResponse = {
     color?: string;
     generic?: string;
     groupId?: string;
+    typeId?: string;
   };
 };
 
 export default function AccountForm({
   initialData,
   groups,
+  types,
 }: {
   initialData?: SerializedAccount | null;
   groups: SerializedGroup[];
+  types: SerializedType[];
 }) {
   const actionData = useActionData<ActionDataResponse>();
   const navigation = useNavigation();
@@ -67,6 +71,29 @@ export default function AccountForm({
         {actionData?.errors.name && (
           <div className="pt-1 text-mkerror" id="name=error">
             {actionData.errors.name}
+          </div>
+        )}
+      </div>
+
+      <div>
+        <label className="flex w-full flex-col gap-1">
+          <span>Type: </span>
+          <select
+            name="typeId"
+            className="flex-1 rounded-md border-2 border-mk px-3 py-2 leading-loose"
+            defaultValue={initialData?.typeId || ""}
+          >
+            <option value="">Select type</option>
+            {types?.map((type: SerializedType) => (
+              <option key={type.id} value={type.id}>
+                {type.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        {actionData?.errors.typeId && (
+          <div className="pt-1 text-mkerror" id="accountId=error">
+            {actionData.errors.typeId}
           </div>
         )}
       </div>

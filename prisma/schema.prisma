@@ -19,6 +19,7 @@ model User {
   password Password?
   accounts Account[]
   groups Group[]
+  types Type[]
   balances Balance[]
 }
 
@@ -47,7 +48,12 @@ model Account {
   group   Group?  @relation(fields: [groupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   groupId String?
 
+  type   Type?  @relation(fields: [typeId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  typeId String?
+
   @@index([userId])
+  @@index([groupId])
+  @@index([typeId])
 }
 
 model Balance {
@@ -68,6 +74,21 @@ model Balance {
 }
 
 model Group {
+  id       String   @id @default(cuid())
+  name     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts Account[]
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+
+  @@index([userId])
+}
+
+model Type {
   id       String   @id @default(cuid())
   name     String
 

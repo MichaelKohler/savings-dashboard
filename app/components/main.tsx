@@ -59,6 +59,18 @@ export default function Sidebar() {
                       isActive ? "bg-white" : ""
                     }`
                   }
+                  to="/types"
+                >
+                  🏦<span className="ml-2 hidden md:inline">Types</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  className={({ isActive }) =>
+                    `align-items text-l flex w-full flex-row justify-center gap-1 border-b py-4 md:justify-start md:p-4 ${
+                      isActive ? "bg-white" : ""
+                    }`
+                  }
                   to="/balances"
                 >
                   💰<span className="ml-2 hidden md:inline">Balances</span>
