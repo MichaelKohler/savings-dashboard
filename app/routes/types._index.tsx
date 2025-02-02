@@ -42,16 +42,13 @@ export default function TypesPage() {
               <tr className="border-b" key={type.id}>
                 <td className="pr-2">{type.name}</td>
                 <td className="text-right">
-                  <Link
-                    to={`/types/${type.id}/edit`}
-                    className="mr-4 inline-block"
-                  >
+                  <Link to={`/types/${type.id}/edit`} className="inline-block">
                     <Button>Edit</Button>
                   </Link>
                   <Form
                     action={`/types/${type.id}/delete`}
                     method="post"
-                    className="inline-block"
+                    className="ml-4 inline-block"
                   >
                     <Button isDanger isSubmit>
                       X

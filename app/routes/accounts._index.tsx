@@ -70,20 +70,22 @@ export default function AccountsPage() {
                 <td className="text-right text-black">
                   <Link
                     to={`/accounts/${account.id}/edit`}
-                    className="mr-4 inline-block"
+                    className="inline-block"
                   >
                     <Button>Edit</Button>
                   </Link>
                   {!markedForDeletion[account.id] && (
-                    <Button isDanger onClick={markForDeletion(account.id)}>
-                      X
-                    </Button>
+                    <span className="ml-4">
+                      <Button isDanger onClick={markForDeletion(account.id)}>
+                        X
+                      </Button>
+                    </span>
                   )}
                   {markedForDeletion[account.id] && (
                     <Form
                       action={`/accounts/${account.id}/delete`}
                       method="post"
-                      className="inline-block"
+                      className="ml-4 inline-block"
                     >
                       <Button isDanger isSubmit>
                         X?

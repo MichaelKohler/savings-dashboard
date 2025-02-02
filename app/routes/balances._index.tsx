@@ -63,20 +63,22 @@ export default function BalancesPage() {
                 <td className="text-right">
                   <Link
                     to={`/balances/${balance.id}/edit`}
-                    className="mr-4 inline-block"
+                    className="inline-block"
                   >
                     <Button>Edit</Button>
                   </Link>
                   {!markedForDeletion[balance.id] && (
-                    <Button isDanger onClick={markForDeletion(balance.id)}>
-                      X
-                    </Button>
+                    <span className="ml-4">
+                      <Button isDanger onClick={markForDeletion(balance.id)}>
+                        X
+                      </Button>
+                    </span>
                   )}
                   {markedForDeletion[balance.id] && (
                     <Form
                       action={`/balances/${balance.id}/delete`}
                       method="post"
-                      className="inline-block"
+                      className="ml-4 inline-block"
                     >
                       <Button isDanger isSubmit>
                         X?

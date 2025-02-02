@@ -32,16 +32,13 @@ export default function GroupsIndexPage() {
             <tr key={group.id} className="border-b">
               <td className="pr-2">{group.name}</td>
               <td className="text-right">
-                <Link
-                  to={`/groups/${group.id}/edit`}
-                  className="mr-4 inline-block"
-                >
+                <Link to={`/groups/${group.id}/edit`} className="inline-block">
                   <Button>Edit</Button>
                 </Link>
                 <Form
                   method="post"
                   action={`/groups/${group.id}/delete`}
-                  className="inline-block"
+                  className="ml-4 inline-block"
                 >
                   <Button isDanger isSubmit>
                     X
