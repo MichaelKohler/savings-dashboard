@@ -49,7 +49,10 @@ export default function AccountsPage() {
         <tbody>
           {data.accounts.map((account) => {
             return (
-              <tr className="border-b" key={account.id}>
+              <tr
+                className={`border-b ${account.archived ? "text-gray-300" : ""}`}
+                key={account.id}
+              >
                 <td className="pr-2">{account.name}</td>
                 <td className="pr-2">
                   <Swatch color={account.color} />
