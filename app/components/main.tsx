@@ -1,5 +1,4 @@
 import { Form, NavLink, Outlet } from "@remix-run/react";
-import Button from "~/components/button";
 import { useOptionalUser } from "~/utils";
 
 export default function Sidebar() {
@@ -65,16 +64,11 @@ export default function Sidebar() {
                   📈<span className="ml-2 hidden md:inline">Charts</span>
                 </NavLink>
               </li>
-
-              {/* We show the button on desktop view, and just the lock on mobile */}
-              <li className="hidden md:block">
-                <Form action="/logout" method="post" className="mt-4 ml-4">
-                  <Button isSubmit>Logout</Button>
-                </Form>
-              </li>
-              <li className="flex justify-center md:hidden">
-                <Form action="/logout" method="post" className="mt-4">
-                  <button type="submit">🔓</button>
+              <li className="align-items text-l flex w-full flex-row justify-center gap-1 border-b py-4 md:justify-start md:p-4">
+                <Form action="/logout" method="post">
+                  <button type="submit">
+                    🔓 <span className="ml-2 hidden md:inline">Logout</span>
+                  </button>
                 </Form>
               </li>
             </>
