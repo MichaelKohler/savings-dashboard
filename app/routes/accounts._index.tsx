@@ -43,7 +43,7 @@ export default function AccountsPage() {
           <tr>
             <th className="pr-2">Name</th>
             <th className="pr-2">Color</th>
-            <th className="pr-2">Actions</th>
+            <th className="text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -67,7 +67,7 @@ export default function AccountsPage() {
                 <td className="pr-2">
                   <Swatch color={account.color} />
                 </td>
-                <td className="pr-2">
+                <td className="text-right">
                   <Link
                     to={`/accounts/${account.id}/edit`}
                     className="mr-4 inline-block"

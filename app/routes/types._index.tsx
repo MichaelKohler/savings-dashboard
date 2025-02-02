@@ -33,7 +33,7 @@ export default function TypesPage() {
         <thead className="border-b text-left">
           <tr>
             <th className="pr-2">Name</th>
-            <th className="pr-2">Actions</th>
+            <th className="text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -41,7 +41,7 @@ export default function TypesPage() {
             return (
               <tr className="border-b" key={type.id}>
                 <td className="pr-2">{type.name}</td>
-                <td className="pr-2">
+                <td className="text-right">
                   <Link
                     to={`/types/${type.id}/edit`}
                     className="mr-4 inline-block"

@@ -44,8 +44,6 @@ export async function getBalances({
     },
   });
 
-  console.log(balances);
-
   return balances;
 }
 

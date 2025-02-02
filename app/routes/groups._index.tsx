@@ -24,14 +24,14 @@ export default function GroupsIndexPage() {
         <thead className="border-b text-left">
           <tr>
             <th className="pr-2">Name</th>
-            <th className="pr-2">Actions</th>
+            <th className="text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
           {groups.map((group) => (
             <tr key={group.id} className="border-b">
               <td className="pr-2">{group.name}</td>
-              <td className="pr-2">
+              <td className="text-right">
                 <Link
                   to={`/groups/${group.id}/edit`}
                   className="mr-4 inline-block"

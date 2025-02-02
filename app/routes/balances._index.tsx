@@ -43,7 +43,7 @@ export default function BalancesPage() {
             <th className="pr-2">Date</th>
             <th className="pr-2">Account</th>
             <th className="pr-2">Balance</th>
-            <th className="pr-2">Actions</th>
+            <th className="text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -58,7 +58,7 @@ export default function BalancesPage() {
                     : ""}
                 </td>
                 <td className="pr-2">{balance.balance}</td>
-                <td className="pr-2">
+                <td className="text-right">
                   <Link
                     to={`/balances/${balance.id}/edit`}
                     className="mr-4 inline-block"
