@@ -5,6 +5,7 @@ coverage
 /build
 /public/build
 .env
+tsconfig.tsbuildinfo
 
 /prisma/data.db
 /prisma/data.db-journal
