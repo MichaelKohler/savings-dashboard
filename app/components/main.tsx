@@ -28,7 +28,7 @@ export default function Sidebar() {
                 className="flex flex-col justify-center items-center py-4"
                 to="/accounts"
               >
-                <span>🏦</span>
+                <span>📒</span>
                 <span className="mt-2 hidden md:inline">Accounts</span>
               </NavLink>
             </li>
