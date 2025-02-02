@@ -17,7 +17,7 @@ export default function Sidebar() {
             <li>
               <NavLink
                 className={({ isActive }) =>
-                  `align-items text-l block flex w-full flex-row gap-1 border-b p-4 ${
+                  `align-items text-l flex w-full flex-row gap-1 border-b p-4 ${
                     isActive ? "bg-white" : ""
                   }`
                 }
@@ -32,7 +32,7 @@ export default function Sidebar() {
               <li>
                 <NavLink
                   className={({ isActive }) =>
-                    `align-items text-l block flex w-full flex-row justify-center gap-1 border-b py-4 md:justify-start md:p-4 ${
+                    `align-items text-l flex w-full flex-row justify-center gap-1 border-b py-4 md:justify-start md:p-4 ${
                       isActive ? "bg-white" : ""
                     }`
                   }
@@ -44,7 +44,7 @@ export default function Sidebar() {
               <li>
                 <NavLink
                   className={({ isActive }) =>
-                    `align-items text-l block flex w-full flex-row justify-center gap-1 border-b py-4 md:justify-start md:p-4 ${
+                    `align-items text-l flex w-full flex-row justify-center gap-1 border-b py-4 md:justify-start md:p-4 ${
                       isActive ? "bg-white" : ""
                     }`
                   }
@@ -56,7 +56,7 @@ export default function Sidebar() {
               <li>
                 <NavLink
                   className={({ isActive }) =>
-                    `align-items text-l block flex w-full flex-row justify-center gap-1 border-b py-4 md:justify-start md:p-4 ${
+                    `align-items text-l flex w-full flex-row justify-center gap-1 border-b py-4 md:justify-start md:p-4 ${
                       isActive ? "bg-white" : ""
                     }`
                   }
