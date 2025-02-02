@@ -52,10 +52,12 @@ export default function BalancesPage() {
               <tr className="border-b" key={balance.id}>
                 <td className="pr-2">{balance.date.substring(0, 10)}</td>
                 <td className="pr-2">
-                  {balance.account.name}{" "}
-                  {balance.account.group?.name
-                    ? ` (${balance.account.group.name})`
-                    : ""}
+                  <span className="block">{balance.account.name}</span>
+                  {balance.account.group?.name && (
+                    <span className="block text-gray-500 text-sm">
+                      {balance.account.group.name}
+                    </span>
+                  )}
                 </td>
                 <td className="pr-2">{balance.balance}</td>
                 <td className="text-right">
