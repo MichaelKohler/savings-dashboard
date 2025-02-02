@@ -53,7 +53,17 @@ export default function AccountsPage() {
                 className={`border-b ${account.archived ? "text-gray-300" : ""}`}
                 key={account.id}
               >
-                <td className="pr-2">{account.name}</td>
+                <td className="pr-2">
+                  <span className="block">
+                    {account.name}
+                    {account.group?.name ? ` (${account.group.name})` : ""}
+                  </span>
+                  {account.type?.name ? (
+                    <span className="block text-sm text-gray-400">
+                      {account.type?.name}
+                    </span>
+                  ) : null}
+                </td>
                 <td className="pr-2">
                   <Swatch color={account.color} />
                 </td>

@@ -35,9 +35,16 @@ export async function getBalances({
     where: { userId },
     orderBy: { date: order },
     include: {
-      account: true,
+      account: {
+        include: {
+          group: true,
+          type: true,
+        },
+      },
     },
   });
+
+  console.log(balances);
 
   return balances;
 }

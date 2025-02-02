@@ -4,6 +4,7 @@ import { Form, useActionData, useNavigation } from "@remix-run/react";
 import Button from "~/components/button";
 import type { SerializedAccount } from "~/models/accounts.server";
 import type { SerializedBalance } from "~/models/balances.server";
+import type { SerializedGroup } from "~/models/groups.server";
 
 type ActionDataResponse = {
   errors: {
@@ -19,7 +20,7 @@ export default function BalanceForm({
   accounts = [],
 }: {
   initialData?: SerializedBalance | null;
-  accounts?: SerializedAccount[];
+  accounts?: (SerializedAccount & { group: SerializedGroup | null })[];
 }) {
   const actionData = useActionData<ActionDataResponse>();
   const navigation = useNavigation();
@@ -86,9 +87,10 @@ export default function BalanceForm({
             defaultValue={initialData?.accountId}
           >
             <option value="">Select account</option>
-            {accounts?.map((account: SerializedAccount) => (
+            {accounts?.map((account) => (
               <option key={account.id} value={account.id}>
                 {account.name}
+                {account.group?.name ? ` (${account.group.name})` : ""}
               </option>
             ))}
           </select>

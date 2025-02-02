@@ -51,7 +51,12 @@ export default function BalancesPage() {
             return (
               <tr className="border-b" key={balance.id}>
                 <td className="pr-2">{balance.date.substring(0, 10)}</td>
-                <td className="pr-2">{balance.account.name}</td>
+                <td className="pr-2">
+                  {balance.account.name}{" "}
+                  {balance.account.group?.name
+                    ? ` (${balance.account.group.name})`
+                    : ""}
+                </td>
                 <td className="pr-2">{balance.balance}</td>
                 <td className="pr-2">
                   <Link

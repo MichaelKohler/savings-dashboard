@@ -31,6 +31,10 @@ export async function getAccounts({
       ...(typeof archived !== "undefined" ? { archived } : {}),
     },
     orderBy: { createdAt: "desc" },
+    include: {
+      group: true,
+      type: true,
+    },
   });
 
   return accounts;
