@@ -18,10 +18,17 @@ export function getAccount({
   });
 }
 
-export async function getAccounts({ userId }: { userId: User["id"] }) {
+export async function getAccounts({
+  userId,
+  archived,
+}: {
+  userId: User["id"];
+  archived?: Account["archived"];
+}) {
   const accounts = await prisma.account.findMany({
     where: {
       userId,
+      ...(typeof archived !== "undefined" ? { archived } : {}),
     },
     orderBy: { createdAt: "desc" },
   });
@@ -75,9 +82,10 @@ export async function updateAccount({
   color,
   showInGraphs,
   groupId,
+  archived,
 }: Pick<
   Account,
-  "id" | "name" | "color" | "showInGraphs" | "userId" | "groupId"
+  "id" | "name" | "color" | "showInGraphs" | "userId" | "groupId" | "archived"
 >) {
   const account = await getAccount({ id, userId });
 
@@ -92,6 +100,7 @@ export async function updateAccount({
       color,
       showInGraphs,
       groupId,
+      archived,
     },
   });
 }

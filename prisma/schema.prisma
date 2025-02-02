@@ -34,6 +34,7 @@ model Account {
   name         String
   color        String
   showInGraphs Boolean @default(true)
+  archived     Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

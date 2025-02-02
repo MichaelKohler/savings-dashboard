@@ -37,6 +37,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const groupId = formData.get("groupId");
   const showInGraphs = formData.has("showInGraphs");
   const id = formData.get("id");
+  const archived = formData.has("archived");
 
   const errors = {
     name: null,
@@ -78,7 +79,15 @@ export async function action({ request }: ActionFunctionArgs) {
     );
   }
 
-  await updateAccount({ id, userId, name, color, showInGraphs, groupId });
+  await updateAccount({
+    id,
+    userId,
+    name,
+    color,
+    showInGraphs,
+    groupId,
+    archived,
+  });
 
   return redirect("/accounts");
 }

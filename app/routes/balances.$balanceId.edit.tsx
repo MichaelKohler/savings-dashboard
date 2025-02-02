@@ -23,7 +23,7 @@ export function meta(): ReturnType<MetaFunction> {
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
   invariant(params.balanceId, "balanceId not found");
-  const accounts = await getAccounts({ userId });
+  const accounts = await getAccounts({ userId, archived: false });
   const balance = await getBalance({ id: params.balanceId, userId });
   return json({ accounts, balance });
 }

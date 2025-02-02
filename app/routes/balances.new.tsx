@@ -21,7 +21,7 @@ export function meta(): ReturnType<MetaFunction> {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
-  const accounts = await getAccounts({ userId });
+  const accounts = await getAccounts({ userId, archived: false });
   return json({ accounts });
 }
 

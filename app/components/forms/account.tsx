@@ -1,17 +1,17 @@
 import * as React from "react";
 
-import { Group } from "@prisma/client";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 
 import Button from "~/components/button";
 import type { SerializedAccount } from "~/models/accounts.server";
-import type { SerializedGroups } from "~/models/groups.server";
+import type { SerializedGroup } from "~/models/groups.server";
 
 type ActionDataResponse = {
   errors: {
     name?: string;
     color?: string;
     generic?: string;
+    groupId?: string;
   };
 };
 
@@ -20,7 +20,7 @@ export default function AccountForm({
   groups,
 }: {
   initialData?: SerializedAccount | null;
-  groups: SerializedGroups[];
+  groups: SerializedGroup[];
 }) {
   const actionData = useActionData<ActionDataResponse>();
   const navigation = useNavigation();
@@ -77,10 +77,10 @@ export default function AccountForm({
           <select
             name="groupId"
             className="flex-1 rounded-md border-2 border-mk px-3 py-2 leading-loose"
-            defaultValue={initialData?.groupId}
+            defaultValue={initialData?.groupId || ""}
           >
             <option value="">Select group</option>
-            {groups?.map((group: Group) => (
+            {groups?.map((group: SerializedGroup) => (
               <option key={group.id} value={group.id}>
                 {group.name}
               </option>
@@ -115,6 +115,20 @@ export default function AccountForm({
           </div>
         )}
       </div>
+
+      {isEdit && (
+        <div>
+          <label className="flex w-full flex-row gap-2">
+            <input
+              type="checkbox"
+              name="archived"
+              data-testid="new-account-archived-input"
+              defaultChecked={initialData?.archived}
+            />
+            <span>Archived</span>
+          </label>
+        </div>
+      )}
 
       <div>
         <label className="flex w-full flex-row gap-2">
