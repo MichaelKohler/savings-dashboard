@@ -62,7 +62,7 @@ export default function BalancesPage() {
                   </Link>
                   {!markedForDeletion[balance.id] && (
                     <Button isDanger onClick={markForDeletion(balance.id)}>
-                      Mark for deletion
+                      X
                     </Button>
                   )}
                   {markedForDeletion[balance.id] && (
@@ -72,7 +72,7 @@ export default function BalancesPage() {
                       className="inline-block"
                     >
                       <Button isDanger isSubmit>
-                        Delete
+                        X?
                       </Button>
                     </Form>
                   )}

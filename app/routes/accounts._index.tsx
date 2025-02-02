@@ -63,7 +63,7 @@ export default function AccountsPage() {
                   </Link>
                   {!markedForDeletion[account.id] && (
                     <Button isDanger onClick={markForDeletion(account.id)}>
-                      Mark for deletion
+                      X
                     </Button>
                   )}
                   {markedForDeletion[account.id] && (
@@ -73,7 +73,7 @@ export default function AccountsPage() {
                       className="inline-block"
                     >
                       <Button isDanger isSubmit>
-                        Delete
+                        X?
                       </Button>
                     </Form>
                   )}
