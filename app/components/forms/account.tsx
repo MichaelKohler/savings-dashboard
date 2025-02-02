@@ -1,8 +1,11 @@
 import * as React from "react";
+
+import { Group } from "@prisma/client";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 
 import Button from "~/components/button";
 import type { SerializedAccount } from "~/models/accounts.server";
+import type { SerializedGroups } from "~/models/groups.server";
 
 type ActionDataResponse = {
   errors: {
@@ -14,8 +17,10 @@ type ActionDataResponse = {
 
 export default function AccountForm({
   initialData,
+  groups,
 }: {
   initialData?: SerializedAccount | null;
+  groups: SerializedGroups[];
 }) {
   const actionData = useActionData<ActionDataResponse>();
   const navigation = useNavigation();
@@ -62,6 +67,29 @@ export default function AccountForm({
         {actionData?.errors.name && (
           <div className="pt-1 text-mkerror" id="name=error">
             {actionData.errors.name}
+          </div>
+        )}
+      </div>
+
+      <div>
+        <label className="flex w-full flex-col gap-1">
+          <span>Group: </span>
+          <select
+            name="groupId"
+            className="flex-1 rounded-md border-2 border-mk px-3 py-2 leading-loose"
+            defaultValue={initialData?.groupId}
+          >
+            <option value="">Select group</option>
+            {groups?.map((group: Group) => (
+              <option key={group.id} value={group.id}>
+                {group.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        {actionData?.errors.groupId && (
+          <div className="pt-1 text-mkerror" id="accountId=error">
+            {actionData.errors.groupId}
           </div>
         )}
       </div>

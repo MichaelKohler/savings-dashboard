@@ -10,6 +10,7 @@ import { useLoaderData } from "@remix-run/react";
 import AccountForm from "~/components/forms/account";
 import { getAccount, updateAccount } from "~/models/accounts.server";
 import { requireUserId } from "~/session.server";
+import { getGroups } from "~/models/groups.server";
 
 export function meta(): ReturnType<MetaFunction> {
   return [
@@ -23,7 +24,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
   invariant(params.accountId, "accountId not found");
   const account = await getAccount({ id: params.accountId, userId });
-  return json({ account });
+  const groups = await getGroups({ userId });
+  return json({ account, groups });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -32,6 +34,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const name = formData.get("name");
   const color = formData.get("color");
+  const groupId = formData.get("groupId");
   const showInGraphs = formData.has("showInGraphs");
   const id = formData.get("id");
 
@@ -39,6 +42,7 @@ export async function action({ request }: ActionFunctionArgs) {
     name: null,
     color: null,
     id: null,
+    groudId: null,
   };
 
   if (typeof id !== "string" || id.length === 0) {
@@ -62,7 +66,19 @@ export async function action({ request }: ActionFunctionArgs) {
     );
   }
 
-  await updateAccount({ id, userId, name, color, showInGraphs });
+  if (typeof groupId !== "undefined" && typeof groupId !== "string") {
+    return json(
+      {
+        errors: {
+          ...errors,
+          groupId: "Group ID must be a string",
+        },
+      },
+      { status: 400 }
+    );
+  }
+
+  await updateAccount({ id, userId, name, color, showInGraphs, groupId });
 
   return redirect("/accounts");
 }
@@ -73,7 +89,7 @@ export default function EditAccountPage() {
   return (
     <>
       <h1 className="pb-4 text-3xl">Edit account - {data.account?.name}</h1>
-      <AccountForm initialData={data.account} />
+      <AccountForm initialData={data.account} groups={data.groups} />
     </>
   );
 }

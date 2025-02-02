@@ -4,9 +4,11 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 
 import AccountForm from "~/components/forms/account";
 import { createAccount } from "~/models/accounts.server";
+import { getGroups } from "~/models/groups.server";
 import { requireUserId } from "~/session.server";
 
 export function meta(): ReturnType<MetaFunction> {
@@ -18,8 +20,9 @@ export function meta(): ReturnType<MetaFunction> {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  await requireUserId(request);
-  return null;
+  const userId = await requireUserId(request);
+  const groups = await getGroups({ userId });
+  return json({ groups });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -28,11 +31,13 @@ export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const name = formData.get("name");
   const color = formData.get("color");
+  const groupId = formData.get("groupId");
   const showInGraphs = formData.has("showInGraphs");
 
   const errors = {
     name: null,
     color: null,
+    groupId: null,
   };
 
   if (typeof name !== "string" || name.length === 0) {
@@ -49,11 +54,24 @@ export async function action({ request }: ActionFunctionArgs) {
     );
   }
 
+  if (typeof groupId !== "undefined" && typeof groupId !== "string") {
+    return json(
+      {
+        errors: {
+          ...errors,
+          groupId: "Group ID must be a string",
+        },
+      },
+      { status: 400 }
+    );
+  }
+
   await createAccount(
     {
       name,
       color,
       showInGraphs,
+      groupId,
     },
     userId
   );
@@ -62,10 +80,12 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function NewAccountPage() {
+  const data = useLoaderData<typeof loader>();
+
   return (
     <>
       <h1 className="pb-4 text-3xl">Add new account</h1>
-      <AccountForm />
+      <AccountForm groups={data.groups} />
     </>
   );
 }

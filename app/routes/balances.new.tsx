@@ -79,7 +79,7 @@ export async function action({ request }: ActionFunctionArgs) {
       {
         errors: {
           ...errors,
-          accountId: "Account ID is required and must be a number",
+          accountId: "Account ID is required and must be a string",
         },
       },
       { status: 400 }
