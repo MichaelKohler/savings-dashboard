@@ -54,7 +54,7 @@ export default function TypesPage() {
                     className="inline-block"
                   >
                     <Button isDanger isSubmit>
-                      X?
+                      X
                     </Button>
                   </Form>
                 </td>
