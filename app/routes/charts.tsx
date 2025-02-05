@@ -118,6 +118,7 @@ export default function ChartsPage() {
               />
             );
           })}
+          <Tooltip />
           <Legend />
         </BarChart>
       </ResponsiveContainer>
@@ -140,6 +141,7 @@ export default function ChartsPage() {
               />
             );
           })}
+          <Tooltip />
           <Legend />
         </BarChart>
       </ResponsiveContainer>
@@ -162,6 +164,7 @@ export default function ChartsPage() {
               />
             );
           })}
+          <Tooltip />
           <Legend />
         </BarChart>
       </ResponsiveContainer>
