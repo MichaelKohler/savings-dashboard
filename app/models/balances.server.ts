@@ -166,6 +166,12 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
     monthCursor.setMonth(monthCursor.getMonth() + 1);
   }
 
+  const removeEntriesAmount = parseInt(
+    process.env.REMOVE_FIRST_X_ENTRIES_FROM_CHARTS || "0",
+    10
+  );
+  result.splice(0, removeEntriesAmount);
+
   return result;
 }
 
