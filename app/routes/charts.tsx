@@ -37,6 +37,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return json({ accounts, balances, groups, types });
 }
 
+function getRandomColor() {
+  return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+}
+
 export default function ChartsPage() {
   const data = useLoaderData<typeof loader>();
 
@@ -132,6 +136,7 @@ export default function ChartsPage() {
                 type="monotoneX"
                 dataKey={`byGroup.${group.id}`}
                 stackId="STACK_ALL"
+                fill={getRandomColor()}
               />
             );
           })}
@@ -153,6 +158,7 @@ export default function ChartsPage() {
                 type="monotoneX"
                 dataKey={`byType.${type.id}`}
                 stackId="STACK_ALL"
+                fill={getRandomColor()}
               />
             );
           })}
