@@ -67,8 +67,9 @@ const COLORS = [
   "#c1e7ff",
 ];
 
-function formatTick(value: any) {
-  const inK = value / 1000;
+function formatTick(value: string) {
+  const parsedValue = parseInt(value);
+  const inK = parsedValue / 1000;
   return inK >= 1 ? `${inK}k` : value;
 }
 
