@@ -109,7 +109,7 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
   const allBalances = await getBalances({ userId, order: "asc" });
 
   if (!allBalances.length) {
-    return [];
+    return { balances: [], predictions: [] };
   }
 
   const earliestDate = new Date(
@@ -171,6 +171,34 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
     10
   );
   result.splice(0, removeEntriesAmount);
+
+  const lastTotal = result[result.length - 1].total;
+  const predictions = getPredictedBalances(lastTotal);
+
+  return { balances: result, predictions };
+}
+
+export function getPredictedBalances(currentTotal: number) {
+  const predictionPercentages = process.env.PREDICTION_PERCENTAGES ?? "";
+  const percentages = predictionPercentages?.split(",").map(Number);
+  const result = [];
+
+  const accumulatingTotals: { [key: number]: number } = {};
+  for (const percentage of percentages) {
+    accumulatingTotals[percentage] = currentTotal;
+  }
+
+  for (let i = 1; i <= 40; i++) {
+    const totalsInYear: { year: number; [key: number]: number } = {
+      year: new Date().getFullYear() + i,
+    };
+    for (const percentage of percentages) {
+      accumulatingTotals[percentage] +=
+        (accumulatingTotals[percentage] / 100) * percentage;
+      totalsInYear[percentage] = Math.round(accumulatingTotals[percentage]);
+    }
+    result.push(totalsInYear);
+  }
 
   return result;
 }

@@ -31,10 +31,10 @@ export function meta(): ReturnType<MetaFunction> {
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
   const accounts = await getAccounts({ userId });
-  const balances = await getBalancesForCharts({ userId });
+  const { balances, predictions } = await getBalancesForCharts({ userId });
   const groups = await getGroups({ userId });
   const types = await getTypes({ userId });
-  return json({ accounts, balances, groups, types });
+  return json({ accounts, balances, groups, types, predictions });
 }
 
 const COLORS = [
@@ -67,6 +67,11 @@ const COLORS = [
   "#c1e7ff",
 ];
 
+function formatTick(value: any) {
+  const inK = value / 1000;
+  return inK >= 1 ? `${inK}k` : value;
+}
+
 export default function ChartsPage() {
   const data = useLoaderData<typeof loader>();
 
@@ -77,29 +82,27 @@ export default function ChartsPage() {
         <LineChart width={500} height={300} data={data.balances}>
           <CartesianGrid strokeDasharray="1 1" />
           <XAxis dataKey="date" />
-          <YAxis />
+          <YAxis tickFormatter={formatTick} />
           <Line
             name="Total"
             type="monotoneX"
             dataKey="total"
-            stroke="#0099CC"
+            stroke={COLORS[0]}
           />
           <Tooltip />
         </LineChart>
       </ResponsiveContainer>
 
-      <h2 className="mt-8 text-2xl">Total (not zero-based)</h2>
+      <h2 className="mt-8 text-2xl">Predictions</h2>
       <ResponsiveContainer width={"100%"} height={500} className="mt-8">
-        <LineChart width={500} height={300} data={data.balances}>
+        <LineChart width={500} height={300} data={data.predictions}>
           <CartesianGrid strokeDasharray="1 1" />
-          <XAxis dataKey="date" />
-          <YAxis type="number" domain={["dataMin - 1000", "dataMax + 1000"]} />
-          <Line
-            name="Total"
-            type="monotoneX"
-            dataKey="total"
-            stroke="#0099CC"
-          />
+          <XAxis dataKey="year" />
+          <YAxis tickFormatter={formatTick} />
+          <Line name="1%" type="monotoneX" dataKey="1" stroke={COLORS[0]} />
+          <Line name="3%" type="monotoneX" dataKey="3" stroke={COLORS[1]} />
+          <Line name="5%" type="monotoneX" dataKey="5" stroke={COLORS[2]} />
+          <Line name="7%" type="monotoneX" dataKey="7" stroke={COLORS[3]} />
           <Tooltip />
         </LineChart>
       </ResponsiveContainer>
@@ -109,7 +112,7 @@ export default function ChartsPage() {
         <LineChart width={500} height={300} data={data.balances}>
           <CartesianGrid strokeDasharray="1 1" />
           <XAxis dataKey="date" />
-          <YAxis />
+          <YAxis tickFormatter={formatTick} />
           {data.accounts.map((account) => {
             return (
               <Line
@@ -131,7 +134,7 @@ export default function ChartsPage() {
         <BarChart width={500} height={300} data={data.balances}>
           <CartesianGrid strokeDasharray="1 1" />
           <XAxis dataKey="date" />
-          <YAxis />
+          <YAxis tickFormatter={formatTick} />
           {data.accounts.map((account) => {
             return (
               <Bar
@@ -154,7 +157,7 @@ export default function ChartsPage() {
         <BarChart width={500} height={300} data={data.balances}>
           <CartesianGrid strokeDasharray="1 1" />
           <XAxis dataKey="date" />
-          <YAxis />
+          <YAxis tickFormatter={formatTick} />
           {data.groups.map((group, index) => {
             return (
               <Bar
@@ -177,7 +180,7 @@ export default function ChartsPage() {
         <BarChart width={500} height={300} data={data.balances}>
           <CartesianGrid strokeDasharray="1 1" />
           <XAxis dataKey="date" />
-          <YAxis />
+          <YAxis tickFormatter={formatTick} />
           {data.types.map((type, index) => {
             return (
               <Bar
