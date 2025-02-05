@@ -1,8 +1,7 @@
 import { prisma } from "~/db.server";
 import type { Type, User } from "@prisma/client";
-import type { SerializeFrom } from "@remix-run/node";
 
-export type SerializedType = SerializeFrom<Type>;
+export type { Type } from "@prisma/client";
 
 export async function getTypes({ userId }: { userId: User["id"] }) {
   return prisma.type.findMany({

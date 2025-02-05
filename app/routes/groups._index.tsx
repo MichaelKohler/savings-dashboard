@@ -1,6 +1,5 @@
-import { Link, useLoaderData, Form } from "@remix-run/react";
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import { Link, useLoaderData, Form } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
 
 import Button from "~/components/button";
 import { getGroups } from "~/models/groups.server";
@@ -9,7 +8,7 @@ import { requireUserId } from "~/session.server";
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
   const groups = await getGroups({ userId }); // ignoring user scoping for simplicity
-  return json({ groups });
+  return { groups };
 }
 
 export default function GroupsIndexPage() {

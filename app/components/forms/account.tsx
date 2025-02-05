@@ -1,11 +1,11 @@
 import * as React from "react";
 
-import { Form, useActionData, useNavigation } from "@remix-run/react";
+import { Form, useActionData, useNavigation } from "react-router";
 
 import Button from "~/components/button";
-import type { SerializedAccount } from "~/models/accounts.server";
-import type { SerializedGroup } from "~/models/groups.server";
-import type { SerializedType } from "~/models/types.server";
+import type { Account } from "~/models/accounts.server";
+import type { Group } from "~/models/groups.server";
+import type { Type } from "~/models/types.server";
 
 type ActionDataResponse = {
   errors: {
@@ -22,9 +22,9 @@ export default function AccountForm({
   groups,
   types,
 }: {
-  initialData?: SerializedAccount | null;
-  groups: SerializedGroup[];
-  types: SerializedType[];
+  initialData?: Account | null;
+  groups: Group[];
+  types: Type[];
 }) {
   const actionData = useActionData<ActionDataResponse>();
   const navigation = useNavigation();
@@ -84,7 +84,7 @@ export default function AccountForm({
             defaultValue={initialData?.typeId || ""}
           >
             <option value="">Select type</option>
-            {types?.map((type: SerializedType) => (
+            {types?.map((type) => (
               <option key={type.id} value={type.id}>
                 {type.name}
               </option>
@@ -107,7 +107,7 @@ export default function AccountForm({
             defaultValue={initialData?.groupId || ""}
           >
             <option value="">Select group</option>
-            {groups?.map((group: SerializedGroup) => (
+            {groups?.map((group) => (
               <option key={group.id} value={group.id}>
                 {group.name}
               </option>

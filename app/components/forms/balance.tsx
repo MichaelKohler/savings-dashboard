@@ -1,10 +1,10 @@
 import * as React from "react";
-import { Form, useActionData, useNavigation } from "@remix-run/react";
+import { Form, useActionData, useNavigation } from "react-router";
 
 import Button from "~/components/button";
-import type { SerializedAccount } from "~/models/accounts.server";
-import type { SerializedBalance } from "~/models/balances.server";
-import type { SerializedGroup } from "~/models/groups.server";
+import type { Account } from "~/models/accounts.server";
+import type { Balance } from "~/models/balances.server";
+import type { Group } from "~/models/groups.server";
 
 type ActionDataResponse = {
   errors: {
@@ -19,8 +19,8 @@ export default function BalanceForm({
   initialData,
   accounts = [],
 }: {
-  initialData?: SerializedBalance | null;
-  accounts?: (SerializedAccount & { group: SerializedGroup | null })[];
+  initialData?: Balance | null;
+  accounts?: (Account & { group: Group | null })[];
 }) {
   const actionData = useActionData<ActionDataResponse>();
   const navigation = useNavigation();
@@ -42,7 +42,7 @@ export default function BalanceForm({
   }, [actionData]);
 
   const dateDefaultInput = initialData
-    ? initialData?.date.substring(0, 10)
+    ? initialData?.date.toISOString().substring(0, 10)
     : "";
 
   return (

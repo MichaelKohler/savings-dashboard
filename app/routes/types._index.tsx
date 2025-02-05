@@ -1,6 +1,5 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import type { LoaderFunctionArgs, MetaFunction } from "react-router";
+import { Form, Link, useLoaderData } from "react-router";
 
 import Button from "~/components/button";
 import { requireUserId } from "~/session.server";
@@ -17,7 +16,7 @@ export function meta(): ReturnType<MetaFunction> {
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
   const types = await getTypes({ userId });
-  return json({ types });
+  return { types };
 }
 
 export default function TypesPage() {

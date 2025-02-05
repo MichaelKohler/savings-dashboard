@@ -4,9 +4,8 @@ import type {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-} from "@remix-run/node";
-import { redirect, json } from "@remix-run/node";
-import { useActionData } from "@remix-run/react";
+} from "react-router";
+import { data, redirect, useActionData } from "react-router";
 
 import GroupForm from "~/components/forms/group";
 import { createGroup } from "~/models/groups.server";
@@ -32,7 +31,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const name = formData.get("name");
 
   if (typeof name !== "string" || name.length === 0) {
-    return json({ errors: { name: "Name is required" } }, { status: 400 });
+    throw data({ errors: { name: "Name is required" } }, { status: 400 });
   }
 
   await createGroup({ name, userId });

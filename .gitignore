@@ -9,3 +9,5 @@ tsconfig.tsbuildinfo
 
 /prisma/data.db
 /prisma/data.db-journal
+
+.react-router

@@ -3,9 +3,14 @@ import type {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-} from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { Form, useActionData, useSearchParams } from "@remix-run/react";
+} from "react-router";
+import {
+  data,
+  Form,
+  redirect,
+  useActionData,
+  useSearchParams,
+} from "react-router";
 
 import { verifyLogin } from "~/models/user.server";
 import { createUserSession, getUserId } from "~/session.server";
@@ -14,7 +19,7 @@ import { safeRedirect, validateEmail } from "~/utils";
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getUserId(request);
   if (userId) return redirect("/");
-  return json({});
+  return {};
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -30,14 +35,14 @@ export async function action({ request }: ActionFunctionArgs) {
   };
 
   if (!validateEmail(email)) {
-    return json(
+    throw data(
       { errors: { ...errors, email: "Email is invalid" } },
       { status: 400 }
     );
   }
 
   if (typeof password !== "string" || password.length === 0) {
-    return json(
+    throw data(
       { errors: { ...errors, password: "Password is required" } },
       { status: 400 }
     );
@@ -46,18 +51,20 @@ export async function action({ request }: ActionFunctionArgs) {
   const user = await verifyLogin(email, password);
 
   if (!user) {
-    return json(
+    throw data(
       { errors: { ...errors, email: "Invalid email or password" } },
       { status: 400 }
     );
   }
 
-  return createUserSession({
+  await createUserSession({
     request,
     userId: user.id,
     remember: remember === "on" ? true : false,
     redirectTo,
   });
+
+  return { errors };
 }
 
 export function meta(): ReturnType<MetaFunction> {

@@ -1,8 +1,7 @@
 import { prisma } from "~/db.server";
 import type { Group, User } from "@prisma/client";
-import type { SerializeFrom } from "@remix-run/node";
 
-export type SerializedGroup = SerializeFrom<Group>;
+export type { Group } from "@prisma/client";
 
 export async function getGroups({ userId }: { userId: User["id"] }) {
   return prisma.group.findMany({

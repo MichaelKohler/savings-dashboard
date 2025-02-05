@@ -3,9 +3,8 @@ import type {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-} from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+} from "react-router";
+import { data, redirect, useLoaderData } from "react-router";
 
 import AccountForm from "~/components/forms/account";
 import { getAccount, updateAccount } from "~/models/accounts.server";
@@ -27,7 +26,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const account = await getAccount({ id: params.accountId, userId });
   const groups = await getGroups({ userId });
   const types = await getTypes({ userId });
-  return json({ account, groups, types });
+  return { account, groups, types };
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -51,28 +50,28 @@ export async function action({ request }: ActionFunctionArgs) {
   };
 
   if (typeof id !== "string" || id.length === 0) {
-    return json(
+    throw data(
       { errors: { ...errors, id: "ID is required and must be text" } },
       { status: 400 }
     );
   }
 
   if (typeof name !== "string" || name.length === 0) {
-    return json(
+    throw data(
       { errors: { ...errors, name: "Name is required and must be text" } },
       { status: 400 }
     );
   }
 
   if (typeof color !== "string" || color.length === 0) {
-    return json(
+    throw data(
       { errors: { ...errors, color: "Color is required and must be text" } },
       { status: 400 }
     );
   }
 
   if (typeof groupId !== "undefined" && typeof groupId !== "string") {
-    return json(
+    throw data(
       {
         errors: {
           ...errors,
@@ -84,7 +83,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   if (typeof typeId !== "undefined" && typeof typeId !== "string") {
-    return json(
+    throw data(
       {
         errors: {
           ...errors,

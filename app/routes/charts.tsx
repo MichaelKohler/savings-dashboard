@@ -10,9 +10,8 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import type { LoaderFunctionArgs, MetaFunction } from "react-router";
+import { useLoaderData } from "react-router";
 
 import { getAccounts } from "~/models/accounts.server";
 import { getBalancesForCharts } from "~/models/balances.server";
@@ -34,7 +33,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const { balances, predictions } = await getBalancesForCharts({ userId });
   const groups = await getGroups({ userId });
   const types = await getTypes({ userId });
-  return json({ accounts, balances, groups, types, predictions });
+  return { accounts, balances, groups, types, predictions };
 }
 
 const COLORS = [

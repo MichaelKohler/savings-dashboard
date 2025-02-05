@@ -1,7 +1,6 @@
 import { useState } from "react";
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import type { LoaderFunctionArgs, MetaFunction } from "react-router";
+import { Form, Link, useLoaderData } from "react-router";
 
 import Button from "~/components/button";
 import { getBalances } from "~/models/balances.server";
@@ -18,7 +17,7 @@ export function meta(): ReturnType<MetaFunction> {
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
   const balances = await getBalances({ userId });
-  return json({ balances });
+  return { balances };
 }
 
 export default function BalancesPage() {
@@ -50,7 +49,9 @@ export default function BalancesPage() {
           {data.balances.map((balance) => {
             return (
               <tr className="border-b" key={balance.id}>
-                <td className="pr-2">{balance.date.substring(0, 10)}</td>
+                <td className="pr-2">
+                  {balance.date.toISOString().substring(0, 10)}
+                </td>
                 <td className="pr-2">
                   <span className="block">{balance.account.name}</span>
                   {balance.account.group?.name && (

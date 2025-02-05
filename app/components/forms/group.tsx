@@ -1,9 +1,9 @@
 import * as React from "react";
 
-import { Form, useActionData, useNavigation } from "@remix-run/react";
+import { Form, useActionData, useNavigation } from "react-router";
 
 import Button from "~/components/button";
-import type { SerializedGroup } from "~/models/groups.server";
+import type { Group } from "~/models/groups.server";
 
 type ActionDataResponse = {
   errors: {
@@ -14,7 +14,7 @@ type ActionDataResponse = {
 export default function GroupForm({
   initialData,
 }: {
-  initialData?: SerializedGroup | null;
+  initialData?: Group | null;
 }) {
   const actionData = useActionData<ActionDataResponse>();
   const navigation = useNavigation();

@@ -1,11 +1,10 @@
 import invariant from "tiny-invariant";
-import { useLoaderData } from "@remix-run/react";
+import { data, redirect, useLoaderData } from "react-router";
 import type {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-} from "@remix-run/node";
-import { redirect, json } from "@remix-run/node";
+} from "react-router";
 
 import GroupForm from "~/components/forms/group";
 import { getGroup, updateGroup } from "~/models/groups.server";
@@ -23,7 +22,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
   invariant(params.groupId, "groupId not found");
   const group = await getGroup({ id: params.groupId, userId });
-  return json({ group });
+  return { group };
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -34,10 +33,10 @@ export async function action({ request }: ActionFunctionArgs) {
   const name = formData.get("name");
 
   if (typeof id !== "string" || !id) {
-    return json({ errors: { id: "Invalid group ID" } }, { status: 400 });
+    throw data({ errors: { id: "Invalid group ID" } }, { status: 400 });
   }
   if (typeof name !== "string" || !name) {
-    return json({ errors: { name: "Name is required" } }, { status: 400 });
+    throw data({ errors: { name: "Name is required" } }, { status: 400 });
   }
 
   await updateGroup({ id, name, userId });

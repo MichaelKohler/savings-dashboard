@@ -4,8 +4,7 @@ import type {
   LinksFunction,
   LoaderFunctionArgs,
   MetaFunction,
-} from "@remix-run/node";
-import { json } from "@remix-run/node";
+} from "react-router";
 import {
   Links,
   Meta,
@@ -13,7 +12,7 @@ import {
   ScrollRestoration,
   isRouteErrorResponse,
   useRouteError,
-} from "@remix-run/react";
+} from "react-router";
 
 import Header from "./components/header";
 import Main from "./components/main";
@@ -45,9 +44,9 @@ export function meta(): ReturnType<MetaFunction> {
 export async function loader({ request }: LoaderFunctionArgs) {
   // This is used in the `getUser` function through `useMatchesData("root")`
   // Do not remove this, even though it's not used in this file!
-  return json({
+  return {
     user: await getUser(request),
-  });
+  };
 }
 
 function App({ children }: { children?: React.ReactNode }) {

@@ -1,10 +1,7 @@
 import type { User, Account, Balance } from "@prisma/client";
-import type { SerializeFrom } from "@remix-run/node";
 
 import { prisma } from "~/db.server";
 import { getAccounts } from "./accounts.server";
-
-export type SerializedBalance = SerializeFrom<Balance>;
 
 export type { Balance } from "@prisma/client";
 

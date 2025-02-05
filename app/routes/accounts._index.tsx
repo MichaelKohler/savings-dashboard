@@ -1,7 +1,6 @@
 import { useState } from "react";
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import type { LoaderFunctionArgs, MetaFunction } from "react-router";
+import { Form, Link, useLoaderData } from "react-router";
 
 import Button from "~/components/button";
 import Swatch from "~/components/swatch";
@@ -19,7 +18,7 @@ export function meta(): ReturnType<MetaFunction> {
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
   const accounts = await getAccounts({ userId });
-  return json({ accounts });
+  return { accounts };
 }
 
 export default function AccountsPage() {

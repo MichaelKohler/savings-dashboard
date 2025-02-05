@@ -3,9 +3,8 @@ import type {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-} from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+} from "react-router";
+import { data, redirect, useLoaderData } from "react-router";
 
 import TypeForm from "~/components/forms/type";
 import { requireUserId } from "~/session.server";
@@ -23,7 +22,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
   invariant(params.typeId, "typeId not found");
   const type = await getType({ id: params.typeId, userId });
-  return json({ type });
+  return { type };
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -39,14 +38,14 @@ export async function action({ request }: ActionFunctionArgs) {
   };
 
   if (typeof id !== "string" || id.length === 0) {
-    return json(
+    throw data(
       { errors: { ...errors, id: "ID is required and must be text" } },
       { status: 400 }
     );
   }
 
   if (typeof name !== "string" || name.length === 0) {
-    return json(
+    throw data(
       {
         errors: {
           ...errors,

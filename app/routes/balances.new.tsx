@@ -2,9 +2,8 @@ import type {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-} from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+} from "react-router";
+import { data, redirect, useLoaderData } from "react-router";
 
 import BalanceForm from "~/components/forms/balance";
 import { getAccounts } from "~/models/accounts.server";
@@ -22,7 +21,7 @@ export function meta(): ReturnType<MetaFunction> {
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
   const accounts = await getAccounts({ userId, archived: false });
-  return json({ accounts });
+  return { accounts };
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -40,14 +39,14 @@ export async function action({ request }: ActionFunctionArgs) {
   };
 
   if (typeof date !== "string" || date.length === 0) {
-    return json(
+    throw data(
       { errors: { ...errors, date: "Date is required and must be text" } },
       { status: 400 }
     );
   }
 
   if (typeof balance !== "string" || balance.length === 0) {
-    return json(
+    throw data(
       {
         errors: {
           ...errors,
@@ -63,7 +62,7 @@ export async function action({ request }: ActionFunctionArgs) {
     parsedBalance = parseInt(balance);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    return json(
+    throw data(
       {
         errors: {
           ...errors,
@@ -75,7 +74,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   if (typeof accountId !== "string" || accountId.length === 0) {
-    return json(
+    throw data(
       {
         errors: {
           ...errors,
