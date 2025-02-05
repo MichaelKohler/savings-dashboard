@@ -9,7 +9,9 @@ export type SerializedBalance = SerializeFrom<Balance>;
 export type { Balance } from "@prisma/client";
 
 type ChartDataEntry = {
-  [key: string]: Balance["balance"] | string;
+  byAccount: Record<string, Balance["balance"] | string>;
+  byGroup: Record<string, Balance["balance"] | string>;
+  byType: Record<string, Balance["balance"] | string>;
   date: string;
   total: number;
 };
@@ -55,6 +57,48 @@ function getMonthKey(date: Date) {
   )}`;
 }
 
+type BalanceReducerTempType = {
+  balance: number;
+  type: string;
+  group: string;
+};
+
+function reduceToBalance(
+  byAccount: { [key: string]: number },
+  [accountId, account]: [string, BalanceReducerTempType]
+) {
+  byAccount[accountId] = account.balance;
+  return byAccount;
+}
+
+function reduceToGroupBalance(
+  byGroup: { [key: string]: number },
+  [_, account]: [string, BalanceReducerTempType]
+) {
+  const group = account.group;
+
+  if (!byGroup[group]) {
+    byGroup[group] = 0;
+  }
+
+  byGroup[group] += account.balance;
+  return byGroup;
+}
+
+function reduceToTypeBalance(
+  byType: { [key: string]: number },
+  [_, account]: [string, BalanceReducerTempType]
+) {
+  const type = account.type;
+
+  if (!byType[type]) {
+    byType[type] = 0;
+  }
+
+  byType[type] += account.balance;
+  return byType;
+}
+
 export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
   const accounts = await getAccounts({ userId });
   const accountIdsForTotals = new Set(
@@ -82,7 +126,14 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
 
   while (monthCursor <= currentMonth) {
     const monthKey = getMonthKey(monthCursor);
-    const accountsMap: Record<string, number> = {};
+    const accountsMap: Record<
+      string,
+      {
+        balance: number;
+        type: string;
+        group: string;
+      }
+    > = {};
 
     for (const balance of allBalances) {
       const balMonthKey = getMonthKey(balance.date);
@@ -92,18 +143,24 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
     }
 
     for (const accId in lastKnownBalances) {
-      accountsMap[accId] = lastKnownBalances[accId];
+      accountsMap[accId] = {
+        type: accounts.find((acc) => acc.id === accId)?.type?.id || "",
+        group: accounts.find((acc) => acc.id === accId)?.group?.id || "",
+        balance: lastKnownBalances[accId],
+      };
     }
 
     const total = Object.entries(accountsMap)
       .filter(([accountId]) => accountIdsForTotals.has(accountId))
-      .map(([, balance]) => balance)
+      .map(([, account]) => account.balance)
       .reduce((a, b) => a + b, 0);
 
     result.push({
       date: monthKey,
       total,
-      ...accountsMap,
+      byAccount: Object.entries(accountsMap).reduce(reduceToBalance, {}),
+      byGroup: Object.entries(accountsMap).reduce(reduceToGroupBalance, {}),
+      byType: Object.entries(accountsMap).reduce(reduceToTypeBalance, {}),
     });
 
     monthCursor.setMonth(monthCursor.getMonth() + 1);
