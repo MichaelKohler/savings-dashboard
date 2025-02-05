@@ -9,7 +9,7 @@ export type SerializedBalance = SerializeFrom<Balance>;
 export type { Balance } from "@prisma/client";
 
 type ChartDataEntry = {
-  [key: string]: Balance["balance"] | string;
+  byAccount: Record<string, Balance["balance"] | string>;
   date: string;
   total: number;
 };
@@ -55,6 +55,14 @@ function getMonthKey(date: Date) {
   )}`;
 }
 
+function reduceToBalance(
+  byAccount: { [key: string]: number },
+  [accountId, account]: [string, { balance: number }]
+) {
+  byAccount[accountId] = account.balance;
+  return byAccount;
+}
+
 export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
   const accounts = await getAccounts({ userId });
   const accountIdsForTotals = new Set(
@@ -82,7 +90,14 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
 
   while (monthCursor <= currentMonth) {
     const monthKey = getMonthKey(monthCursor);
-    const accountsMap: Record<string, number> = {};
+    const accountsMap: Record<
+      string,
+      {
+        balance: number;
+        type: string;
+        group: string;
+      }
+    > = {};
 
     for (const balance of allBalances) {
       const balMonthKey = getMonthKey(balance.date);
@@ -92,23 +107,28 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
     }
 
     for (const accId in lastKnownBalances) {
-      accountsMap[accId] = lastKnownBalances[accId];
+      accountsMap[accId] = {
+        type: accounts.find((acc) => acc.id === accId)?.type?.name || "",
+        group: accounts.find((acc) => acc.id === accId)?.group?.name || "",
+        balance: lastKnownBalances[accId],
+      };
     }
 
     const total = Object.entries(accountsMap)
       .filter(([accountId]) => accountIdsForTotals.has(accountId))
-      .map(([, balance]) => balance)
+      .map(([, account]) => account.balance)
       .reduce((a, b) => a + b, 0);
 
     result.push({
       date: monthKey,
       total,
-      ...accountsMap,
+      byAccount: Object.entries(accountsMap).reduce(reduceToBalance, {}),
     });
 
     monthCursor.setMonth(monthCursor.getMonth() + 1);
   }
 
+  console.log(result);
   return result;
 }
 

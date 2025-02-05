@@ -82,7 +82,7 @@ export default function ChartsPage() {
                 key={account.id}
                 name={`${account.name}${account.group?.name ? ` (${account.group.name})` : ""}`}
                 type="monotoneX"
-                dataKey={account.id}
+                dataKey={`byAccount.${account.id}`}
                 stroke={account.color}
               />
             );
@@ -104,7 +104,7 @@ export default function ChartsPage() {
                 key={account.id}
                 name={`${account.name}${account.group?.name ? ` (${account.group.name})` : ""}`}
                 type="monotoneX"
-                dataKey={account.id}
+                dataKey={`byAccount.${account.id}`}
                 stackId="STACK_ALL"
                 fill={account.color}
               />
