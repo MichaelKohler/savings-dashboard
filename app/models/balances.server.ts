@@ -10,6 +10,8 @@ export type { Balance } from "@prisma/client";
 
 type ChartDataEntry = {
   byAccount: Record<string, Balance["balance"] | string>;
+  byGroup: Record<string, Balance["balance"] | string>;
+  byType: Record<string, Balance["balance"] | string>;
   date: string;
   total: number;
 };
@@ -55,12 +57,46 @@ function getMonthKey(date: Date) {
   )}`;
 }
 
+type BalanceReducerTempType = {
+  balance: number;
+  type: string;
+  group: string;
+};
+
 function reduceToBalance(
   byAccount: { [key: string]: number },
-  [accountId, account]: [string, { balance: number }]
+  [accountId, account]: [string, BalanceReducerTempType]
 ) {
   byAccount[accountId] = account.balance;
   return byAccount;
+}
+
+function reduceToGroupBalance(
+  byGroup: { [key: string]: number },
+  [_, account]: [string, BalanceReducerTempType]
+) {
+  const group = account.group;
+
+  if (!byGroup[group]) {
+    byGroup[group] = 0;
+  }
+
+  byGroup[group] += account.balance;
+  return byGroup;
+}
+
+function reduceToTypeBalance(
+  byType: { [key: string]: number },
+  [_, account]: [string, BalanceReducerTempType]
+) {
+  const type = account.type;
+
+  if (!byType[type]) {
+    byType[type] = 0;
+  }
+
+  byType[type] += account.balance;
+  return byType;
 }
 
 export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
@@ -108,8 +144,8 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
 
     for (const accId in lastKnownBalances) {
       accountsMap[accId] = {
-        type: accounts.find((acc) => acc.id === accId)?.type?.name || "",
-        group: accounts.find((acc) => acc.id === accId)?.group?.name || "",
+        type: accounts.find((acc) => acc.id === accId)?.type?.id || "",
+        group: accounts.find((acc) => acc.id === accId)?.group?.id || "",
         balance: lastKnownBalances[accId],
       };
     }
@@ -123,12 +159,13 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
       date: monthKey,
       total,
       byAccount: Object.entries(accountsMap).reduce(reduceToBalance, {}),
+      byGroup: Object.entries(accountsMap).reduce(reduceToGroupBalance, {}),
+      byType: Object.entries(accountsMap).reduce(reduceToTypeBalance, {}),
     });
 
     monthCursor.setMonth(monthCursor.getMonth() + 1);
   }
 
-  console.log(result);
   return result;
 }
 

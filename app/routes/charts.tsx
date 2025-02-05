@@ -17,6 +17,8 @@ import { useLoaderData } from "@remix-run/react";
 import { getAccounts } from "~/models/accounts.server";
 import { getBalancesForCharts } from "~/models/balances.server";
 import { requireUserId } from "~/session.server";
+import { getGroups } from "~/models/groups.server";
+import { getTypes } from "~/models/types.server";
 
 export function meta(): ReturnType<MetaFunction> {
   return [
@@ -30,7 +32,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
   const accounts = await getAccounts({ userId });
   const balances = await getBalancesForCharts({ userId });
-  return json({ accounts, balances });
+  const groups = await getGroups({ userId });
+  const types = await getTypes({ userId });
+  return json({ accounts, balances, groups, types });
 }
 
 export default function ChartsPage() {
@@ -107,6 +111,48 @@ export default function ChartsPage() {
                 dataKey={`byAccount.${account.id}`}
                 stackId="STACK_ALL"
                 fill={account.color}
+              />
+            );
+          })}
+          <Legend />
+        </BarChart>
+      </ResponsiveContainer>
+
+      <h2 className="mt-8 text-2xl">Per Group</h2>
+      <ResponsiveContainer width={"100%"} height={500} className="mt-8">
+        <BarChart width={500} height={300} data={data.balances}>
+          <CartesianGrid strokeDasharray="1 1" />
+          <XAxis dataKey="date" />
+          <YAxis />
+          {data.groups.map((group) => {
+            return (
+              <Bar
+                key={group.id}
+                name={group.name}
+                type="monotoneX"
+                dataKey={`byGroup.${group.id}`}
+                stackId="STACK_ALL"
+              />
+            );
+          })}
+          <Legend />
+        </BarChart>
+      </ResponsiveContainer>
+
+      <h2 className="mt-8 text-2xl">Per Type</h2>
+      <ResponsiveContainer width={"100%"} height={500} className="mt-8">
+        <BarChart width={500} height={300} data={data.balances}>
+          <CartesianGrid strokeDasharray="1 1" />
+          <XAxis dataKey="date" />
+          <YAxis />
+          {data.types.map((type) => {
+            return (
+              <Bar
+                key={type.id}
+                name={type.name}
+                type="monotoneX"
+                dataKey={`byType.${type.id}`}
+                stackId="STACK_ALL"
               />
             );
           })}
