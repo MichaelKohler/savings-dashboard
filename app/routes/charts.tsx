@@ -37,9 +37,35 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return json({ accounts, balances, groups, types });
 }
 
-function getRandomColor() {
-  return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-}
+const COLORS = [
+  "#003f5c",
+  "#2f4b7c",
+  "#665191",
+  "#a05195",
+  "#d45087",
+  "#f95d6a",
+  "#ff7c43",
+  "#ffa600",
+  // Does not match color schema, but okay if needed
+  "#488f31",
+  "#75a760",
+  "#9fc08f",
+  "#c8d8bf",
+  "#f1c6c6",
+  "#ec9c9d",
+  "#e27076",
+  "#de425b",
+  // Not as dinstinctive anymore
+  "#004c6d",
+  "#255e7e",
+  "#3d708f",
+  "#5383a1",
+  "#6996b3",
+  "#7faac6",
+  "#94bed9",
+  "#abd2ec",
+  "#c1e7ff",
+];
 
 export default function ChartsPage() {
   const data = useLoaderData<typeof loader>();
@@ -129,7 +155,7 @@ export default function ChartsPage() {
           <CartesianGrid strokeDasharray="1 1" />
           <XAxis dataKey="date" />
           <YAxis />
-          {data.groups.map((group) => {
+          {data.groups.map((group, index) => {
             return (
               <Bar
                 key={group.id}
@@ -137,7 +163,7 @@ export default function ChartsPage() {
                 type="monotoneX"
                 dataKey={`byGroup.${group.id}`}
                 stackId="STACK_ALL"
-                fill={getRandomColor()}
+                fill={COLORS[index % COLORS.length]}
               />
             );
           })}
@@ -152,7 +178,7 @@ export default function ChartsPage() {
           <CartesianGrid strokeDasharray="1 1" />
           <XAxis dataKey="date" />
           <YAxis />
-          {data.types.map((type) => {
+          {data.types.map((type, index) => {
             return (
               <Bar
                 key={type.id}
@@ -160,7 +186,7 @@ export default function ChartsPage() {
                 type="monotoneX"
                 dataKey={`byType.${type.id}`}
                 stackId="STACK_ALL"
-                fill={getRandomColor()}
+                fill={COLORS[index % COLORS.length]}
               />
             );
           })}
