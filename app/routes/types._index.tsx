@@ -29,7 +29,7 @@ export default function TypesPage() {
       </Link>
 
       <table className="mt-5 min-w-full">
-        <thead className="border-b text-left">
+        <thead className="border-b border-gray-300 text-left">
           <tr>
             <th className="pr-2">Name</th>
             <th className="text-right">Actions</th>
@@ -38,7 +38,7 @@ export default function TypesPage() {
         <tbody>
           {data.types.map((type) => {
             return (
-              <tr className="border-b" key={type.id}>
+              <tr className="border-b border-gray-300" key={type.id}>
                 <td className="pr-2">{type.name}</td>
                 <td className="text-right">
                   <Link to={`/types/${type.id}/edit`} className="inline-block">

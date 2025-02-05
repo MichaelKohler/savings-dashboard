@@ -9,7 +9,7 @@ export default function Sidebar() {
       <div className="p-4 md:p-8 grow">
         <Outlet />
       </div>
-      <ul className="sticky bottom-0 bg-white w-screen flex flex-row justify-between py-4 px-6 md:px-12 border-t shadow-[rgba(0,0,0,0.1)_0px_-3px_50px_5px]">
+      <ul className="sticky bottom-0 bg-white w-screen flex flex-row justify-between py-4 px-6 md:px-12 border-t border-gray-300">
         {!user && (
           <li>
             <NavLink

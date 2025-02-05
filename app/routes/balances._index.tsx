@@ -37,7 +37,7 @@ export default function BalancesPage() {
       </Link>
 
       <table className="mt-5 min-w-full">
-        <thead className="border-b text-left">
+        <thead className="border-b border-gray-300 text-left">
           <tr>
             <th className="pr-2">Date</th>
             <th className="pr-2">Account</th>
@@ -48,7 +48,7 @@ export default function BalancesPage() {
         <tbody>
           {data.balances.map((balance) => {
             return (
-              <tr className="border-b" key={balance.id}>
+              <tr className="border-b border-gray-300" key={balance.id}>
                 <td className="pr-2">
                   {balance.date.toISOString().substring(0, 10)}
                 </td>

@@ -38,7 +38,7 @@ export default function AccountsPage() {
       </Link>
 
       <table className="mt-5 min-w-full">
-        <thead className="border-b text-left">
+        <thead className="border-b border-gray-300 text-left">
           <tr>
             <th className="w-10 pr-2"></th>
             <th className="pr-2">Name</th>
@@ -49,7 +49,7 @@ export default function AccountsPage() {
           {data.accounts.map((account) => {
             return (
               <tr
-                className={`border-b ${account.archived ? "text-gray-300" : ""}`}
+                className={`border-b border-gray-300 ${account.archived ? "text-gray-300" : ""}`}
                 key={account.id}
               >
                 <td className="w-10 pr-2">

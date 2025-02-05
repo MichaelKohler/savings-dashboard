@@ -20,7 +20,7 @@ export default function GroupsIndexPage() {
         <Button>+ New Group</Button>
       </Link>
       <table className="mt-5 min-w-full">
-        <thead className="border-b text-left">
+        <thead className="border-b border-gray-300 text-left">
           <tr>
             <th className="pr-2">Name</th>
             <th className="text-right">Actions</th>
@@ -28,7 +28,7 @@ export default function GroupsIndexPage() {
         </thead>
         <tbody>
           {groups.map((group) => (
-            <tr key={group.id} className="border-b">
+            <tr key={group.id} className="border-b border-gray-300">
               <td className="pr-2">{group.name}</td>
               <td className="text-right">
                 <Link to={`/groups/${group.id}/edit`} className="inline-block">
