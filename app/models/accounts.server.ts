@@ -40,22 +40,6 @@ export async function getAccounts({
   return accounts;
 }
 
-export async function getAccountsForCharts({ userId }: { userId: User["id"] }) {
-  const accounts = await prisma.account.findMany({
-    where: {
-      userId,
-      showInGraphs: true,
-    },
-    orderBy: { createdAt: "desc" },
-    include: {
-      group: true,
-      type: true,
-    },
-  });
-
-  return accounts;
-}
-
 export function createAccount(
   account: Pick<
     Account,

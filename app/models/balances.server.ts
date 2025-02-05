@@ -2,6 +2,7 @@ import type { User, Account, Balance } from "@prisma/client";
 import type { SerializeFrom } from "@remix-run/node";
 
 import { prisma } from "~/db.server";
+import { getAccounts } from "./accounts.server";
 
 export type SerializedBalance = SerializeFrom<Balance>;
 
@@ -55,6 +56,12 @@ function getMonthKey(date: Date) {
 }
 
 export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
+  const accounts = await getAccounts({ userId });
+  const accountIdsForTotals = new Set(
+    accounts
+      .filter((account) => account.showInGraphs)
+      .map((account) => account.id)
+  );
   const allBalances = await getBalances({ userId, order: "asc" });
 
   if (!allBalances.length) {
@@ -88,9 +95,14 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
       accountsMap[accId] = lastKnownBalances[accId];
     }
 
+    const total = Object.entries(accountsMap)
+      .filter(([accountId]) => accountIdsForTotals.has(accountId))
+      .map(([, balance]) => balance)
+      .reduce((a, b) => a + b, 0);
+
     result.push({
       date: monthKey,
-      total: Object.values(accountsMap).reduce((a, b) => a + b, 0),
+      total,
       ...accountsMap,
     });
 
