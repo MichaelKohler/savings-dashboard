@@ -57,14 +57,12 @@ export async function action({ request }: ActionFunctionArgs) {
     );
   }
 
-  await createUserSession({
+  return createUserSession({
     request,
     userId: user.id,
     remember: remember === "on" ? true : false,
     redirectTo,
   });
-
-  return { errors };
 }
 
 export function meta(): ReturnType<MetaFunction> {
@@ -78,7 +76,7 @@ export function meta(): ReturnType<MetaFunction> {
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/charts";
-  const actionData = useActionData<typeof action>();
+  const actionData = useActionData();
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
 
