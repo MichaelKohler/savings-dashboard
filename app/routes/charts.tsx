@@ -93,7 +93,7 @@ export default function ChartsPage() {
         </LineChart>
       </ResponsiveContainer>
 
-      <h2 className="mt-8 text-2xl">Predictions</h2>
+      <h2 className="mt-64 text-2xl">Predictions</h2>
       <ResponsiveContainer width={"100%"} height={500} className="mt-8">
         <LineChart width={500} height={300} data={data.predictions}>
           <CartesianGrid strokeDasharray="1 1" />
@@ -107,7 +107,7 @@ export default function ChartsPage() {
         </LineChart>
       </ResponsiveContainer>
 
-      <h2 className="mt-8 text-2xl">Per Account</h2>
+      <h2 className="mt-64 text-2xl">Per Account</h2>
       <ResponsiveContainer width={"100%"} height={500} className="mt-8">
         <LineChart width={500} height={300} data={data.balances}>
           <CartesianGrid strokeDasharray="1 1" />
@@ -129,7 +129,7 @@ export default function ChartsPage() {
         </LineChart>
       </ResponsiveContainer>
 
-      <h2 className="mt-8 text-2xl">Stacked</h2>
+      <h2 className="mt-64 text-2xl">Stacked</h2>
       <ResponsiveContainer width={"100%"} height={500} className="mt-8">
         <BarChart width={500} height={300} data={data.balances}>
           <CartesianGrid strokeDasharray="1 1" />
@@ -152,7 +152,7 @@ export default function ChartsPage() {
         </BarChart>
       </ResponsiveContainer>
 
-      <h2 className="mt-8 text-2xl">Per Group</h2>
+      <h2 className="mt-64 text-2xl">Per Group</h2>
       <ResponsiveContainer width={"100%"} height={500} className="mt-8">
         <BarChart width={500} height={300} data={data.balances}>
           <CartesianGrid strokeDasharray="1 1" />
@@ -175,7 +175,7 @@ export default function ChartsPage() {
         </BarChart>
       </ResponsiveContainer>
 
-      <h2 className="mt-8 text-2xl">Per Type</h2>
+      <h2 className="mt-64 text-2xl">Per Type</h2>
       <ResponsiveContainer width={"100%"} height={500} className="mt-8">
         <BarChart width={500} height={300} data={data.balances}>
           <CartesianGrid strokeDasharray="1 1" />
