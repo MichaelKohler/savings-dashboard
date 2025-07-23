@@ -14,6 +14,8 @@
     "setup": "prisma generate && prisma db push && prisma db seed",
     "start": "react-router-serve ./build/server/index.js",
     "test": "vitest",
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:run": "playwright test",
     "typecheck": "tsc -b",
     "validate": "run-p \"test -- --run\" lint typecheck"
   },
@@ -44,6 +46,7 @@
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.25.1",
     "@faker-js/faker": "^9.7.0",
+    "@playwright/test": "^1.54.1",
     "@react-router/dev": "^7.5.1",
     "@react-router/fs-routes": "^7.5.1",
     "@testing-library/jest-dom": "^6.6.3",
@@ -82,7 +85,7 @@
     "node": ">=20"
   },
   "prisma": {
-    "seed": "node --require esbuild-register prisma/seed.ts"
+    "seed": "node prisma/seed.mjs"
   },
   "version": "1.0.0"
 }
