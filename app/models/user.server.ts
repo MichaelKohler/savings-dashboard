@@ -1,5 +1,5 @@
 import type { Password, User } from "@prisma/client";
-import bcrypt from "@node-rs/bcrypt";
+import { compare } from "@node-rs/bcrypt";
 
 import { prisma } from "~/db.server";
 
@@ -79,10 +79,7 @@ export async function verifyLogin(
     return null;
   }
 
-  const isValid = await bcrypt.compare(
-    password,
-    userWithPassword.password.hash
-  );
+  const isValid = await compare(password, userWithPassword.password.hash);
 
   if (!isValid) {
     return null;
@@ -91,7 +88,6 @@ export async function verifyLogin(
   // Do not trust linting here, we do not want to expose the password,
   // therefore we explicitly do not want it to be part of the return value.
   // This variable is unused, but intentionally.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: _password, ...userWithoutPassword } = userWithPassword;
 
   return userWithoutPassword;

@@ -21,7 +21,7 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: ["!**/.server", "!**/.client"],
+    ignores: ["!**/.server", "!**/.client", ".react-router"],
   },
   ...compat.extends("eslint:recommended"),
   {
