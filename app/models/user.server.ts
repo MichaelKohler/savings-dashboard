@@ -1,5 +1,5 @@
 import type { Password, User } from "@prisma/client";
-import { compare } from "@node-rs/bcrypt";
+import { compare, hash } from "@node-rs/bcrypt";
 
 import { prisma } from "~/db.server";
 
@@ -18,7 +18,7 @@ export function countUsers() {
 }
 
 export async function createUser(email: User["email"], password: string) {
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await hash(password, 10);
 
   return prisma.user.create({
     data: {
@@ -44,7 +44,7 @@ export async function changePassword(email: User["email"], password: string) {
     throw new Error("USER_NOT_FOUND");
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await hash(password, 10);
 
   return prisma.password.update({
     where: {
