@@ -1,0 +1,19 @@
+services:
+  postgres-test:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpass
+      POSTGRES_DB: savings_dashboard_test
+    ports:
+      - "5433:5432"  # Use different port to avoid conflicts
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U testuser -d savings_dashboard_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_test_data:

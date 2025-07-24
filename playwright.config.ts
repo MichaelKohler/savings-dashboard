@@ -56,7 +56,7 @@ const config: PlaywrightTestConfig = {
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "npx prisma db seed && npm run dev",
+    command: "npm run dev",
     port: 5173,
     reuseExistingServer: !process.env.CI,
     stdout: "ignore",
