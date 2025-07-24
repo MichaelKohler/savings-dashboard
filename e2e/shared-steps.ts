@@ -81,3 +81,29 @@ export async function createType(page: Page, typeName: string) {
   // Verify the type was created by checking it appears in the list
   await expect(page.getByText(typeName)).toBeVisible();
 }
+
+/**
+ * Creates a new balance
+ * @param page - The Playwright page object
+ * @param date - The date for the balance (YYYY-MM-DD format)
+ * @param accountName - The name of the account to select
+ * @param balanceAmount - The balance amount
+ */
+export async function createBalance(page: Page, date: string, accountName: string, balanceAmount: string) {
+  // Navigate to balances page
+  await page.getByRole("link", { name: "💰 Balances" }).click();
+
+  // Click New Balance button
+  await page.getByRole("button", { name: "+ New Balance" }).click();
+
+  // Fill in the balance details
+  await page.getByLabel("Date:").fill(date);
+  await page.getByLabel("Account:").selectOption({ label: accountName });
+  await page.getByLabel("Balance (rounded to the nearest number):").fill(balanceAmount);
+
+  // Save the balance
+  await page.getByRole("button", { name: "Save" }).click();
+
+  // Verify the balance was created by checking it appears in the list
+  await expect(page.getByText(balanceAmount)).toBeVisible();
+}
