@@ -6,6 +6,8 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
+    "change-password": "node --experimental-strip-types scripts/change-password.ts",
+    "create-user": "node --experimental-strip-types scripts/create-user.ts",
     "dev": "react-router dev",
     "dev:host": "react-router dev --host",
     "format": "prettier --write .",
