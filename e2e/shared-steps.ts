@@ -89,7 +89,12 @@ export async function createType(page: Page, typeName: string) {
  * @param accountName - The name of the account to select
  * @param balanceAmount - The balance amount
  */
-export async function createBalance(page: Page, date: string, accountName: string, balanceAmount: string) {
+export async function createBalance(
+  page: Page,
+  date: string,
+  accountName: string,
+  balanceAmount: string
+) {
   // Navigate to balances page
   await page.getByRole("link", { name: "💰 Balances" }).click();
 
@@ -99,7 +104,9 @@ export async function createBalance(page: Page, date: string, accountName: strin
   // Fill in the balance details
   await page.getByLabel("Date:").fill(date);
   await page.getByLabel("Account:").selectOption({ label: accountName });
-  await page.getByLabel("Balance (rounded to the nearest number):").fill(balanceAmount);
+  await page
+    .getByLabel("Balance (rounded to the nearest number):")
+    .fill(balanceAmount);
 
   // Save the balance
   await page.getByRole("button", { name: "Save" }).click();
