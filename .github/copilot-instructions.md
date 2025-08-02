@@ -32,7 +32,8 @@ This is a savings dashboard application that allows users to track their savings
 - Write self-documenting code with minimal comments
 - Prefer composition over inheritance
 - Keep functions small and focused (single responsibility)
-- Run tests, linting and formatting at the end of each agent run cycle
+- Run `npm run validate` and `npm run format` at the end of each agent run cycle
+- Always use `npm run test:e2e` when running E2E tests and not `npm run test:e2e:run`.
 
 ### React specific
 
