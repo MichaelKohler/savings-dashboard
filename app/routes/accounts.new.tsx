@@ -3,7 +3,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "react-router";
-import { data, redirect, useLoaderData } from "react-router";
+import { data, redirect, useLoaderData, useRouteError } from "react-router";
 
 import AccountForm from "~/components/forms/account";
 import { createAccount } from "~/models/accounts.server";
@@ -95,13 +95,30 @@ export async function action({ request }: ActionFunctionArgs) {
   return redirect("/accounts");
 }
 
+type ActionError = {
+  data: {
+    errors: {
+      name?: string;
+      color?: string;
+      generic?: string;
+      groupId?: string;
+      typeId?: string;
+    };
+  };
+};
+
 export default function NewAccountPage() {
   const data = useLoaderData<typeof loader>();
+  const error = useRouteError() as ActionError;
 
   return (
     <>
       <h1 className="pb-4 text-3xl">Add new account</h1>
-      <AccountForm groups={data.groups} types={data.types} />
+      <AccountForm
+        groups={data.groups}
+        types={data.types}
+        errors={error?.data?.errors}
+      />
     </>
   );
 }

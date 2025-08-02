@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Form, useActionData, useNavigation } from "react-router";
+import { Form, useNavigation } from "react-router";
 
 import Button from "~/components/button";
 import type { Account } from "~/models/accounts.server";
@@ -21,12 +21,13 @@ export default function AccountForm({
   initialData,
   groups,
   types,
+  errors = {},
 }: {
   initialData?: Account | null;
   groups: Group[];
   types: Type[];
+  errors?: ActionDataResponse["errors"];
 }) {
-  const actionData = useActionData<ActionDataResponse>();
   const navigation = useNavigation();
 
   const nameRef = React.useRef<HTMLInputElement>(null);
@@ -35,12 +36,12 @@ export default function AccountForm({
   const isEdit = !!initialData?.id;
 
   React.useEffect(() => {
-    if (actionData?.errors?.name) {
+    if (errors?.name) {
       nameRef.current?.focus();
-    } else if (actionData?.errors?.color) {
+    } else if (errors?.color) {
       colorRef.current?.focus();
     }
-  }, [actionData]);
+  }, [errors]);
 
   return (
     <Form
@@ -60,17 +61,15 @@ export default function AccountForm({
             type="text"
             name="name"
             className="flex-1 rounded-md border-2 border-mk px-3 text-lg leading-loose"
-            aria-invalid={actionData?.errors.name ? true : undefined}
-            aria-errormessage={
-              actionData?.errors.name ? "name-error" : undefined
-            }
+            aria-invalid={errors?.name ? true : undefined}
+            aria-errormessage={errors?.name ? "name-error" : undefined}
             data-testid="new-account-name-input"
             defaultValue={initialData?.name}
           />
         </label>
-        {actionData?.errors.name && (
+        {errors?.name && (
           <div className="pt-1 text-mkerror" id="name=error">
-            {actionData.errors.name}
+            {errors.name}
           </div>
         )}
       </div>
@@ -91,9 +90,9 @@ export default function AccountForm({
             ))}
           </select>
         </label>
-        {actionData?.errors.typeId && (
+        {errors?.typeId && (
           <div className="pt-1 text-mkerror" id="accountId=error">
-            {actionData.errors.typeId}
+            {errors.typeId}
           </div>
         )}
       </div>
@@ -114,9 +113,9 @@ export default function AccountForm({
             ))}
           </select>
         </label>
-        {actionData?.errors.groupId && (
+        {errors?.groupId && (
           <div className="pt-1 text-mkerror" id="accountId=error">
-            {actionData.errors.groupId}
+            {errors.groupId}
           </div>
         )}
       </div>
@@ -128,17 +127,15 @@ export default function AccountForm({
             ref={colorRef}
             type="color"
             name="color"
-            aria-invalid={actionData?.errors.color ? true : undefined}
-            aria-errormessage={
-              actionData?.errors.color ? "color-error" : undefined
-            }
+            aria-invalid={errors?.color ? true : undefined}
+            aria-errormessage={errors?.color ? "color-error" : undefined}
             data-testid="new-account-color-input"
             defaultValue={initialData?.color}
           />
         </label>
-        {actionData?.errors.color && (
+        {errors?.color && (
           <div className="pt-1 text-mkerror" id="color=error">
-            {actionData.errors.color}
+            {errors.color}
           </div>
         )}
       </div>
@@ -171,9 +168,9 @@ export default function AccountForm({
 
       {isEdit && <input type="hidden" name="id" value={initialData?.id} />}
 
-      {actionData?.errors.generic && (
+      {errors?.generic && (
         <div className="pt-1 text-mkerror" id="generic=error">
-          {actionData.errors.generic}
+          {errors.generic}
         </div>
       )}
 

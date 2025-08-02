@@ -4,7 +4,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "react-router";
-import { data, redirect, useLoaderData } from "react-router";
+import { data, redirect, useLoaderData, useRouteError } from "react-router";
 
 import AccountForm from "~/components/forms/account";
 import { getAccount, updateAccount } from "~/models/accounts.server";
@@ -108,8 +108,21 @@ export async function action({ request }: ActionFunctionArgs) {
   return redirect("/accounts");
 }
 
+type ActionError = {
+  data: {
+    errors: {
+      name?: string;
+      color?: string;
+      generic?: string;
+      groupId?: string;
+      typeId?: string;
+    };
+  };
+};
+
 export default function EditAccountPage() {
   const data = useLoaderData<typeof loader>();
+  const error = useRouteError() as ActionError;
 
   return (
     <>
@@ -118,6 +131,7 @@ export default function EditAccountPage() {
         initialData={data.account}
         groups={data.groups}
         types={data.types}
+        errors={error?.data?.errors}
       />
     </>
   );
