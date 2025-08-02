@@ -12,12 +12,6 @@ Simple savings dashboard. This is loosely based on the [Remix Indie Stack](https
 cp .env.example .env
 ```
 
-- Optional / PlanetScale:
-
-```sh
-pscale connect savings dev --port 3309
-```
-
 - Initial setup:
 
   ```sh
