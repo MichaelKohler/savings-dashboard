@@ -17,7 +17,7 @@ This is a savings dashboard application that allows users to track their savings
 - **Database**: Prisma with PostgreSQL
 - **Charts**: Recharts for financial data visualization
 - **Version Control**: Git
-- **Environment Variables**: dotenv-cli for testing environment
+- **Environment Variables**: Node.js native `--env-file` parameter for testing environment
 - **Deployment**: Vercel
 
 ## Coding Standards
