@@ -30,7 +30,6 @@ async function seed() {
 seed()
   .catch((e) => {
     console.error(e);
-    // eslint-disable-next-line no-undef
     process.exit(1);
   })
   .finally(async () => {

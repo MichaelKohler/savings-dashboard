@@ -1,6 +1,6 @@
 {
   "exclude": [],
-  "include": ["**/*.ts", "**/*.tsx", "prisma/seed.mjs"],
+  "include": ["**/*.ts", "**/*.tsx", "prisma/seed.ts"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2020"],
     "types": ["@react-router/node", "node", "vite/client", "vitest/globals"],
