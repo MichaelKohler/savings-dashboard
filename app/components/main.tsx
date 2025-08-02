@@ -5,7 +5,7 @@ export default function Sidebar() {
   const user = useOptionalUser();
 
   return (
-    <div className="bg-white flex flex-col h-screen">
+    <div className="bg-white flex flex-col h-screen relative z-10">
       <div className="p-4 md:p-8 grow">
         <Outlet />
       </div>
