@@ -1,7 +1,7 @@
 import type { User, Account, Balance } from "@prisma/client";
 
-import { prisma } from "~/db.server";
 import { getAccounts } from "./accounts.server";
+import { prisma } from "~/db.server";
 
 export type { Balance } from "@prisma/client";
 

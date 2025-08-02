@@ -132,6 +132,7 @@ export default [
           ignoreRestSiblings: true,
         },
       ],
+      "import/order": "error",
     },
   },
 ];
