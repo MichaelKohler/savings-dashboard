@@ -89,7 +89,7 @@ export default function ChartsPage() {
             dataKey="total"
             stroke={COLORS[0]}
           />
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 10 }} />
+          <Tooltip cursor={false} wrapperStyle={{ zIndex: 40 }} />
         </LineChart>
       </ResponsiveContainer>
 
@@ -103,7 +103,7 @@ export default function ChartsPage() {
           <Line name="3%" type="monotoneX" dataKey="3" stroke={COLORS[1]} />
           <Line name="5%" type="monotoneX" dataKey="5" stroke={COLORS[2]} />
           <Line name="7%" type="monotoneX" dataKey="7" stroke={COLORS[3]} />
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 10 }} />
+          <Tooltip cursor={false} wrapperStyle={{ zIndex: 40 }} />
         </LineChart>
       </ResponsiveContainer>
 
@@ -124,7 +124,7 @@ export default function ChartsPage() {
               />
             );
           })}
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 10 }} />
+          <Tooltip cursor={false} wrapperStyle={{ zIndex: 40 }} />
           <Legend />
         </LineChart>
       </ResponsiveContainer>
@@ -147,7 +147,7 @@ export default function ChartsPage() {
               />
             );
           })}
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 10 }} />
+          <Tooltip cursor={false} wrapperStyle={{ zIndex: 40 }} />
           <Legend />
         </BarChart>
       </ResponsiveContainer>
@@ -170,7 +170,7 @@ export default function ChartsPage() {
               />
             );
           })}
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 10 }} />
+          <Tooltip cursor={false} wrapperStyle={{ zIndex: 40 }} />
           <Legend />
         </BarChart>
       </ResponsiveContainer>
@@ -193,7 +193,7 @@ export default function ChartsPage() {
               />
             );
           })}
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 10 }} />
+          <Tooltip cursor={false} wrapperStyle={{ zIndex: 40 }} />
           <Legend />
         </BarChart>
       </ResponsiveContainer>
