@@ -20,13 +20,21 @@ import tailwindStylesheetUrl from "./styles/tailwind.css?url";
 import { getUser } from "./session.server";
 
 export function headers(): ReturnType<HeadersFunction> {
-  return {
+  const headers: Record<string, string> = {
     "Permissions-Policy":
       "accelerometer=(), ambient-light-sensor=(), battery=(), camera=(), microphone=(), geolocation=(), gyroscope=()",
     "Referrer-Policy": "no-referrer",
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",
   };
+
+  // Add HSTS header only in production
+  if (process.env.NODE_ENV === "production") {
+    headers["Strict-Transport-Security"] =
+      "max-age=31536000; includeSubDomains; preload";
+  }
+
+  return headers;
 }
 
 export function links(): ReturnType<LinksFunction> {
