@@ -1,7 +1,7 @@
-import { createUser } from "../app/models/user.server";
-import { prisma } from "../app/db.server";
 import * as readline from "readline/promises";
 import { stdin as input, stdout as output } from "process";
+import { createUser } from "../app/models/user.server";
+import { prisma } from "../app/db.server";
 
 const rl = readline.createInterface({ input, output });
 
