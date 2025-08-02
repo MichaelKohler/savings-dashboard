@@ -8,6 +8,7 @@ import { data, Form, useActionData } from "react-router";
 
 import { changePassword, verifyLogin } from "~/models/user.server";
 import { requireUser } from "~/session.server";
+import { validatePassword } from "~/utils";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireUser(request);
@@ -27,9 +28,15 @@ export async function action({ request }: ActionFunctionArgs) {
     generic: null,
   };
 
-  if (typeof newPassword !== "string" || newPassword === "") {
+  if (!validatePassword(newPassword)) {
     throw data(
-      { errors: { ...errors, password: "Password is required" }, done: false },
+      {
+        errors: {
+          ...errors,
+          newPassword: "Password must be at least 8 characters long",
+        },
+        done: false,
+      },
       { status: 400 }
     );
   }
