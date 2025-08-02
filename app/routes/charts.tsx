@@ -89,7 +89,7 @@ export default function ChartsPage() {
             dataKey="total"
             stroke={COLORS[0]}
           />
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 1000 }} />
+          <Tooltip cursor={false} />
         </LineChart>
       </ResponsiveContainer>
 
@@ -103,7 +103,7 @@ export default function ChartsPage() {
           <Line name="3%" type="monotoneX" dataKey="3" stroke={COLORS[1]} />
           <Line name="5%" type="monotoneX" dataKey="5" stroke={COLORS[2]} />
           <Line name="7%" type="monotoneX" dataKey="7" stroke={COLORS[3]} />
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 1000 }} />
+          <Tooltip cursor={false} />
         </LineChart>
       </ResponsiveContainer>
 
@@ -124,8 +124,8 @@ export default function ChartsPage() {
               />
             );
           })}
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 1000 }} />
           <Legend />
+          <Tooltip cursor={false} />
         </LineChart>
       </ResponsiveContainer>
 
@@ -147,8 +147,8 @@ export default function ChartsPage() {
               />
             );
           })}
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 1000 }} />
           <Legend />
+          <Tooltip cursor={false} />
         </BarChart>
       </ResponsiveContainer>
 
@@ -170,8 +170,8 @@ export default function ChartsPage() {
               />
             );
           })}
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 1000 }} />
           <Legend />
+          <Tooltip cursor={false} />
         </BarChart>
       </ResponsiveContainer>
 
@@ -193,8 +193,8 @@ export default function ChartsPage() {
               />
             );
           })}
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 1000 }} />
           <Legend />
+          <Tooltip cursor={false} />
         </BarChart>
       </ResponsiveContainer>
     </main>
