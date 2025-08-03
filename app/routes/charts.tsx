@@ -89,11 +89,11 @@ export default function ChartsPage() {
             dataKey="total"
             stroke={COLORS[0]}
           />
-          <Tooltip />
+          <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
         </LineChart>
       </ResponsiveContainer>
 
-      <h2 className="mt-64 text-2xl">Predictions</h2>
+      <h2 className="mt-16 text-2xl">Predictions</h2>
       <ResponsiveContainer width={"100%"} height={500} className="mt-8">
         <LineChart width={500} height={300} data={data.predictions}>
           <CartesianGrid strokeDasharray="1 1" />
@@ -103,11 +103,11 @@ export default function ChartsPage() {
           <Line name="3%" type="monotoneX" dataKey="3" stroke={COLORS[1]} />
           <Line name="5%" type="monotoneX" dataKey="5" stroke={COLORS[2]} />
           <Line name="7%" type="monotoneX" dataKey="7" stroke={COLORS[3]} />
-          <Tooltip />
+          <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
         </LineChart>
       </ResponsiveContainer>
 
-      <h2 className="mt-64 text-2xl">Per Account</h2>
+      <h2 className="mt-16 text-2xl">Per Account</h2>
       <ResponsiveContainer width={"100%"} height={500} className="mt-8">
         <LineChart width={500} height={300} data={data.balances}>
           <CartesianGrid strokeDasharray="1 1" />
@@ -124,12 +124,12 @@ export default function ChartsPage() {
               />
             );
           })}
-          <Tooltip />
+          <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
           <Legend />
         </LineChart>
       </ResponsiveContainer>
 
-      <h2 className="mt-64 text-2xl">Stacked</h2>
+      <h2 className="mt-16 text-2xl">Stacked</h2>
       <ResponsiveContainer width={"100%"} height={500} className="mt-8">
         <BarChart width={500} height={300} data={data.balances}>
           <CartesianGrid strokeDasharray="1 1" />
@@ -147,12 +147,12 @@ export default function ChartsPage() {
               />
             );
           })}
-          <Tooltip />
+          <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
           <Legend />
         </BarChart>
       </ResponsiveContainer>
 
-      <h2 className="mt-64 text-2xl">Per Group</h2>
+      <h2 className="mt-16 text-2xl">Per Group</h2>
       <ResponsiveContainer width={"100%"} height={500} className="mt-8">
         <BarChart width={500} height={300} data={data.balances}>
           <CartesianGrid strokeDasharray="1 1" />
@@ -170,12 +170,12 @@ export default function ChartsPage() {
               />
             );
           })}
-          <Tooltip />
+          <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
           <Legend />
         </BarChart>
       </ResponsiveContainer>
 
-      <h2 className="mt-64 text-2xl">Per Type</h2>
+      <h2 className="mt-16 text-2xl">Per Type</h2>
       <ResponsiveContainer width={"100%"} height={500} className="mt-8">
         <BarChart width={500} height={300} data={data.balances}>
           <CartesianGrid strokeDasharray="1 1" />
@@ -193,7 +193,7 @@ export default function ChartsPage() {
               />
             );
           })}
-          <Tooltip />
+          <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
           <Legend />
         </BarChart>
       </ResponsiveContainer>

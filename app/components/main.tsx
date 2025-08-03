@@ -5,11 +5,11 @@ export default function Sidebar() {
   const user = useOptionalUser();
 
   return (
-    <div className="bg-white flex flex-col h-screen">
+    <div className="bg-white flex flex-col h-screen relative">
       <div className="p-4 md:p-8 grow">
         <Outlet />
       </div>
-      <ul className="sticky bottom-0 bg-white w-screen flex flex-row justify-between py-4 px-6 md:px-12 border-t border-gray-300">
+      <ul className="sticky bottom-0 bg-white w-screen flex flex-row justify-between py-4 px-6 md:px-12 border-t border-gray-300 z-50">
         {!user && (
           <li>
             <NavLink
