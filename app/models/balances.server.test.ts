@@ -1,7 +1,5 @@
 import { vi } from "vitest";
 
-import { prisma } from "~/db.server";
-import * as accountModel from "./accounts.server";
 import {
   getBalance,
   getBalances,
@@ -11,9 +9,9 @@ import {
   getBalancesForCharts,
   getPredictedBalances,
 } from "./balances.server";
+import { prisma } from "~/db.server";
 
 vi.mock("~/db.server");
-vi.mock("./accounts.server");
 
 describe("balance models", () => {
   const user = {
@@ -33,35 +31,31 @@ describe("balance models", () => {
     updatedAt: new Date(),
   };
 
-  const account = {
-    id: "1",
-    name: "Test Account",
-    color: "#ff0000",
-    showInGraphs: true,
-    groupId: "1",
-    typeId: "1",
-    userId: user.id,
-    archived: false,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
   describe("getBalance", () => {
     it("should return a single balance by id", async () => {
-      prisma.balance.findFirst.mockResolvedValue(balance);
+      vi.mocked(prisma.balance.findFirst).mockResolvedValue(balance);
 
       const result = await getBalance({ id: balance.id, userId: user.id });
 
       expect(result).toEqual(balance);
       expect(prisma.balance.findFirst).toHaveBeenCalledWith({
         where: { id: balance.id, userId: user.id },
+        select: {
+          id: true,
+          balance: true,
+          date: true,
+          accountId: true,
+          userId: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       });
     });
   });
 
   describe("getBalances", () => {
     it("should return a list of balances for a user", async () => {
-      prisma.balance.findMany.mockResolvedValue([balance]);
+      vi.mocked(prisma.balance.findMany).mockResolvedValue([balance]);
 
       const result = await getBalances({ userId: user.id });
 
@@ -69,11 +63,42 @@ describe("balance models", () => {
       expect(prisma.balance.findMany).toHaveBeenCalledWith({
         where: { userId: user.id },
         orderBy: { date: "desc" },
-        include: {
+        select: {
+          id: true,
+          balance: true,
+          date: true,
+          createdAt: true,
+          updatedAt: true,
+          userId: true,
+          accountId: true,
           account: {
-            include: {
-              group: true,
-              type: true,
+            select: {
+              id: true,
+              name: true,
+              color: true,
+              showInGraphs: true,
+              archived: true,
+              userId: true,
+              groupId: true,
+              typeId: true,
+              group: {
+                select: {
+                  id: true,
+                  name: true,
+                  createdAt: true,
+                  updatedAt: true,
+                  userId: true,
+                },
+              },
+              type: {
+                select: {
+                  id: true,
+                  name: true,
+                  createdAt: true,
+                  updatedAt: true,
+                  userId: true,
+                },
+              },
             },
           },
         },
@@ -83,7 +108,7 @@ describe("balance models", () => {
 
   describe("createBalance", () => {
     it("should create a new balance", async () => {
-      prisma.balance.create.mockResolvedValue(balance);
+      vi.mocked(prisma.balance.create).mockResolvedValue(balance);
 
       const result = await createBalance(
         {
@@ -116,8 +141,8 @@ describe("balance models", () => {
 
   describe("updateBalance", () => {
     it("should update a balance", async () => {
-      prisma.balance.findFirst.mockResolvedValue(balance);
-      prisma.balance.update.mockResolvedValue(balance);
+      vi.mocked(prisma.balance.findFirst).mockResolvedValue(balance);
+      vi.mocked(prisma.balance.update).mockResolvedValue(balance);
 
       const result = await updateBalance(balance);
 
@@ -133,16 +158,14 @@ describe("balance models", () => {
     });
 
     it("should throw an error if balance is not found", async () => {
-      prisma.balance.findFirst.mockResolvedValue(null);
-      await expect(updateBalance(balance)).rejects.toThrow(
-        "BALANCE_NOT_FOUND"
-      );
+      vi.mocked(prisma.balance.findFirst).mockResolvedValue(null);
+      await expect(updateBalance(balance)).rejects.toThrow("BALANCE_NOT_FOUND");
     });
   });
 
   describe("deleteBalance", () => {
     it("should delete a balance", async () => {
-      prisma.balance.deleteMany.mockResolvedValue({ count: 1 });
+      vi.mocked(prisma.balance.deleteMany).mockResolvedValue({ count: 1 });
 
       const result = await deleteBalance({ id: balance.id, userId: user.id });
 
@@ -156,19 +179,33 @@ describe("balance models", () => {
   describe("getBalancesForCharts", () => {
     it("should return balances for charts", async () => {
       const accounts = [
-        { ...account, id: "1", showInGraphs: true, type: { id: "t1" }, group: { id: "g1" } },
-        { ...account, id: "2", showInGraphs: false, type: { id: "t2" }, group: { id: "g2" } },
+        {
+          id: "1",
+          showInGraphs: true,
+          type: { id: "t1" },
+          group: { id: "g1" },
+        },
+        {
+          id: "2",
+          showInGraphs: false,
+          type: { id: "t2" },
+          group: { id: "g2" },
+        },
       ];
       const balances = [
-        { ...balance, accountId: "1", date: new Date("2023-01-15"), balance: 100 },
-        { ...balance, accountId: "1", date: new Date("2023-02-15"), balance: 150 },
-        { ...balance, accountId: "2", date: new Date("2023-01-15"), balance: 200 },
+        { accountId: "1", date: new Date("2023-01-15"), balance: 100 },
+        { accountId: "1", date: new Date("2023-02-15"), balance: 150 },
+        { accountId: "2", date: new Date("2023-01-15"), balance: 200 },
       ];
 
-      vi.spyOn(accountModel, "getAccounts").mockResolvedValue(accounts as any);
-      prisma.balance.findMany.mockResolvedValue(balances as any);
+      // @ts-expect-error .. we do not necesarily need to specify the full object here
+      vi.mocked(prisma.account.findMany).mockResolvedValue(accounts);
+      // @ts-expect-error .. we do not necesarily need to specify the full object here
+      vi.mocked(prisma.balance.findMany).mockResolvedValue(balances);
 
-      const { balances: result } = await getBalancesForCharts({ userId: user.id });
+      const { balances: result } = await getBalancesForCharts({
+        userId: user.id,
+      });
 
       expect(result.length).toBeGreaterThan(0);
       expect(result[0].total).toBe(100);
@@ -176,10 +213,20 @@ describe("balance models", () => {
     });
 
     it("should return empty array if no balances", async () => {
-      vi.spyOn(accountModel, "getAccounts").mockResolvedValue([account] as any);
-      prisma.balance.findMany.mockResolvedValue([]);
+      vi.mocked(prisma.account.findMany).mockResolvedValue([
+        {
+          id: "1",
+          showInGraphs: true,
+          // @ts-expect-error .. we do not necesarily need to specify the full object here
+          type: { id: "t1" },
+          group: { id: "g1" },
+        },
+      ]);
+      vi.mocked(prisma.balance.findMany).mockResolvedValue([]);
 
-      const { balances: result } = await getBalancesForCharts({ userId: user.id });
+      const { balances: result } = await getBalancesForCharts({
+        userId: user.id,
+      });
       expect(result).toEqual([]);
     });
   });

@@ -1,6 +1,7 @@
 import { vi } from "vitest";
 
-import { prisma } from "~/db.server";
+import * as bcrypt from "@node-rs/bcrypt";
+
 import {
   getUserById,
   getUserByEmail,
@@ -11,7 +12,7 @@ import {
   deleteUserByUserId,
   verifyLogin,
 } from "./user.server";
-import { compare, hash } from "@node-rs/bcrypt";
+import { prisma } from "~/db.server";
 
 vi.mock("~/db.server");
 vi.mock("@node-rs/bcrypt");
@@ -26,11 +27,21 @@ describe("user models", () => {
 
   const password = {
     hash: "hashedpassword",
+    userId: user.id,
   };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+
+    vi.spyOn(bcrypt, "hash").mockImplementation(() =>
+      Promise.resolve(password.hash)
+    );
+    vi.spyOn(bcrypt, "compare").mockImplementation(() => Promise.resolve(true));
+  });
 
   describe("getUserById", () => {
     it("should return a user by id", async () => {
-      prisma.user.findUnique.mockResolvedValue(user);
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(user);
 
       const result = await getUserById(user.id);
 
@@ -43,7 +54,7 @@ describe("user models", () => {
 
   describe("getUserByEmail", () => {
     it("should return a user by email", async () => {
-      prisma.user.findUnique.mockResolvedValue(user);
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(user);
 
       const result = await getUserByEmail(user.email);
 
@@ -56,7 +67,7 @@ describe("user models", () => {
 
   describe("countUsers", () => {
     it("should return the number of users", async () => {
-      prisma.user.count.mockResolvedValue(1);
+      vi.mocked(prisma.user.count).mockResolvedValue(1);
 
       const result = await countUsers();
 
@@ -67,13 +78,13 @@ describe("user models", () => {
 
   describe("createUser", () => {
     it("should create a new user", async () => {
-      (hash as any).mockResolvedValue(password.hash);
-      prisma.user.create.mockResolvedValue(user);
+      vi.mocked(bcrypt.hash).mockResolvedValue(password.hash);
+      vi.mocked(prisma.user.create).mockResolvedValue(user);
 
       const result = await createUser(user.email, "password");
 
       expect(result).toEqual(user);
-      expect(hash).toHaveBeenCalledWith("password", 10);
+      expect(bcrypt.hash).toHaveBeenCalledWith("password", 10);
       expect(prisma.user.create).toHaveBeenCalledWith({
         data: {
           email: user.email,
@@ -89,15 +100,15 @@ describe("user models", () => {
 
   describe("changePassword", () => {
     it("should change a user's password", async () => {
-      prisma.user.findUnique.mockResolvedValue(user);
-      (hash as any).mockResolvedValue(password.hash);
-      prisma.password.update.mockResolvedValue(password as any);
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(user);
+      vi.mocked(bcrypt.hash).mockResolvedValue(password.hash);
+      vi.mocked(prisma.password.update).mockResolvedValue(password);
 
       const result = await changePassword(user.email, "newpassword");
 
       expect(result).toEqual(password);
       await expect(getUserByEmail(user.email)).resolves.toEqual(user);
-      expect(hash).toHaveBeenCalledWith("newpassword", 10);
+      expect(bcrypt.hash).toHaveBeenCalledWith("newpassword", 10);
       expect(prisma.password.update).toHaveBeenCalledWith({
         where: {
           userId: user.id,
@@ -115,7 +126,7 @@ describe("user models", () => {
     });
 
     it("should throw an error if user is not found", async () => {
-      prisma.user.findUnique.mockResolvedValue(null);
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
       await expect(
         changePassword("nouser@example.com", "newpassword")
       ).rejects.toThrow("USER_NOT_FOUND");
@@ -124,7 +135,7 @@ describe("user models", () => {
 
   describe("deleteUserByEmail", () => {
     it("should delete a user by email", async () => {
-      prisma.user.delete.mockResolvedValue(user);
+      vi.mocked(prisma.user.delete).mockResolvedValue(user);
 
       const result = await deleteUserByEmail(user.email);
 
@@ -137,7 +148,7 @@ describe("user models", () => {
 
   describe("deleteUserByUserId", () => {
     it("should delete a user by id", async () => {
-      prisma.user.delete.mockResolvedValue(user);
+      vi.mocked(prisma.user.delete).mockResolvedValue(user);
 
       const result = await deleteUserByUserId(user.id);
 
@@ -151,8 +162,8 @@ describe("user models", () => {
   describe("verifyLogin", () => {
     it("should return the user if login is valid", async () => {
       const userWithPassword = { ...user, password };
-      prisma.user.findUnique.mockResolvedValue(userWithPassword);
-      (compare as any).mockResolvedValue(true);
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(userWithPassword);
+      vi.mocked(bcrypt.compare).mockResolvedValue(true);
 
       const result = await verifyLogin(user.email, "password");
       const { password: _password, ...userWithoutPassword } = userWithPassword;
@@ -162,11 +173,11 @@ describe("user models", () => {
         where: { email: user.email },
         include: { password: true },
       });
-      expect(compare).toHaveBeenCalledWith("password", password.hash);
+      expect(bcrypt.compare).toHaveBeenCalledWith("password", password.hash);
     });
 
     it("should return null if user is not found", async () => {
-      prisma.user.findUnique.mockResolvedValue(null);
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
 
       const result = await verifyLogin(user.email, "password");
 
@@ -175,8 +186,8 @@ describe("user models", () => {
 
     it("should return null if password is not valid", async () => {
       const userWithPassword = { ...user, password };
-      prisma.user.findUnique.mockResolvedValue(userWithPassword);
-      (compare as any).mockResolvedValue(false);
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(userWithPassword);
+      vi.mocked(bcrypt.compare).mockResolvedValue(false);
 
       const result = await verifyLogin(user.email, "password");
 

@@ -1,6 +1,5 @@
 import { vi } from "vitest";
 
-import { prisma } from "~/db.server";
 import {
   getTypes,
   getType,
@@ -8,6 +7,7 @@ import {
   updateType,
   deleteType,
 } from "./types.server";
+import { prisma } from "~/db.server";
 
 vi.mock("~/db.server");
 
@@ -24,35 +24,60 @@ describe("type models", () => {
     name: "Test Type",
     userId: user.id,
     accounts: [],
+    createdAt: new Date(),
+    updatedAt: new Date(),
   };
 
   describe("getTypes", () => {
     it("should return a list of types for a user", async () => {
-      prisma.type.findMany.mockResolvedValue([type]);
+      vi.mocked(prisma.type.findMany).mockResolvedValue([type]);
 
       const result = await getTypes({ userId: user.id });
 
       expect(result).toEqual([type]);
       expect(prisma.type.findMany).toHaveBeenCalledWith({
         where: { userId: user.id },
-        include: {
-          accounts: true,
+        select: {
+          id: true,
+          name: true,
+          createdAt: true,
+          updatedAt: true,
+          userId: true,
+          accounts: {
+            select: {
+              id: true,
+              name: true,
+              archived: true,
+            },
+          },
         },
+        orderBy: { createdAt: "desc" },
       });
     });
   });
 
   describe("getType", () => {
     it("should return a single type by id", async () => {
-      prisma.type.findUnique.mockResolvedValue(type);
+      vi.mocked(prisma.type.findUnique).mockResolvedValue(type);
 
       const result = await getType({ id: type.id, userId: user.id });
 
       expect(result).toEqual(type);
       expect(prisma.type.findUnique).toHaveBeenCalledWith({
         where: { id: type.id, userId: user.id },
-        include: {
-          accounts: true,
+        select: {
+          id: true,
+          name: true,
+          createdAt: true,
+          updatedAt: true,
+          userId: true,
+          accounts: {
+            select: {
+              id: true,
+              name: true,
+              archived: true,
+            },
+          },
         },
       });
     });
@@ -60,7 +85,7 @@ describe("type models", () => {
 
   describe("createType", () => {
     it("should create a new type", async () => {
-      prisma.type.create.mockResolvedValue(type);
+      vi.mocked(prisma.type.create).mockResolvedValue(type);
 
       const result = await createType({ name: type.name, userId: user.id });
 
@@ -73,7 +98,7 @@ describe("type models", () => {
 
   describe("updateType", () => {
     it("should update a type", async () => {
-      prisma.type.update.mockResolvedValue(type);
+      vi.mocked(prisma.type.update).mockResolvedValue(type);
 
       const result = await updateType({
         id: type.id,
@@ -91,7 +116,7 @@ describe("type models", () => {
 
   describe("deleteType", () => {
     it("should delete a type", async () => {
-      prisma.type.delete.mockResolvedValue(type);
+      vi.mocked(prisma.type.delete).mockResolvedValue(type);
 
       const result = await deleteType({ id: type.id, userId: user.id });
 

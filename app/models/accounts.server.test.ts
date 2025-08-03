@@ -1,6 +1,5 @@
 import { vi } from "vitest";
 
-import { prisma } from "~/db.server";
 import {
   getAccount,
   getAccounts,
@@ -8,6 +7,7 @@ import {
   updateAccount,
   deleteAccount,
 } from "./accounts.server";
+import { prisma } from "~/db.server";
 
 vi.mock("~/db.server");
 
@@ -34,20 +34,32 @@ describe("account models", () => {
 
   describe("getAccount", () => {
     it("should return a single account by id", async () => {
-      prisma.account.findFirst.mockResolvedValue(account);
+      vi.mocked(prisma.account.findFirst).mockResolvedValue(account);
 
       const result = await getAccount({ id: account.id, userId: user.id });
 
       expect(result).toEqual(account);
       expect(prisma.account.findFirst).toHaveBeenCalledWith({
         where: { id: account.id, userId: user.id },
+        select: {
+          id: true,
+          name: true,
+          color: true,
+          showInGraphs: true,
+          archived: true,
+          createdAt: true,
+          updatedAt: true,
+          userId: true,
+          groupId: true,
+          typeId: true,
+        },
       });
     });
   });
 
   describe("getAccounts", () => {
     it("should return a list of accounts for a user", async () => {
-      prisma.account.findMany.mockResolvedValue([account]);
+      vi.mocked(prisma.account.findMany).mockResolvedValue([account]);
 
       const result = await getAccounts({ userId: user.id });
 
@@ -55,25 +67,77 @@ describe("account models", () => {
       expect(prisma.account.findMany).toHaveBeenCalledWith({
         where: { userId: user.id },
         orderBy: { createdAt: "desc" },
-        include: {
-          group: true,
-          type: true,
+        select: {
+          id: true,
+          name: true,
+          color: true,
+          showInGraphs: true,
+          archived: true,
+          createdAt: true,
+          updatedAt: true,
+          userId: true,
+          groupId: true,
+          typeId: true,
+          group: {
+            select: {
+              id: true,
+              name: true,
+              createdAt: true,
+              updatedAt: true,
+              userId: true,
+            },
+          },
+          type: {
+            select: {
+              id: true,
+              name: true,
+              createdAt: true,
+              updatedAt: true,
+              userId: true,
+            },
+          },
         },
       });
     });
 
     it("should return a list of archived accounts for a user", async () => {
-      prisma.account.findMany.mockResolvedValue([account]);
+      vi.mocked(prisma.account.findMany).mockResolvedValue([account]);
 
       const result = await getAccounts({ userId: user.id, archived: true });
 
       expect(result).toEqual([account]);
       expect(prisma.account.findMany).toHaveBeenCalledWith({
-        where: { userId: user.id, archived: true },
+        where: { archived: true, userId: user.id },
         orderBy: { createdAt: "desc" },
-        include: {
-          group: true,
-          type: true,
+        select: {
+          id: true,
+          name: true,
+          color: true,
+          showInGraphs: true,
+          archived: true,
+          createdAt: true,
+          updatedAt: true,
+          userId: true,
+          groupId: true,
+          typeId: true,
+          group: {
+            select: {
+              id: true,
+              name: true,
+              createdAt: true,
+              updatedAt: true,
+              userId: true,
+            },
+          },
+          type: {
+            select: {
+              id: true,
+              name: true,
+              createdAt: true,
+              updatedAt: true,
+              userId: true,
+            },
+          },
         },
       });
     });
@@ -81,7 +145,7 @@ describe("account models", () => {
 
   describe("createAccount", () => {
     it("should create a new account", async () => {
-      prisma.account.create.mockResolvedValue(account);
+      vi.mocked(prisma.account.create).mockResolvedValue(account);
 
       const result = await createAccount(
         {
@@ -122,8 +186,8 @@ describe("account models", () => {
 
   describe("updateAccount", () => {
     it("should update an account", async () => {
-      prisma.account.findFirst.mockResolvedValue(account);
-      prisma.account.update.mockResolvedValue(account);
+      vi.mocked(prisma.account.findFirst).mockResolvedValue(account);
+      vi.mocked(prisma.account.update).mockResolvedValue(account);
 
       const result = await updateAccount(account);
 
@@ -142,14 +206,14 @@ describe("account models", () => {
     });
 
     it("should throw an error if account is not found", async () => {
-      prisma.account.findFirst.mockResolvedValue(null);
+      vi.mocked(prisma.account.findFirst).mockResolvedValue(null);
       await expect(updateAccount(account)).rejects.toThrow("ACCOUNT_NOT_FOUND");
     });
   });
 
   describe("deleteAccount", () => {
     it("should delete an account", async () => {
-      prisma.account.deleteMany.mockResolvedValue({ count: 1 });
+      vi.mocked(prisma.account.deleteMany).mockResolvedValue({ count: 1 });
 
       const result = await deleteAccount({ id: account.id, userId: user.id });
 

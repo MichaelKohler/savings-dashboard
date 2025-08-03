@@ -1,6 +1,5 @@
 import { vi } from "vitest";
 
-import { prisma } from "~/db.server";
 import {
   getGroups,
   getGroup,
@@ -8,6 +7,7 @@ import {
   updateGroup,
   deleteGroup,
 } from "./groups.server";
+import { prisma } from "~/db.server";
 
 vi.mock("~/db.server");
 
@@ -24,35 +24,60 @@ describe("group models", () => {
     name: "Test Group",
     userId: user.id,
     accounts: [],
+    createdAt: new Date(),
+    updatedAt: new Date(),
   };
 
   describe("getGroups", () => {
     it("should return a list of groups for a user", async () => {
-      prisma.group.findMany.mockResolvedValue([group]);
+      vi.mocked(prisma.group.findMany).mockResolvedValue([group]);
 
       const result = await getGroups({ userId: user.id });
 
       expect(result).toEqual([group]);
       expect(prisma.group.findMany).toHaveBeenCalledWith({
         where: { userId: user.id },
-        include: {
-          accounts: true,
+        select: {
+          id: true,
+          name: true,
+          createdAt: true,
+          updatedAt: true,
+          userId: true,
+          accounts: {
+            select: {
+              id: true,
+              name: true,
+              archived: true,
+            },
+          },
         },
+        orderBy: { createdAt: "desc" },
       });
     });
   });
 
   describe("getGroup", () => {
     it("should return a single group by id", async () => {
-      prisma.group.findUnique.mockResolvedValue(group);
+      vi.mocked(prisma.group.findUnique).mockResolvedValue(group);
 
       const result = await getGroup({ id: group.id, userId: user.id });
 
       expect(result).toEqual(group);
       expect(prisma.group.findUnique).toHaveBeenCalledWith({
         where: { id: group.id, userId: user.id },
-        include: {
-          accounts: true,
+        select: {
+          id: true,
+          name: true,
+          createdAt: true,
+          updatedAt: true,
+          userId: true,
+          accounts: {
+            select: {
+              id: true,
+              name: true,
+              archived: true,
+            },
+          },
         },
       });
     });
@@ -60,7 +85,7 @@ describe("group models", () => {
 
   describe("createGroup", () => {
     it("should create a new group", async () => {
-      prisma.group.create.mockResolvedValue(group);
+      vi.mocked(prisma.group.create).mockResolvedValue(group);
 
       const result = await createGroup({ name: group.name, userId: user.id });
 
@@ -73,7 +98,7 @@ describe("group models", () => {
 
   describe("updateGroup", () => {
     it("should update a group", async () => {
-      prisma.group.update.mockResolvedValue(group);
+      vi.mocked(prisma.group.update).mockResolvedValue(group);
 
       const result = await updateGroup({
         id: group.id,
@@ -91,7 +116,7 @@ describe("group models", () => {
 
   describe("deleteGroup", () => {
     it("should delete a group", async () => {
-      prisma.group.delete.mockResolvedValue(group);
+      vi.mocked(prisma.group.delete).mockResolvedValue(group);
 
       const result = await deleteGroup({ id: group.id, userId: user.id });
 
