@@ -8,7 +8,7 @@ import {
   deleteBalance,
   getBalancesForCharts,
   getPredictedBalances,
-} from "./balances.server";
+} from "../../../app/models/balances.server";
 import { prisma } from "~/db.server";
 
 vi.mock("~/db.server");

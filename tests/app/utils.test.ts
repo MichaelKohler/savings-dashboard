@@ -1,4 +1,4 @@
-import { validateEmail, validatePassword, safeRedirect } from "./utils";
+import { validateEmail, validatePassword, safeRedirect } from "../../app/utils";
 
 describe("validateEmail", () => {
   test("returns false for non-emails", () => {

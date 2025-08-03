@@ -11,7 +11,7 @@ import {
   deleteUserByEmail,
   deleteUserByUserId,
   verifyLogin,
-} from "./user.server";
+} from "../../../app/models/user.server";
 import { prisma } from "~/db.server";
 
 vi.mock("~/db.server");

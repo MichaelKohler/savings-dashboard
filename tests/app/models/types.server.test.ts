@@ -6,7 +6,7 @@ import {
   createType,
   updateType,
   deleteType,
-} from "./types.server";
+} from "../../../app/models/types.server";
 import { prisma } from "~/db.server";
 
 vi.mock("~/db.server");
