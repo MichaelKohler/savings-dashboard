@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import type { LoaderFunctionArgs, MetaFunction } from "react-router";
 import { useLoaderData } from "react-router";
+import { useState } from "react";
 
 import { getAccounts } from "~/models/accounts.server";
 import { getBalancesForCharts } from "~/models/balances.server";
@@ -74,6 +75,48 @@ function formatTick(value: string) {
 
 export default function ChartsPage() {
   const data = useLoaderData<typeof loader>();
+  const [hiddenPredictions, setHiddenPredictions] = useState<string[]>([]);
+  const [hiddenAccounts, setHiddenAccounts] = useState<string[]>([]);
+
+  const handlePredictionsLegendClick = (e: any) => {
+    const { dataKey } = e;
+    setHiddenPredictions((prev) =>
+      prev.includes(dataKey)
+        ? prev.filter((k) => k !== dataKey)
+        : [...prev, dataKey]
+    );
+  };
+
+  const [hiddenTypes, setHiddenTypes] = useState<string[]>([]);
+
+  const handleTypesLegendClick = (e: any) => {
+    const { dataKey } = e;
+    setHiddenTypes((prev) =>
+      prev.includes(dataKey)
+        ? prev.filter((k) => k !== dataKey)
+        : [...prev, dataKey]
+    );
+  };
+
+  const [hiddenGroups, setHiddenGroups] = useState<string[]>([]);
+
+  const handleGroupsLegendClick = (e: any) => {
+    const { dataKey } = e;
+    setHiddenGroups((prev) =>
+      prev.includes(dataKey)
+        ? prev.filter((k) => k !== dataKey)
+        : [...prev, dataKey]
+    );
+  };
+
+  const handleAccountsLegendClick = (e: any) => {
+    const { dataKey } = e;
+    setHiddenAccounts((prev) =>
+      prev.includes(dataKey)
+        ? prev.filter((k) => k !== dataKey)
+        : [...prev, dataKey]
+    );
+  };
 
   return (
     <main className="h-auto w-full">
@@ -99,11 +142,36 @@ export default function ChartsPage() {
           <CartesianGrid strokeDasharray="1 1" />
           <XAxis dataKey="year" />
           <YAxis tickFormatter={formatTick} />
-          <Line name="1%" type="monotoneX" dataKey="1" stroke={COLORS[0]} />
-          <Line name="3%" type="monotoneX" dataKey="3" stroke={COLORS[1]} />
-          <Line name="5%" type="monotoneX" dataKey="5" stroke={COLORS[2]} />
-          <Line name="7%" type="monotoneX" dataKey="7" stroke={COLORS[3]} />
+          <Line
+            name="1%"
+            type="monotoneX"
+            dataKey="1"
+            stroke={COLORS[0]}
+            hide={hiddenPredictions.includes("1")}
+          />
+          <Line
+            name="3%"
+            type="monotoneX"
+            dataKey="3"
+            stroke={COLORS[1]}
+            hide={hiddenPredictions.includes("3")}
+          />
+          <Line
+            name="5%"
+            type="monotoneX"
+            dataKey="5"
+            stroke={COLORS[2]}
+            hide={hiddenPredictions.includes("5")}
+          />
+          <Line
+            name="7%"
+            type="monotoneX"
+            dataKey="7"
+            stroke={COLORS[3]}
+            hide={hiddenPredictions.includes("7")}
+          />
           <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
+          <Legend onClick={handlePredictionsLegendClick} />
         </LineChart>
       </ResponsiveContainer>
 
@@ -114,18 +182,20 @@ export default function ChartsPage() {
           <XAxis dataKey="date" />
           <YAxis tickFormatter={formatTick} />
           {data.accounts.map((account) => {
+            const dataKey = `byAccount.${account.id}`;
             return (
               <Line
                 key={account.id}
                 name={`${account.name}${account.group?.name ? ` (${account.group.name})` : ""}`}
                 type="monotoneX"
-                dataKey={`byAccount.${account.id}`}
+                dataKey={dataKey}
                 stroke={account.color}
+                hide={hiddenAccounts.includes(dataKey)}
               />
             );
           })}
           <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
-          <Legend />
+          <Legend onClick={handleAccountsLegendClick} />
         </LineChart>
       </ResponsiveContainer>
 
@@ -136,19 +206,21 @@ export default function ChartsPage() {
           <XAxis dataKey="date" />
           <YAxis tickFormatter={formatTick} />
           {data.accounts.map((account) => {
+            const dataKey = `byAccount.${account.id}`;
             return (
               <Bar
                 key={account.id}
                 name={`${account.name}${account.group?.name ? ` (${account.group.name})` : ""}`}
                 type="monotoneX"
-                dataKey={`byAccount.${account.id}`}
+                dataKey={dataKey}
                 stackId="STACK_ALL"
                 fill={account.color}
+                hide={hiddenAccounts.includes(dataKey)}
               />
             );
           })}
           <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
-          <Legend />
+          <Legend onClick={handleAccountsLegendClick} />
         </BarChart>
       </ResponsiveContainer>
 
@@ -159,19 +231,21 @@ export default function ChartsPage() {
           <XAxis dataKey="date" />
           <YAxis tickFormatter={formatTick} />
           {data.groups.map((group, index) => {
+            const dataKey = `byGroup.${group.id}`;
             return (
               <Bar
                 key={group.id}
                 name={group.name}
                 type="monotoneX"
-                dataKey={`byGroup.${group.id}`}
+                dataKey={dataKey}
                 stackId="STACK_ALL"
                 fill={COLORS[index % COLORS.length]}
+                hide={hiddenGroups.includes(dataKey)}
               />
             );
           })}
           <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
-          <Legend />
+          <Legend onClick={handleGroupsLegendClick} />
         </BarChart>
       </ResponsiveContainer>
 
@@ -182,19 +256,21 @@ export default function ChartsPage() {
           <XAxis dataKey="date" />
           <YAxis tickFormatter={formatTick} />
           {data.types.map((type, index) => {
+            const dataKey = `byType.${type.id}`;
             return (
               <Bar
                 key={type.id}
                 name={type.name}
                 type="monotoneX"
-                dataKey={`byType.${type.id}`}
+                dataKey={dataKey}
                 stackId="STACK_ALL"
                 fill={COLORS[index % COLORS.length]}
+                hide={hiddenTypes.includes(dataKey)}
               />
             );
           })}
           <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
-          <Legend />
+          <Legend onClick={handleTypesLegendClick} />
         </BarChart>
       </ResponsiveContainer>
     </main>
