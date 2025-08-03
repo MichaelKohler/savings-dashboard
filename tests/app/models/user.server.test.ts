@@ -6,8 +6,6 @@ import {
   getUserById,
   getUserByEmail,
   countUsers,
-  createUser,
-  changePassword,
   deleteUserByEmail,
   deleteUserByUserId,
   verifyLogin,
@@ -73,63 +71,6 @@ describe("user models", () => {
 
       expect(result).toEqual(1);
       expect(prisma.user.count).toHaveBeenCalled();
-    });
-  });
-
-  describe("createUser", () => {
-    it("should create a new user", async () => {
-      vi.mocked(bcrypt.hash).mockResolvedValue(password.hash);
-      vi.mocked(prisma.user.create).mockResolvedValue(user);
-
-      const result = await createUser(user.email, "password");
-
-      expect(result).toEqual(user);
-      expect(bcrypt.hash).toHaveBeenCalledWith("password", 10);
-      expect(prisma.user.create).toHaveBeenCalledWith({
-        data: {
-          email: user.email,
-          password: {
-            create: {
-              hash: password.hash,
-            },
-          },
-        },
-      });
-    });
-  });
-
-  describe("changePassword", () => {
-    it("should change a user's password", async () => {
-      vi.mocked(prisma.user.findUnique).mockResolvedValue(user);
-      vi.mocked(bcrypt.hash).mockResolvedValue(password.hash);
-      vi.mocked(prisma.password.update).mockResolvedValue(password);
-
-      const result = await changePassword(user.email, "newpassword");
-
-      expect(result).toEqual(password);
-      await expect(getUserByEmail(user.email)).resolves.toEqual(user);
-      expect(bcrypt.hash).toHaveBeenCalledWith("newpassword", 10);
-      expect(prisma.password.update).toHaveBeenCalledWith({
-        where: {
-          userId: user.id,
-        },
-        data: {
-          hash: password.hash,
-        },
-      });
-    });
-
-    it("should throw an error if no email is passed", async () => {
-      await expect(changePassword("", "newpassword")).rejects.toThrow(
-        "NO_EMAIL_PASSED"
-      );
-    });
-
-    it("should throw an error if user is not found", async () => {
-      vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
-      await expect(
-        changePassword("nouser@example.com", "newpassword")
-      ).rejects.toThrow("USER_NOT_FOUND");
     });
   });
 

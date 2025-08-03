@@ -1,5 +1,5 @@
 import type { Password, User } from "@prisma/client";
-import { compare, hash } from "@node-rs/bcrypt";
+import { compare } from "@node-rs/bcrypt";
 
 import { prisma } from "~/db.server";
 
@@ -15,45 +15,6 @@ export async function getUserByEmail(email: User["email"]) {
 
 export function countUsers() {
   return prisma.user.count();
-}
-
-export async function createUser(email: User["email"], password: string) {
-  const hashedPassword = await hash(password, 10);
-
-  return prisma.user.create({
-    data: {
-      email,
-      password: {
-        create: {
-          hash: hashedPassword,
-        },
-      },
-    },
-  });
-}
-
-export async function changePassword(email: User["email"], password: string) {
-  const userEmail = email;
-
-  if (!email) {
-    throw new Error("NO_EMAIL_PASSED");
-  }
-
-  const existingUser = await getUserByEmail(userEmail);
-  if (!existingUser) {
-    throw new Error("USER_NOT_FOUND");
-  }
-
-  const hashedPassword = await hash(password, 10);
-
-  return prisma.password.update({
-    where: {
-      userId: existingUser.id,
-    },
-    data: {
-      hash: hashedPassword,
-    },
-  });
 }
 
 export async function deleteUserByEmail(email: User["email"]) {
