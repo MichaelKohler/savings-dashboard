@@ -49,6 +49,8 @@ This is a savings dashboard application that allows users to track their savings
 - Components in `/app/components/`
 - Routes in `/app/routes/`
 - Prisma data models in `/app/models/`
+- All tests in `/tests/`
+- Utilities in `/app/utils/`
 
 ### Naming Conventions
 
