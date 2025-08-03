@@ -1,11 +1,14 @@
 import * as readline from "readline/promises";
 import { stdin as input, stdout as output } from "process";
-import { createUser } from "../app/models/user.server";
-import { prisma } from "../app/db.server";
+
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "@node-rs/bcrypt";
 
 const rl = readline.createInterface({ input, output });
 
 async function main() {
+  const prisma = new PrismaClient();
+
   const email = await rl.question("Enter the email for the new user: ");
   const password = await rl.question("Enter the password for the new user: ");
 
@@ -14,7 +17,18 @@ async function main() {
     return;
   }
 
-  await createUser(email, password);
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  await prisma.user.create({
+    data: {
+      email,
+      password: {
+        create: {
+          hash: hashedPassword,
+        },
+      },
+    },
+  });
 
   console.log(`User ${email} created successfully. 🌱`);
 }
@@ -25,6 +39,5 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect();
     rl.close();
   });
