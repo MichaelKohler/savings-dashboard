@@ -27,16 +27,22 @@ vi.mock("~/models/types.server", () => ({
 
 // Mock recharts components
 vi.mock("recharts", () => ({
-  BarChart: ({ children }: { children: React.ReactNode }) => <div data-testid="bar-chart">{children}</div>,
+  BarChart: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="bar-chart">{children}</div>
+  ),
   Bar: () => <div data-testid="bar" />,
   Legend: () => <div data-testid="legend" />,
-  LineChart: ({ children }: { children: React.ReactNode }) => <div data-testid="line-chart">{children}</div>,
+  LineChart: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="line-chart">{children}</div>
+  ),
   Line: () => <div data-testid="line" />,
   XAxis: () => <div data-testid="x-axis" />,
   YAxis: () => <div data-testid="y-axis" />,
   Tooltip: () => <div data-testid="tooltip" />,
   CartesianGrid: () => <div data-testid="cartesian-grid" />,
-  ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div data-testid="responsive-container">{children}</div>,
+  ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="responsive-container">{children}</div>
+  ),
 }));
 
 vi.mock("react-router", () => ({
@@ -45,7 +51,9 @@ vi.mock("react-router", () => ({
 
 const { requireUserId } = vi.mocked(await import("~/session.server"));
 const { getAccounts } = vi.mocked(await import("~/models/accounts.server"));
-const { getBalancesForCharts } = vi.mocked(await import("~/models/balances.server"));
+const { getBalancesForCharts } = vi.mocked(
+  await import("~/models/balances.server")
+);
 const { getGroups } = vi.mocked(await import("~/models/groups.server"));
 const { getTypes } = vi.mocked(await import("~/models/types.server"));
 const { useLoaderData } = vi.mocked(await import("react-router"));
@@ -147,7 +155,7 @@ describe("routes/charts", () => {
       expect(getBalancesForCharts).toHaveBeenCalledWith({ userId: "user-id" });
       expect(getGroups).toHaveBeenCalledWith({ userId: "user-id" });
       expect(getTypes).toHaveBeenCalledWith({ userId: "user-id" });
-      
+
       expect(result).toEqual({
         accounts: mockAccounts,
         balances: mockBalances,
