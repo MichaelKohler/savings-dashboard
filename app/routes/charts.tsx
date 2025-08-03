@@ -1,3 +1,4 @@
+import type { LegendPayload } from "recharts/types/component/DefaultLegendContent";
 import {
   BarChart,
   Bar,
@@ -73,17 +74,14 @@ function formatTick(value: string) {
   return inK >= 1 ? `${inK}k` : value;
 }
 
-interface LegendClickPayload {
-  dataKey: string;
-}
-
 export default function ChartsPage() {
   const data = useLoaderData<typeof loader>();
   const [hiddenPredictions, setHiddenPredictions] = useState<string[]>([]);
   const [hiddenAccounts, setHiddenAccounts] = useState<string[]>([]);
 
-  const handlePredictionsLegendClick = (e: LegendClickPayload) => {
+  const handlePredictionsLegendClick = (e: LegendPayload) => {
     const { dataKey } = e;
+    if (typeof dataKey !== "string") return;
     setHiddenPredictions((prev) =>
       prev.includes(dataKey)
         ? prev.filter((k) => k !== dataKey)
@@ -93,8 +91,9 @@ export default function ChartsPage() {
 
   const [hiddenTypes, setHiddenTypes] = useState<string[]>([]);
 
-  const handleTypesLegendClick = (e: LegendClickPayload) => {
+  const handleTypesLegendClick = (e: LegendPayload) => {
     const { dataKey } = e;
+    if (typeof dataKey !== "string") return;
     setHiddenTypes((prev) =>
       prev.includes(dataKey)
         ? prev.filter((k) => k !== dataKey)
@@ -104,8 +103,9 @@ export default function ChartsPage() {
 
   const [hiddenGroups, setHiddenGroups] = useState<string[]>([]);
 
-  const handleGroupsLegendClick = (e: LegendClickPayload) => {
+  const handleGroupsLegendClick = (e: LegendPayload) => {
     const { dataKey } = e;
+    if (typeof dataKey !== "string") return;
     setHiddenGroups((prev) =>
       prev.includes(dataKey)
         ? prev.filter((k) => k !== dataKey)
@@ -113,8 +113,9 @@ export default function ChartsPage() {
     );
   };
 
-  const handleAccountsLegendClick = (e: LegendClickPayload) => {
+  const handleAccountsLegendClick = (e: LegendPayload) => {
     const { dataKey } = e;
+    if (typeof dataKey !== "string") return;
     setHiddenAccounts((prev) =>
       prev.includes(dataKey)
         ? prev.filter((k) => k !== dataKey)
