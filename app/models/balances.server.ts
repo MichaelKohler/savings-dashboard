@@ -1,6 +1,5 @@
 import type { User, Account, Balance } from "@prisma/client";
 
-import { getAccounts } from "./accounts.server";
 import { prisma } from "~/db.server";
 
 export type { Balance } from "@prisma/client";
@@ -21,6 +20,15 @@ export function getBalance({
 }) {
   return prisma.balance.findFirst({
     where: { id, userId },
+    select: {
+      id: true,
+      balance: true,
+      date: true,
+      accountId: true,
+      userId: true,
+      createdAt: true,
+      updatedAt: true,
+    },
   });
 }
 
@@ -34,11 +42,42 @@ export async function getBalances({
   const balances = await prisma.balance.findMany({
     where: { userId },
     orderBy: { date: order },
-    include: {
+    select: {
+      id: true,
+      balance: true,
+      date: true,
+      createdAt: true,
+      updatedAt: true,
+      userId: true,
+      accountId: true,
       account: {
-        include: {
-          group: true,
-          type: true,
+        select: {
+          id: true,
+          name: true,
+          color: true,
+          showInGraphs: true,
+          archived: true,
+          userId: true,
+          groupId: true,
+          typeId: true,
+          group: {
+            select: {
+              id: true,
+              name: true,
+              createdAt: true,
+              updatedAt: true,
+              userId: true,
+            },
+          },
+          type: {
+            select: {
+              id: true,
+              name: true,
+              createdAt: true,
+              updatedAt: true,
+              userId: true,
+            },
+          },
         },
       },
     },
@@ -97,13 +136,41 @@ function reduceToTypeBalance(
 }
 
 export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
-  const accounts = await getAccounts({ userId });
+  // Single query to get all accounts with their related data
+  const accounts = await prisma.account.findMany({
+    where: { userId },
+    select: {
+      id: true,
+      showInGraphs: true,
+      group: {
+        select: {
+          id: true,
+        },
+      },
+      type: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+
   const accountIdsForTotals = new Set(
     accounts
       .filter((account) => account.showInGraphs)
       .map((account) => account.id)
   );
-  const allBalances = await getBalances({ userId, order: "asc" });
+
+  // Single optimized query to get all balances with minimal data
+  const allBalances = await prisma.balance.findMany({
+    where: { userId },
+    select: {
+      balance: true,
+      date: true,
+      accountId: true,
+    },
+    orderBy: { date: "asc" },
+  });
 
   if (!allBalances.length) {
     return { balances: [], predictions: [] };
@@ -121,9 +188,12 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
   const monthCursor = new Date(earliestDate);
   const lastKnownBalances: Record<string, number> = {};
 
+  // Create lookup maps for better performance
+  const accountsMap = new Map(accounts.map((acc) => [acc.id, acc]));
+
   while (monthCursor <= currentMonth) {
     const monthKey = getMonthKey(monthCursor);
-    const accountsMap: Record<
+    const accountsMapForMonth: Record<
       string,
       {
         balance: number;
@@ -140,14 +210,17 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
     }
 
     for (const accId in lastKnownBalances) {
-      accountsMap[accId] = {
-        type: accounts.find((acc) => acc.id === accId)?.type?.id || "",
-        group: accounts.find((acc) => acc.id === accId)?.group?.id || "",
-        balance: lastKnownBalances[accId],
-      };
+      const account = accountsMap.get(accId);
+      if (account) {
+        accountsMapForMonth[accId] = {
+          type: account.type?.id || "",
+          group: account.group?.id || "",
+          balance: lastKnownBalances[accId],
+        };
+      }
     }
 
-    const total = Object.entries(accountsMap)
+    const total = Object.entries(accountsMapForMonth)
       .filter(([accountId]) => accountIdsForTotals.has(accountId))
       .map(([, account]) => account.balance)
       .reduce((a, b) => a + b, 0);
@@ -155,9 +228,18 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
     result.push({
       date: monthKey,
       total,
-      byAccount: Object.entries(accountsMap).reduce(reduceToBalance, {}),
-      byGroup: Object.entries(accountsMap).reduce(reduceToGroupBalance, {}),
-      byType: Object.entries(accountsMap).reduce(reduceToTypeBalance, {}),
+      byAccount: Object.entries(accountsMapForMonth).reduce(
+        reduceToBalance,
+        {}
+      ),
+      byGroup: Object.entries(accountsMapForMonth).reduce(
+        reduceToGroupBalance,
+        {}
+      ),
+      byType: Object.entries(accountsMapForMonth).reduce(
+        reduceToTypeBalance,
+        {}
+      ),
     });
 
     monthCursor.setMonth(monthCursor.getMonth() + 1);

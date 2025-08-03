@@ -7,17 +7,40 @@ export type { Group } from "@prisma/client";
 export async function getGroups({ userId }: { userId: User["id"] }) {
   return prisma.group.findMany({
     where: { userId },
-    include: {
-      accounts: true,
+    select: {
+      id: true,
+      name: true,
+      createdAt: true,
+      updatedAt: true,
+      userId: true,
+      accounts: {
+        select: {
+          id: true,
+          name: true,
+          archived: true,
+        },
+      },
     },
+    orderBy: { createdAt: "desc" },
   });
 }
 
 export async function getGroup({ id, userId }: Pick<Group, "id" | "userId">) {
   return prisma.group.findUnique({
     where: { id, userId },
-    include: {
-      accounts: true,
+    select: {
+      id: true,
+      name: true,
+      createdAt: true,
+      updatedAt: true,
+      userId: true,
+      accounts: {
+        select: {
+          id: true,
+          name: true,
+          archived: true,
+        },
+      },
     },
   });
 }
