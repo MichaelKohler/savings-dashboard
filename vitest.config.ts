@@ -12,7 +12,11 @@ export default defineConfig({
     globals: true,
     environment: "happy-dom",
     include: ["tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
-    exclude: [...configDefaults.exclude, "e2e/", "app/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    exclude: [
+      ...configDefaults.exclude,
+      "e2e/",
+      "app/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+    ],
     setupFiles: ["./app/test-setup.ts"],
   },
 });

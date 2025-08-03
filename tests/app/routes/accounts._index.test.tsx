@@ -14,17 +14,43 @@ vi.mock("~/models/accounts.server", () => ({
 }));
 
 vi.mock("~/components/button", () => ({
-  default: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
-    <button {...props}>{children}</button>
-  ),
+  default: ({
+    children,
+    ...props
+  }: {
+    children: React.ReactNode;
+    [key: string]: unknown;
+  }) => <button {...props}>{children}</button>,
 }));
 
 vi.mock("react-router", () => ({
-  Link: ({ to, children, ...props }: { to: string; children: React.ReactNode; [key: string]: unknown }) => (
-    <a href={to} {...props}>{children}</a>
+  Link: ({
+    to,
+    children,
+    ...props
+  }: {
+    to: string;
+    children: React.ReactNode;
+    [key: string]: unknown;
+  }) => (
+    <a href={to} {...props}>
+      {children}
+    </a>
   ),
-  Form: ({ children, action, method, ...props }: { children: React.ReactNode; action?: string; method?: string; [key: string]: unknown }) => (
-    <form action={action} method={method} {...props}>{children}</form>
+  Form: ({
+    children,
+    action,
+    method,
+    ...props
+  }: {
+    children: React.ReactNode;
+    action?: string;
+    method?: string;
+    [key: string]: unknown;
+  }) => (
+    <form action={action} method={method} {...props}>
+      {children}
+    </form>
   ),
   useLoaderData: vi.fn(),
 }));
@@ -119,7 +145,9 @@ describe("routes/accounts._index", () => {
       render(<AccountsPage />);
 
       expect(screen.getByText("+ New Account")).toBeInTheDocument();
-      expect(screen.getByText("Checking Account (Bank Accounts)")).toBeInTheDocument();
+      expect(
+        screen.getByText("Checking Account (Bank Accounts)")
+      ).toBeInTheDocument();
       expect(screen.getByText("Checking")).toBeInTheDocument();
       expect(screen.getByText("Savings Account")).toBeInTheDocument();
     });
