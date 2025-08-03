@@ -6,7 +6,7 @@ import {
   createAccount,
   updateAccount,
   deleteAccount,
-} from "./accounts.server";
+} from "../../../app/models/accounts.server";
 import { prisma } from "~/db.server";
 
 vi.mock("~/db.server");

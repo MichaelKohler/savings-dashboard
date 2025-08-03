@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import type { LoaderFunctionArgs } from "react-router";
 
-import { loader } from "./_index";
+import { loader } from "../../../app/routes/_index";
 
 // Mock session.server
 vi.mock("~/session.server", () => ({

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { LoaderFunctionArgs } from "react-router";
 
-import { loader } from "./healthcheck";
+import { loader } from "../../../app/routes/healthcheck";
 
 // Mock dependencies
 vi.mock("~/db.server", () => ({

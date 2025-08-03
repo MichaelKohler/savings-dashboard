@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import type { LoaderFunctionArgs } from "react-router";
 
-import BalancesPage, { loader } from "./balances._index";
+import BalancesPage, { loader } from "../../../app/routes/balances._index";
 
 // Mock dependencies
 vi.mock("~/session.server", () => ({

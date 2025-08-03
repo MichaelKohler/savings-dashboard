@@ -6,7 +6,7 @@ import {
   createGroup,
   updateGroup,
   deleteGroup,
-} from "./groups.server";
+} from "../../../app/models/groups.server";
 import { prisma } from "~/db.server";
 
 vi.mock("~/db.server");

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { ActionFunctionArgs } from "react-router";
 
-import { action } from "./accounts.$accountId.delete";
+import { action } from "../../../app/routes/accounts.$accountId.delete";
 
 // Mock dependencies
 vi.mock("~/session.server", () => ({
