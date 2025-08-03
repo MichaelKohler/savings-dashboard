@@ -73,12 +73,16 @@ function formatTick(value: string) {
   return inK >= 1 ? `${inK}k` : value;
 }
 
+interface LegendClickPayload {
+  dataKey: string;
+}
+
 export default function ChartsPage() {
   const data = useLoaderData<typeof loader>();
   const [hiddenPredictions, setHiddenPredictions] = useState<string[]>([]);
   const [hiddenAccounts, setHiddenAccounts] = useState<string[]>([]);
 
-  const handlePredictionsLegendClick = (e: any) => {
+  const handlePredictionsLegendClick = (e: LegendClickPayload) => {
     const { dataKey } = e;
     setHiddenPredictions((prev) =>
       prev.includes(dataKey)
@@ -89,7 +93,7 @@ export default function ChartsPage() {
 
   const [hiddenTypes, setHiddenTypes] = useState<string[]>([]);
 
-  const handleTypesLegendClick = (e: any) => {
+  const handleTypesLegendClick = (e: LegendClickPayload) => {
     const { dataKey } = e;
     setHiddenTypes((prev) =>
       prev.includes(dataKey)
@@ -100,7 +104,7 @@ export default function ChartsPage() {
 
   const [hiddenGroups, setHiddenGroups] = useState<string[]>([]);
 
-  const handleGroupsLegendClick = (e: any) => {
+  const handleGroupsLegendClick = (e: LegendClickPayload) => {
     const { dataKey } = e;
     setHiddenGroups((prev) =>
       prev.includes(dataKey)
@@ -109,7 +113,7 @@ export default function ChartsPage() {
     );
   };
 
-  const handleAccountsLegendClick = (e: any) => {
+  const handleAccountsLegendClick = (e: LegendClickPayload) => {
     const { dataKey } = e;
     setHiddenAccounts((prev) =>
       prev.includes(dataKey)
