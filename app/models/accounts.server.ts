@@ -12,6 +12,18 @@ export function getAccount({
 }) {
   return prisma.account.findFirst({
     where: { id, userId },
+    select: {
+      id: true,
+      name: true,
+      color: true,
+      showInGraphs: true,
+      archived: true,
+      createdAt: true,
+      updatedAt: true,
+      userId: true,
+      groupId: true,
+      typeId: true,
+    },
   });
 }
 
@@ -28,9 +40,35 @@ export async function getAccounts({
       ...(typeof archived !== "undefined" ? { archived } : {}),
     },
     orderBy: { createdAt: "desc" },
-    include: {
-      group: true,
-      type: true,
+    select: {
+      id: true,
+      name: true,
+      color: true,
+      showInGraphs: true,
+      archived: true,
+      createdAt: true,
+      updatedAt: true,
+      userId: true,
+      groupId: true,
+      typeId: true,
+      group: {
+        select: {
+          id: true,
+          name: true,
+          createdAt: true,
+          updatedAt: true,
+          userId: true,
+        },
+      },
+      type: {
+        select: {
+          id: true,
+          name: true,
+          createdAt: true,
+          updatedAt: true,
+          userId: true,
+        },
+      },
     },
   });
 
