@@ -1,10 +1,10 @@
-type Props = {
+interface Props {
   isSubmit?: boolean;
   isDanger?: boolean;
   isDisabled?: boolean;
   children: React.ReactNode;
   onClick?: () => void;
-};
+}
 
 export default function Button({
   isSubmit = false,

@@ -5,11 +5,11 @@ import { Form, useActionData, useNavigation } from "react-router";
 import Button from "~/components/button";
 import type { Group } from "~/models/groups.server";
 
-type ActionDataResponse = {
+interface ActionDataResponse {
   errors: {
     name?: string;
   };
-};
+}
 
 export default function GroupForm({
   initialData,

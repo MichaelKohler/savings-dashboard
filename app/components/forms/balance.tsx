@@ -6,14 +6,14 @@ import type { Account } from "~/models/accounts.server";
 import type { Balance } from "~/models/balances.server";
 import type { Group } from "~/models/groups.server";
 
-type ActionDataResponse = {
+interface ActionDataResponse {
   errors: {
     date?: string;
     accountId?: string;
     balance?: string;
     generic?: string;
   };
-};
+}
 
 export default function BalanceForm({
   initialData,

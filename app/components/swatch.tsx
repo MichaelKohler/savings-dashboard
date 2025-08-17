@@ -1,6 +1,6 @@
-type Props = {
+interface Props {
   color: string;
-};
+}
 
 export default function Swatch({ color }: Props) {
   return (

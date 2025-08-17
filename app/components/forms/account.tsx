@@ -7,7 +7,7 @@ import type { Account } from "~/models/accounts.server";
 import type { Group } from "~/models/groups.server";
 import type { Type } from "~/models/types.server";
 
-type ActionDataResponse = {
+interface ActionDataResponse {
   errors: {
     name?: string;
     color?: string;
@@ -15,7 +15,7 @@ type ActionDataResponse = {
     groupId?: string;
     typeId?: string;
   };
-};
+}
 
 export default function AccountForm({
   initialData,

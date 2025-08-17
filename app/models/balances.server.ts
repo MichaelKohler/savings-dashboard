@@ -4,13 +4,13 @@ import { prisma } from "~/db.server";
 
 export type { Balance } from "@prisma/client";
 
-type ChartDataEntry = {
+interface ChartDataEntry {
   byAccount: Record<string, Balance["balance"] | string>;
   byGroup: Record<string, Balance["balance"] | string>;
   byType: Record<string, Balance["balance"] | string>;
   date: string;
   total: number;
-};
+}
 
 export function getBalance({
   id,
@@ -93,14 +93,14 @@ function getMonthKey(date: Date) {
   )}`;
 }
 
-type BalanceReducerTempType = {
+interface BalanceReducerTempType {
   balance: number;
   type: string;
   group: string;
-};
+}
 
 function reduceToBalance(
-  byAccount: { [key: string]: number },
+  byAccount: Record<string, number>,
   [accountId, account]: [string, BalanceReducerTempType]
 ) {
   byAccount[accountId] = account.balance;
@@ -108,7 +108,7 @@ function reduceToBalance(
 }
 
 function reduceToGroupBalance(
-  byGroup: { [key: string]: number },
+  byGroup: Record<string, number>,
   [_, account]: [string, BalanceReducerTempType]
 ) {
   const group = account.group;
@@ -122,7 +122,7 @@ function reduceToGroupBalance(
 }
 
 function reduceToTypeBalance(
-  byType: { [key: string]: number },
+  byType: Record<string, number>,
   [_, account]: [string, BalanceReducerTempType]
 ) {
   const type = account.type;
@@ -262,7 +262,7 @@ export function getPredictedBalances(currentTotal: number) {
   const percentages = predictionPercentages?.split(",").map(Number);
   const result = [];
 
-  const accumulatingTotals: { [key: number]: number } = {};
+  const accumulatingTotals: Record<number, number> = {};
   for (const percentage of percentages) {
     accumulatingTotals[percentage] = currentTotal;
   }
