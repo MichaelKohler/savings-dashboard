@@ -1,0 +1,23 @@
+services:
+  postgresDev:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: savings_dashboard_dev
+      POSTGRES_USER: savings_dashboard
+      POSTGRES_PASSWORD: savings_dashboard_password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/18/docker
+    networks:
+      - dev
+    command: >
+      postgres -c fsync=off -c synchronous_commit=off -c full_page_writes=off
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB -c shared_buffers=256MB
+
+networks:
+  dev:
+    name: savings-dashboard-dev
+    driver: bridge
