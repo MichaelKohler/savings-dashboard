@@ -1,4 +1,9 @@
-FROM node:24-alpine
+FROM --platform=${BUILDPLATFORM:-linux/amd64} node:24-alpine
+
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+ARG TARGETOS
+ARG TARGETARCH
 
 WORKDIR /usr/server/app
 
