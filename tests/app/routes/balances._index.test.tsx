@@ -127,7 +127,7 @@ describe("routes/balances._index", () => {
       getBalances.mockResolvedValue(mockBalances);
 
       const request = new Request("http://localhost/balances");
-      const result = await loader({ request } as LoaderFunctionArgs);
+      const result = await loader({ request, unstable_pattern: "" } as LoaderFunctionArgs);
 
       expect(requireUserId).toHaveBeenCalledWith(request);
       expect(getBalances).toHaveBeenCalledWith({ userId: "user-id" });
@@ -140,7 +140,7 @@ describe("routes/balances._index", () => {
 
       const request = new Request("http://localhost/balances");
 
-      await expect(loader({ request } as LoaderFunctionArgs)).rejects.toThrow(
+      await expect(loader({ request, unstable_pattern: "" } as LoaderFunctionArgs)).rejects.toThrow(
         "Unauthorized"
       );
     });

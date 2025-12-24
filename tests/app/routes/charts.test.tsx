@@ -148,7 +148,7 @@ describe("routes/charts", () => {
       getTypes.mockResolvedValue(mockTypes);
 
       const request = new Request("http://localhost/charts");
-      const result = await loader({ request } as LoaderFunctionArgs);
+      const result = await loader({ request, unstable_pattern: "" } as LoaderFunctionArgs);
 
       expect(requireUserId).toHaveBeenCalledWith(request);
       expect(getAccounts).toHaveBeenCalledWith({ userId: "user-id" });
@@ -171,7 +171,7 @@ describe("routes/charts", () => {
 
       const request = new Request("http://localhost/charts");
 
-      await expect(loader({ request } as LoaderFunctionArgs)).rejects.toThrow(
+      await expect(loader({ request, unstable_pattern: "" } as LoaderFunctionArgs)).rejects.toThrow(
         "Unauthorized"
       );
     });

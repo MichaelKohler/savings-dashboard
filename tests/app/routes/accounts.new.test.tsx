@@ -120,7 +120,7 @@ describe("routes/accounts.new", () => {
       getTypes.mockResolvedValue(mockTypes);
 
       const request = new Request("http://localhost/accounts/new");
-      const result = await loader({ request } as LoaderFunctionArgs);
+      const result = await loader({ request, unstable_pattern: "" } as LoaderFunctionArgs);
 
       expect(requireUserId).toHaveBeenCalledWith(request);
       expect(getGroups).toHaveBeenCalledWith({ userId: "user-id" });
@@ -134,7 +134,7 @@ describe("routes/accounts.new", () => {
 
       const request = new Request("http://localhost/accounts/new");
 
-      await expect(loader({ request } as LoaderFunctionArgs)).rejects.toThrow(
+      await expect(loader({ request, unstable_pattern: "" } as LoaderFunctionArgs)).rejects.toThrow(
         "Unauthorized"
       );
     });
@@ -158,7 +158,7 @@ describe("routes/accounts.new", () => {
       });
 
       try {
-        await action({ request } as ActionFunctionArgs);
+        await action({ request, unstable_pattern: "" } as ActionFunctionArgs);
       } catch (response) {
         const res = response as Response;
         expect(res.status).toBe(302);
@@ -188,7 +188,7 @@ describe("routes/accounts.new", () => {
         body: formData,
       });
 
-      expect(() => action({ request } as ActionFunctionArgs)).rejects.toThrow();
+      expect(() => action({ request, unstable_pattern: "" } as ActionFunctionArgs)).rejects.toThrow();
     });
 
     it("should throw error for missing color", async () => {
@@ -202,7 +202,7 @@ describe("routes/accounts.new", () => {
         body: formData,
       });
 
-      expect(() => action({ request } as ActionFunctionArgs)).rejects.toThrow();
+      expect(() => action({ request, unstable_pattern: "" } as ActionFunctionArgs)).rejects.toThrow();
     });
   });
 

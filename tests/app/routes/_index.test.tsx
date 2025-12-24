@@ -18,7 +18,7 @@ describe("routes/_index", () => {
       const request = new Request("http://localhost/");
 
       try {
-        await loader({ request } as LoaderFunctionArgs);
+        await loader({ request, unstable_pattern: "" } as LoaderFunctionArgs);
       } catch (response) {
         const res = response as Response;
         expect(res.status).toBe(302);
@@ -32,7 +32,7 @@ describe("routes/_index", () => {
 
       const request = new Request("http://localhost/");
 
-      await expect(loader({ request } as LoaderFunctionArgs)).rejects.toThrow(
+      await expect(loader({ request, unstable_pattern: "" } as LoaderFunctionArgs)).rejects.toThrow(
         "Unauthorized"
       );
     });

@@ -119,7 +119,7 @@ describe("routes/accounts._index", () => {
       getAccounts.mockResolvedValue(mockAccounts);
 
       const request = new Request("http://localhost/accounts");
-      const result = await loader({ request } as LoaderFunctionArgs);
+      const result = await loader({ request, unstable_pattern: "" } as LoaderFunctionArgs);
 
       expect(requireUserId).toHaveBeenCalledWith(request);
       expect(getAccounts).toHaveBeenCalledWith({ userId: "user-id" });
@@ -132,7 +132,7 @@ describe("routes/accounts._index", () => {
 
       const request = new Request("http://localhost/accounts");
 
-      await expect(loader({ request } as LoaderFunctionArgs)).rejects.toThrow(
+      await expect(loader({ request, unstable_pattern: "" } as LoaderFunctionArgs)).rejects.toThrow(
         "Unauthorized"
       );
     });

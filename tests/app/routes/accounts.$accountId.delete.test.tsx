@@ -37,6 +37,7 @@ describe("routes/accounts.$accountId.delete", () => {
           request,
           params: { accountId: "account-1" },
           context: {},
+          unstable_pattern: "",
         } as ActionFunctionArgs);
       } catch (response) {
         const res = response as Response;
@@ -67,6 +68,7 @@ describe("routes/accounts.$accountId.delete", () => {
           request,
           params: { accountId: "account-1" },
           context: {},
+          unstable_pattern: "",
         } as ActionFunctionArgs)
       ).rejects.toThrow("Unauthorized");
 
@@ -85,6 +87,7 @@ describe("routes/accounts.$accountId.delete", () => {
           request,
           params: {},
           context: {},
+          unstable_pattern: "",
         } as ActionFunctionArgs)
       ).rejects.toThrow("accountId not found");
 
@@ -103,6 +106,7 @@ describe("routes/accounts.$accountId.delete", () => {
           request,
           params: { accountId: undefined },
           context: {},
+          unstable_pattern: "",
         } as ActionFunctionArgs)
       ).rejects.toThrow("accountId not found");
 
@@ -121,6 +125,7 @@ describe("routes/accounts.$accountId.delete", () => {
           request,
           params: { accountId: "" },
           context: {},
+          unstable_pattern: "",
         } as ActionFunctionArgs)
       ).rejects.toThrow("accountId not found");
 

@@ -36,7 +36,7 @@ describe("routes/healthcheck", () => {
         },
       });
 
-      const response = await loader({ request } as LoaderFunctionArgs);
+      const response = await loader({ request, unstable_pattern: "" } as LoaderFunctionArgs);
 
       expect(response).toBeInstanceOf(Response);
       expect(response.status).toBe(200);
@@ -57,7 +57,7 @@ describe("routes/healthcheck", () => {
         },
       });
 
-      await loader({ request } as LoaderFunctionArgs);
+      await loader({ request, unstable_pattern: "" } as LoaderFunctionArgs);
 
       expect(mockFetch).toHaveBeenCalledWith("http://example.com", {
         method: "HEAD",
@@ -78,7 +78,7 @@ describe("routes/healthcheck", () => {
         },
       });
 
-      const response = await loader({ request } as LoaderFunctionArgs);
+      const response = await loader({ request, unstable_pattern: "" } as LoaderFunctionArgs);
 
       expect(response).toBeInstanceOf(Response);
       expect(response.status).toBe(500);
@@ -97,7 +97,7 @@ describe("routes/healthcheck", () => {
         },
       });
 
-      const response = await loader({ request } as LoaderFunctionArgs);
+      const response = await loader({ request, unstable_pattern: "" } as LoaderFunctionArgs);
 
       expect(response).toBeInstanceOf(Response);
       expect(response.status).toBe(500);
@@ -114,7 +114,7 @@ describe("routes/healthcheck", () => {
         },
       });
 
-      const response = await loader({ request } as LoaderFunctionArgs);
+      const response = await loader({ request, unstable_pattern: "" } as LoaderFunctionArgs);
 
       expect(response).toBeInstanceOf(Response);
       expect(response.status).toBe(500);

@@ -82,7 +82,7 @@ describe("routes/login", () => {
       const request = new Request("http://localhost/login");
 
       try {
-        await loader({ request } as LoaderFunctionArgs);
+        await loader({ request, unstable_pattern: "" } as LoaderFunctionArgs);
       } catch (response) {
         const res = response as Response;
         expect(res).toBe(302);
@@ -94,7 +94,7 @@ describe("routes/login", () => {
       getUserId.mockResolvedValue(undefined);
 
       const request = new Request("http://localhost/login");
-      const result = await loader({ request } as LoaderFunctionArgs);
+      const result = await loader({ request, unstable_pattern: "" } as LoaderFunctionArgs);
 
       expect(result).toEqual({});
     });
@@ -117,7 +117,7 @@ describe("routes/login", () => {
         body: formData,
       });
 
-      const result = await action({ request } as ActionFunctionArgs);
+      const result = await action({ request, unstable_pattern: "" } as ActionFunctionArgs);
 
       expect(validateEmail).toHaveBeenCalledWith("test@example.com");
       expect(verifyLogin).toHaveBeenCalledWith(
@@ -145,7 +145,7 @@ describe("routes/login", () => {
         body: formData,
       });
 
-      expect(() => action({ request } as ActionFunctionArgs)).rejects.toThrow();
+      expect(() => action({ request, unstable_pattern: "" } as ActionFunctionArgs)).rejects.toThrow();
     });
 
     it("should throw error for missing password", async () => {
@@ -160,7 +160,7 @@ describe("routes/login", () => {
         body: formData,
       });
 
-      expect(() => action({ request } as ActionFunctionArgs)).rejects.toThrow();
+      expect(() => action({ request, unstable_pattern: "" } as ActionFunctionArgs)).rejects.toThrow();
     });
 
     it("should throw error for invalid credentials", async () => {
@@ -176,7 +176,7 @@ describe("routes/login", () => {
         body: formData,
       });
 
-      expect(() => action({ request } as ActionFunctionArgs)).rejects.toThrow();
+      expect(() => action({ request, unstable_pattern: "" } as ActionFunctionArgs)).rejects.toThrow();
     });
 
     it("should handle remember checkbox correctly when not checked", async () => {
@@ -194,7 +194,7 @@ describe("routes/login", () => {
         body: formData,
       });
 
-      await action({ request } as ActionFunctionArgs);
+      await action({ request, unstable_pattern: "" } as ActionFunctionArgs);
 
       expect(createUserSession).toHaveBeenCalledWith(
         expect.objectContaining({
