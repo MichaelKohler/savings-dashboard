@@ -1,0 +1,45 @@
+---
+import Header from '~/components/header';
+import Main from '~/components/main';
+import '~/styles/tailwind.css';
+
+interface Props {
+  title?: string;
+}
+
+const { title = 'savings.michaelkohler.info' } = Astro.props;
+const user = Astro.locals.user;
+
+const headers: Record<string, string> = {
+  'Permissions-Policy': 'accelerometer=(), ambient-light-sensor=(), battery=(), camera=(), microphone=(), geolocation=(), gyroscope=()',
+  'Referrer-Policy': 'no-referrer',
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+};
+
+if (import.meta.env.PROD) {
+  headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains; preload';
+}
+
+Object.entries(headers).forEach(([key, value]) => {
+  Astro.response.headers.set(key, value);
+});
+---
+
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@700&family=Raleway&display=swap" rel="stylesheet" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title}</title>
+  </head>
+  <body class="h-full">
+    <Header client:load />
+    <Main user={user} client:load>
+      <slot />
+    </Main>
+  </body>
+</html>

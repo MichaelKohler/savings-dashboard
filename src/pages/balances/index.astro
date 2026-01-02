@@ -1,0 +1,20 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import BalancesList from '~/components/BalancesList';
+import { requireUserId } from '~/lib/session.server';
+import { getBalances } from '~/models/balances.server';
+
+try {
+  var userId = await requireUserId(Astro.cookies, Astro.url.pathname);
+  var balances = await getBalances({ userId });
+} catch (error: any) {
+  if (error.message.startsWith('REDIRECT:')) {
+    return Astro.redirect(error.message.replace('REDIRECT:', ''));
+  }
+  throw error;
+}
+---
+
+<Layout title="Balances">
+  <BalancesList balances={balances} client:load />
+</Layout>

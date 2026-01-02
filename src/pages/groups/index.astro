@@ -1,0 +1,20 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import GroupsList from '~/components/GroupsList';
+import { requireUserId } from '~/lib/session.server';
+import { getGroups } from '~/models/groups.server';
+
+try {
+  var userId = await requireUserId(Astro.cookies, Astro.url.pathname);
+  var groups = await getGroups({ userId });
+} catch (error: any) {
+  if (error.message.startsWith('REDIRECT:')) {
+    return Astro.redirect(error.message.replace('REDIRECT:', ''));
+  }
+  throw error;
+}
+---
+
+<Layout title="Groups">
+  <GroupsList groups={groups} client:load />
+</Layout>
