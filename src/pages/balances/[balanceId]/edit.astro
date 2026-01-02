@@ -1,0 +1,22 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import BalanceForm from '~/components/BalanceForm';
+import { requireUserId } from '~/lib/session.server';
+import { getBalance } from '~/models/balances.server';
+import { getAccounts } from '~/models/accounts.server';
+
+const userId = await requireUserId(Astro.cookies);
+const { balanceId } = Astro.params;
+
+if (!balanceId) {
+  return Astro.redirect('/balances');
+}
+
+const balance = await getBalance({ id: balanceId, userId });
+const accounts = await getAccounts({ userId, archived: false });
+---
+
+<Layout title="Edit Balance">
+  <h1 class="pb-4 text-3xl">Edit balance</h1>
+  <BalanceForm balance={balance} accounts={accounts} client:load />
+</Layout>

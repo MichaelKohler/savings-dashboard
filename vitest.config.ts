@@ -8,15 +8,16 @@ import { configDefaults } from "vitest/config";
 
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
+  resolve: {
+    alias: {
+      "astro:actions": "/src/__mocks__/astro-actions.ts",
+    },
+  },
   test: {
     globals: true,
     environment: "happy-dom",
-    include: ["tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
-    exclude: [
-      ...configDefaults.exclude,
-      "e2e/",
-      "app/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
-    ],
-    setupFiles: ["./app/test-setup.ts"],
+    include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    exclude: [...configDefaults.exclude, "e2e/"],
+    setupFiles: ["./src/test-setup.ts"],
   },
 });

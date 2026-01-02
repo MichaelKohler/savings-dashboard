@@ -1,0 +1,11 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import TypeForm from '~/components/TypeForm';
+import { requireUserId } from '~/lib/session.server';
+
+---
+
+<Layout title="New Type">
+  <h1 class="pb-4 text-3xl">Add new type</h1>
+  <TypeForm client:load />
+</Layout>

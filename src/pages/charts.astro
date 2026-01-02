@@ -1,0 +1,27 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import ChartsComponent from '~/components/Charts';
+import { requireUserId } from '~/lib/session.server';
+import { getAccounts } from '~/models/accounts.server';
+import { getBalancesForCharts } from '~/models/balances.server';
+import { getGroups } from '~/models/groups.server';
+import { getTypes } from '~/models/types.server';
+
+var userId = await requireUserId(Astro.cookies);
+var accounts = await getAccounts({ userId });
+var { balances, predictions } = await getBalancesForCharts({ userId });
+var groups = await getGroups({ userId });
+var types = await getTypes({ userId });
+
+---
+
+<Layout title="Charts">
+  <ChartsComponent
+    accounts={accounts}
+    balances={balances}
+    groups={groups}
+    types={types}
+    predictions={predictions}
+    client:load
+  />
+</Layout>

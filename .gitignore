@@ -3,6 +3,7 @@ node_modules
 coverage
 
 /build
+/dist
 /public/build
 .env
 tsconfig.tsbuildinfo
@@ -10,9 +11,9 @@ tsconfig.tsbuildinfo
 /prisma/data.db
 /prisma/data.db-journal
 
-.react-router
-
 playwright-report
 test-results
 
 data
+
+.astro

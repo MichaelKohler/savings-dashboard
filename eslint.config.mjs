@@ -41,6 +41,12 @@ export default [
     rules: {
       "no-unused-vars": "off",
       "react/react-in-jsx-scope": "off",
+      "import/no-unresolved": [
+        "error",
+        {
+          ignore: ["^astro:"],
+        },
+      ],
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
@@ -59,6 +65,8 @@ export default [
     ignores: [
       "**/playwright-report",
       "**/build",
+      "**/dist",
+      ".astro",
       "public/build",
       "node_modules",
       "playwright-report",

@@ -11,6 +11,8 @@ coverage
 
 /build
 /public/build
+/dist
+/.astro
 .env
 tsconfig.tsbuildinfo
 

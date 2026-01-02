@@ -1,0 +1,16 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import AccountForm from '~/components/AccountForm';
+import { requireUserId } from '~/lib/session.server';
+import { getGroups } from '~/models/groups.server';
+import { getTypes } from '~/models/types.server';
+
+const userId = await requireUserId(Astro.cookies);
+const groups = await getGroups({ userId });
+const types = await getTypes({ userId });
+---
+
+<Layout title="New Account">
+  <h1 class="pb-4 text-3xl">Add new account</h1>
+  <AccountForm groups={groups} types={types} client:load />
+</Layout>

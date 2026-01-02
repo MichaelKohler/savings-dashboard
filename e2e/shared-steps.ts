@@ -1,4 +1,4 @@
-import { Page, expect } from "@playwright/test";
+import { type Page, expect } from "@playwright/test";
 
 /**
  * Performs login with default test credentials
@@ -15,10 +15,10 @@ export async function login(
   await page.getByLabel("Email address").press("Tab");
 
   await page.getByLabel("Password").fill(password);
-  await page.getByLabel("Password").press("Enter");
+  await page.getByRole("button", { name: "Log in" }).click();
 
-  // Verify login was successful by checking for New Account button
-  await expect(page.getByText("New Account")).toBeVisible();
+  // Verify login was successful by checking for Logout button (visible on all authenticated pages)
+  await expect(page.getByRole("button", { name: /Logout/i })).toBeVisible();
 }
 
 /**
@@ -57,7 +57,9 @@ export async function createGroup(page: Page, groupName: string) {
   await page.getByRole("button", { name: "Save" }).click();
 
   // Verify the group was created by checking it appears in the list
-  await expect(page.getByText(groupName)).toBeVisible();
+  await expect(
+    page.getByRole("cell", { name: groupName }).first()
+  ).toBeVisible();
 }
 
 /**
@@ -79,7 +81,9 @@ export async function createType(page: Page, typeName: string) {
   await page.getByRole("button", { name: "Save" }).click();
 
   // Verify the type was created by checking it appears in the list
-  await expect(page.getByText(typeName)).toBeVisible();
+  await expect(
+    page.getByRole("cell", { name: typeName }).first()
+  ).toBeVisible();
 }
 
 /**
@@ -104,13 +108,11 @@ export async function createBalance(
   // Fill in the balance details
   await page.getByLabel("Date:").fill(date);
   await page.getByLabel("Account:").selectOption({ label: accountName });
-  await page
-    .getByLabel("Balance (rounded to the nearest number):")
-    .fill(balanceAmount);
+  await page.getByLabel("Balance:").fill(balanceAmount);
 
   // Save the balance
   await page.getByRole("button", { name: "Save" }).click();
 
   // Verify the balance was created by checking it appears in the list
-  await expect(page.getByText(balanceAmount)).toBeVisible();
+  await expect(page.getByText(balanceAmount).first()).toBeVisible();
 }
