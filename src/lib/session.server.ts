@@ -18,7 +18,8 @@ interface CookieStore {
 }
 
 export async function getSession(
-  cookies: AstroCookies
+  cookies: AstroCookies,
+  maxAge?: number
 ): Promise<IronSession<SessionData>> {
   // Convert AstroCookies to a format iron-session can work with
   const cookieStore: CookieStore = {
@@ -27,7 +28,12 @@ export async function getSession(
       return cookie ? { name, value: cookie.value } : undefined;
     },
     set: (name: string, value: string, options?: Record<string, unknown>) => {
-      cookies.set(name, value, options || {});
+      // Merge options with maxAge if provided
+      const cookieOptions: Record<string, unknown> = { ...(options || {}) };
+      if (maxAge !== undefined) {
+        cookieOptions.maxAge = maxAge;
+      }
+      cookies.set(name, value, cookieOptions);
     },
     delete: (name: string) => {
       cookies.delete(name, { path: "/" });
@@ -99,20 +105,10 @@ export async function createUserSession({
   remember: boolean;
   redirectTo: string;
 }) {
-  const session = await getSession(cookies);
+  const maxAge = remember ? 60 * 60 * 24 * 7 : undefined;
+  const session = await getSession(cookies, maxAge);
   session.userId = userId;
   await session.save();
-
-  // Set max age if remember is true
-  if (remember) {
-    cookies.set("__session", cookies.get("__session")?.value || "", {
-      httpOnly: true,
-      path: "/",
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-    });
-  }
 
   return redirectTo;
 }

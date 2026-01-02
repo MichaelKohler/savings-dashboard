@@ -1,7 +1,12 @@
 import { defineMiddleware } from "astro:middleware";
 import { getUser } from "~/lib/session.server";
 
-const PUBLIC_ROUTES = ["/login", "/api/healthcheck"];
+const PUBLIC_ROUTES = [
+  "/login",
+  "/api/login",
+  "/api/logout",
+  "/api/healthcheck",
+];
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const { url, cookies, redirect } = context;
