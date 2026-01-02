@@ -160,7 +160,7 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
     },
   });
 
-  type AccountForChart = typeof accounts[number];
+  type AccountForChart = (typeof accounts)[number];
 
   const accountIdsForTotals = new Set(
     accounts
@@ -196,7 +196,9 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
   const lastKnownBalances: Record<string, number> = {};
 
   // Create lookup maps for better performance
-  const accountsMap = new Map(accounts.map((acc: AccountForChart) => [acc.id, acc]));
+  const accountsMap = new Map(
+    accounts.map((acc: AccountForChart) => [acc.id, acc])
+  );
 
   while (monthCursor <= currentMonth) {
     const monthKey = getMonthKey(monthCursor);
@@ -257,6 +259,10 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
     10
   );
   result.splice(0, removeEntriesAmount);
+
+  if (!result.length) {
+    return { balances: [], predictions: [] };
+  }
 
   const lastTotal = result[result.length - 1].total;
   const predictions = getPredictedBalances(lastTotal);

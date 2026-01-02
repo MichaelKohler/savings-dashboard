@@ -11,32 +11,39 @@ interface SessionData {
   userId?: string;
 }
 
-interface CookieStore {
-  get: (name: string) => { name: string; value: string } | undefined;
-  set: (name: string, value: string, options?: Record<string, unknown>) => void;
-  delete: (name: string) => void;
-}
-
 export async function getSession(
   cookies: AstroCookies,
   maxAge?: number
 ): Promise<IronSession<SessionData>> {
   // Convert AstroCookies to a format iron-session can work with
-  const cookieStore: CookieStore = {
+  const cookieStore = {
     get: (name: string) => {
       const cookie = cookies.get(name);
       return cookie ? { name, value: cookie.value } : undefined;
     },
-    set: (name: string, value: string, options?: Record<string, unknown>) => {
-      // Merge options with maxAge if provided
-      const cookieOptions: Record<string, unknown> = { ...(options || {}) };
-      if (maxAge !== undefined) {
-        cookieOptions.maxAge = maxAge;
+    set: (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      nameOrOptions: string | { name: string; value: string; [key: string]: any },
+      value?: string,
+      options?: Record<string, unknown>
+    ) => {
+      // Handle overloaded signature
+      if (typeof nameOrOptions === "object") {
+        // Called with ResponseCookie object
+        const { name, value, ...cookieOptions } = nameOrOptions;
+        const mergedOptions = { ...cookieOptions };
+        if (maxAge !== undefined) {
+          mergedOptions.maxAge = maxAge;
+        }
+        cookies.set(name, value, mergedOptions);
+      } else {
+        // Called with name, value, options
+        const cookieOptions: Record<string, unknown> = { ...(options || {}) };
+        if (maxAge !== undefined) {
+          cookieOptions.maxAge = maxAge;
+        }
+        cookies.set(nameOrOptions, value!, cookieOptions);
       }
-      cookies.set(name, value, cookieOptions);
-    },
-    delete: (name: string) => {
-      cookies.delete(name, { path: "/" });
     },
   };
 

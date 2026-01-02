@@ -42,10 +42,8 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
         return;
       }
 
-      console.log("Redirecting to:", data.redirect, redirectTo);
       window.location.href = data.redirect || redirectTo;
     } catch (_error) {
-      console.log("Login error:", _error);
       setErrors({ email: "An error occurred. Please try again." });
       setIsSubmitting(false);
     }

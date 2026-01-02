@@ -4,7 +4,7 @@ import { getUserId } from '~/lib/session.server';
 const userId = await getUserId(Astro.cookies);
 
 if (userId) {
-  return Astro.redirect('/charts');
+  return Astro.redirect('/accounts');
 }
 
 return Astro.redirect('/login');
