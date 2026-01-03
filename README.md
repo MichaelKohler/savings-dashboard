@@ -4,6 +4,10 @@ Simple savings dashboard. This is loosely based on the [Remix Indie Stack](https
 
 ![Screenshot - Balances](./screenshot-balances.png)
 
+## Requirements
+
+- **Node.js 24.0.0 or higher** (comes with npm 11)
+
 ## Development
 
 - Copy the environment file and adjust it:

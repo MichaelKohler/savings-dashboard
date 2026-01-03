@@ -87,7 +87,7 @@
     "wait-on": "^9.0.3"
   },
   "engines": {
-    "node": ">=22.6.0"
+    "node": ">=24.0.0"
   },
   "prisma": {
     "seed": "node --experimental-strip-types prisma/seed.ts"

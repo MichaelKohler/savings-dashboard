@@ -21,7 +21,7 @@ jobs:
       - name: ⎔ Setup node
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
 
       - name: 📥 Download deps
         run: npm ci
@@ -39,7 +39,7 @@ jobs:
       - name: ⎔ Setup node
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
 
       - name: 📥 Download deps
         run: npm ci
@@ -57,7 +57,7 @@ jobs:
       - name: ⎔ Setup node
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
 
       - name: 📥 Download deps
         run: npm ci
@@ -68,7 +68,7 @@ jobs:
   playwright:
     name: ⚫️ Playwright
     runs-on: ubuntu-latest
-    container: node:22
+    container: node:24
 
     services:
       postgres:
