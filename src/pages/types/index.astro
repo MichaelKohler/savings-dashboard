@@ -1,0 +1,20 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import TypesList from '~/components/TypesList';
+import { requireUserId } from '~/lib/session.server';
+import { getTypes } from '~/models/types.server';
+
+try {
+  var userId = await requireUserId(Astro.cookies, Astro.url.pathname);
+  var types = await getTypes({ userId });
+} catch (error: any) {
+  if (error.message.startsWith('REDIRECT:')) {
+    return Astro.redirect(error.message.replace('REDIRECT:', ''));
+  }
+  throw error;
+}
+---
+
+<Layout title="Types">
+  <TypesList types={types} client:load />
+</Layout>

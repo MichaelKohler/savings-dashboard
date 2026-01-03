@@ -1,0 +1,27 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import TypeForm from '~/components/TypeForm';
+import { requireUserId } from '~/lib/session.server';
+import { getType } from '~/models/types.server';
+
+try {
+  var userId = await requireUserId(Astro.cookies, Astro.url.pathname);
+  const { typeId } = Astro.params;
+
+  if (!typeId) {
+    return Astro.redirect('/types');
+  }
+
+  var type = await getType({ id: typeId, userId });
+} catch (error: any) {
+  if (error.message.startsWith('REDIRECT:')) {
+    return Astro.redirect(error.message.replace('REDIRECT:', ''));
+  }
+  throw error;
+}
+---
+
+<Layout title="Edit Type">
+  <h1 class="pb-4 text-3xl">Edit type</h1>
+  <TypeForm type={type} client:load />
+</Layout>

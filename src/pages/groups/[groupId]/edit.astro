@@ -1,0 +1,27 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import GroupForm from '~/components/GroupForm';
+import { requireUserId } from '~/lib/session.server';
+import { getGroup } from '~/models/groups.server';
+
+try {
+  var userId = await requireUserId(Astro.cookies, Astro.url.pathname);
+  const { groupId } = Astro.params;
+
+  if (!groupId) {
+    return Astro.redirect('/groups');
+  }
+
+  var group = await getGroup({ id: groupId, userId });
+} catch (error: any) {
+  if (error.message.startsWith('REDIRECT:')) {
+    return Astro.redirect(error.message.replace('REDIRECT:', ''));
+  }
+  throw error;
+}
+---
+
+<Layout title="Edit Group">
+  <h1 class="pb-4 text-3xl">Edit group</h1>
+  <GroupForm group={group} client:load />
+</Layout>

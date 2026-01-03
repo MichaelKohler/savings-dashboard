@@ -1,0 +1,31 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import AccountForm from '~/components/AccountForm';
+import { requireUserId } from '~/lib/session.server';
+import { getAccount } from '~/models/accounts.server';
+import { getGroups } from '~/models/groups.server';
+import { getTypes } from '~/models/types.server';
+
+try {
+  var userId = await requireUserId(Astro.cookies, Astro.url.pathname);
+  const { accountId } = Astro.params;
+
+  if (!accountId) {
+    return Astro.redirect('/accounts');
+  }
+
+  var account = await getAccount({ id: accountId, userId });
+  var groups = await getGroups({ userId });
+  var types = await getTypes({ userId });
+} catch (error: any) {
+  if (error.message.startsWith('REDIRECT:')) {
+    return Astro.redirect(error.message.replace('REDIRECT:', ''));
+  }
+  throw error;
+}
+---
+
+<Layout title="Edit Account">
+  <h1 class="pb-4 text-3xl">Edit account</h1>
+  <AccountForm account={account} groups={groups} types={types} client:load />
+</Layout>

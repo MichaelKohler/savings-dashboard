@@ -1,0 +1,20 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import AccountsList from '~/components/AccountsList';
+import { requireUserId } from '~/lib/session.server';
+import { getAccounts } from '~/models/accounts.server';
+
+try {
+  var userId = await requireUserId(Astro.cookies, Astro.url.pathname);
+  var accounts = await getAccounts({ userId });
+} catch (error: any) {
+  if (error.message.startsWith('REDIRECT:')) {
+    return Astro.redirect(error.message.replace('REDIRECT:', ''));
+  }
+  throw error;
+}
+---
+
+<Layout title="Accounts">
+  <AccountsList accounts={accounts} client:load />
+</Layout>

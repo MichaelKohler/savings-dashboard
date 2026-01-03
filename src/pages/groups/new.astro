@@ -1,0 +1,19 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import GroupForm from '~/components/GroupForm';
+import { requireUserId } from '~/lib/session.server';
+
+try {
+  var userId = await requireUserId(Astro.cookies, Astro.url.pathname);
+} catch (error: any) {
+  if (error.message.startsWith('REDIRECT:')) {
+    return Astro.redirect(error.message.replace('REDIRECT:', ''));
+  }
+  throw error;
+}
+---
+
+<Layout title="New Group">
+  <h1 class="pb-4 text-3xl">Add new group</h1>
+  <GroupForm client:load />
+</Layout>

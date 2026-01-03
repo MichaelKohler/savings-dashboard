@@ -1,0 +1,16 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import LoginForm from '~/components/LoginForm';
+import { getUserId } from '~/lib/session.server';
+
+const userId = await getUserId(Astro.cookies);
+if (userId) {
+  return Astro.redirect('/');
+}
+
+const redirectTo = Astro.url.searchParams.get('redirectTo') || '/charts';
+---
+
+<Layout title="Login">
+  <LoginForm redirectTo={redirectTo} client:load />
+</Layout>
