@@ -2,9 +2,7 @@ name: 🚀 Test
 on:
   push:
     branches:
-      - "*"
-    tags:
-      - "*"
+      - "main"
   pull_request: {}
 permissions:
   actions: write
