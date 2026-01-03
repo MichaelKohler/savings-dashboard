@@ -1,4 +1,4 @@
-# Copilot Instructions - Savings Dashboard
+# Agent instructions for Savings Dashboard
 
 ## Project Overview
 
