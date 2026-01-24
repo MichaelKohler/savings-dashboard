@@ -1,13 +1,23 @@
 import * as readline from "readline/promises";
 import { stdin as input, stdout as output } from "process";
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../src/generated/prisma/client.ts";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 import bcrypt from "@node-rs/bcrypt";
 
 const rl = readline.createInterface({ input, output });
 
 async function main() {
-  const prisma = new PrismaClient();
+  const connectionString = process.env.DATABASE_URL;
+
+  if (!connectionString) {
+    throw new Error("DATABASE_URL environment variable is not set");
+  }
+
+  const pool = new Pool({ connectionString });
+  const adapter = new PrismaPg(pool);
+  const prisma = new PrismaClient({ adapter });
 
   const email = await rl.question("Enter the email for the new user: ");
   const password = await rl.question("Enter the password for the new user: ");
@@ -40,4 +50,5 @@ main()
   })
   .finally(async () => {
     rl.close();
+    process.exit(0);
   });

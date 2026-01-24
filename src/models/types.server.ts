@@ -1,8 +1,8 @@
-import type { Type, User } from "@prisma/client";
+import type { Type, User } from "~/generated/prisma/client";
 
 import { prisma } from "~/lib/db.server";
 
-export type { Type } from "@prisma/client";
+export type { Type } from "~/generated/prisma/client";
 
 export async function getTypes({ userId }: { userId: User["id"] }) {
   return prisma.type.findMany({

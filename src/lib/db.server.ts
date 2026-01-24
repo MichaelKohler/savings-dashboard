@@ -1,4 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "~/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 
 let prisma: PrismaClient;
 
@@ -6,15 +8,24 @@ declare global {
   var __db__: PrismaClient;
 }
 
-// this is needed because in development we don't want to restart
-// the server with every change, but we want to make sure we don't
-// create a new connection to the DB with every change either.
-// in production we'll have a single connection to the DB.
+function createPrismaClient() {
+  const connectionString = process.env.DATABASE_URL;
+
+  if (!connectionString) {
+    throw new Error("DATABASE_URL environment variable is not set");
+  }
+
+  const pool = new Pool({ connectionString });
+  const adapter = new PrismaPg(pool);
+
+  return new PrismaClient({ adapter });
+}
+
 if (process.env.NODE_ENV === "production") {
-  prisma = new PrismaClient();
+  prisma = createPrismaClient();
 } else {
   if (!global.__db__) {
-    global.__db__ = new PrismaClient();
+    global.__db__ = createPrismaClient();
   }
   prisma = global.__db__;
   prisma.$connect();

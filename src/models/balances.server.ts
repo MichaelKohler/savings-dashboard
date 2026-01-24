@@ -1,8 +1,8 @@
-import type { User, Account, Balance } from "@prisma/client";
+import type { User, Account, Balance } from "~/generated/prisma/client";
 
 import { prisma } from "~/lib/db.server";
 
-export type { Balance } from "@prisma/client";
+export type { Balance } from "~/generated/prisma/client";
 
 export interface ChartDataEntry {
   byAccount: Record<string, Balance["balance"] | string>;

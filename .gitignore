@@ -8,8 +8,8 @@ coverage
 .env
 tsconfig.tsbuildinfo
 
-/prisma/data.db
-/prisma/data.db-journal
+# Prisma generated client
+/src/generated
 
 playwright-report
 test-results

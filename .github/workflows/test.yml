@@ -96,6 +96,11 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
 
+      - name: 🔧 Generate Prisma Client
+        run: npx prisma generate
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
+
       - name: 🌱 Seed the Database
         run: npx prisma db seed
         env:

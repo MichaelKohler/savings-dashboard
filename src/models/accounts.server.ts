@@ -1,8 +1,8 @@
-import type { User, Account } from "@prisma/client";
+import type { User, Account } from "~/generated/prisma/client";
 
 import { prisma } from "~/lib/db.server";
 
-export type { Account } from "@prisma/client";
+export type { Account } from "~/generated/prisma/client";
 
 export function getAccount({
   id,
