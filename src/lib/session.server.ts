@@ -112,6 +112,7 @@ export async function createUserSession({
 
 export async function logout(cookies: AstroCookies) {
   const session = await getSession(cookies);
-  await session.destroy();
+  session.destroy();
+
   return "/";
 }

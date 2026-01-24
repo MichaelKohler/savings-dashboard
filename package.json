@@ -5,6 +5,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
+    "astro:check": "astro check",
     "build": "astro check && astro build",
     "change-password": "node --experimental-strip-types --env-file=.env scripts/change-password.ts",
     "create-user": "node --experimental-strip-types --env-file=.env scripts/create-user.ts",
@@ -24,7 +25,7 @@
     "test:e2e:setup": "docker compose -f docker-compose.e2e.yml up -d && sh -c 'for i in {1..30}; do if node --env-file=.env.e2e ./node_modules/.bin/prisma db push --accept-data-loss 2>/dev/null; then break; fi; echo \"Waiting for PostgreSQL ($i/30)...\"; sleep 2; done' && node --env-file=.env.e2e ./node_modules/.bin/prisma db seed",
     "test:e2e:teardown": "docker compose -f docker-compose.e2e.yml down -v",
     "typecheck": "astro sync && tsc -b",
-    "validate": "run-p \"test -- --run\" lint typecheck test:e2e"
+    "validate": "npm run test -- --run && npm run lint && npm run astro:check && npm run typecheck && npm run test:e2e"
   },
   "prettier": {
     "trailingComma": "es5"
@@ -68,7 +69,6 @@
     "eslint-plugin-react": "^7.37.5",
     "globals": "^17.0.0",
     "happy-dom": "^20.3.4",
-    "npm-run-all": "^4.1.5",
     "prettier": "^3.8.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "prisma": "^6.19.2",
