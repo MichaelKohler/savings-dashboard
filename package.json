@@ -23,7 +23,7 @@
     "test:e2e:run": "node --env-file=.env.e2e ./node_modules/.bin/playwright test",
     "test:e2e:setup": "docker compose -f docker-compose.e2e.yml up -d && sh -c 'for i in {1..30}; do if node --env-file=.env.e2e ./node_modules/.bin/prisma db push --accept-data-loss 2>/dev/null; then break; fi; echo \"Waiting for PostgreSQL ($i/30)...\"; sleep 2; done' && node --env-file=.env.e2e ./node_modules/.bin/prisma db seed",
     "test:e2e:teardown": "docker compose -f docker-compose.e2e.yml down -v",
-    "typecheck": "tsc -b",
+    "typecheck": "astro sync && tsc -b",
     "validate": "run-p \"test -- --run\" lint typecheck test:e2e"
   },
   "prettier": {
