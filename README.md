@@ -41,6 +41,67 @@ The database seed script creates a new user with some data you can use to get st
 - Email: `rachel@remix.run`
 - Password: `rachelrox`
 
+## Running with Docker
+
+This project includes Docker support for both development and production environments.
+
+### Development with Docker Compose
+
+To run the PostgreSQL database in Docker for local development:
+
+```sh
+docker compose -f docker-compose.dev.yml up -d
+```
+
+This starts a PostgreSQL 18 container on port `5434`. Update your `.env` file with:
+
+```
+DATABASE_URL="postgresql://savings_dashboard:savings_dashboard_password@localhost:5434/savings_dashboard_dev"
+```
+
+Then run the application locally with `npm run dev` as usual.
+
+To stop the database:
+
+```sh
+docker compose -f docker-compose.dev.yml down
+```
+
+### Production Docker Build
+
+To build and run the application in production mode:
+
+1. Build the Docker image:
+
+   ```sh
+   docker build -t savings-dashboard .
+   ```
+
+2. Run the container:
+
+   ```sh
+   docker run -p 3000:3000 \
+     -e DATABASE_URL="your_database_url" \
+     -e SESSION_SECRET="your_session_secret" \
+     savings-dashboard
+   ```
+
+   Make sure to provide:
+   - `DATABASE_URL`: Connection string to your PostgreSQL database
+   - `SESSION_SECRET`: A secure random string (minimum 32 characters)
+
+The application will be available at `http://localhost:3000`.
+
+### E2E Testing with Docker
+
+To run end-to-end tests with a containerized test database:
+
+```sh
+docker compose -f docker-compose.e2e.yml up -d
+```
+
+This starts a PostgreSQL test database on port `5433`. The E2E tests are configured to use this database.
+
 ## Testing
 
 ### Vitest

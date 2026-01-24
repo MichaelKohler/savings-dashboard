@@ -1,9 +1,18 @@
 {
-  "exclude": [],
-  "include": ["**/*.ts", "**/*.tsx", "prisma/seed.ts"],
+  "extends": "astro/tsconfigs/strict",
+  "exclude": ["node_modules", "dist"],
+  "include": [
+    ".astro/types.d.ts",
+    "src/**/*",
+    "prisma/seed.ts",
+    "e2e/**/*",
+    "scripts/**/*",
+    "*.config.ts",
+    "*.config.mjs"
+  ],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2020"],
-    "types": ["@react-router/node", "node", "vite/client", "vitest/globals"],
+    "types": ["astro/client", "node", "vite/client", "vitest/globals"],
     "isolatedModules": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
@@ -16,10 +25,9 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./app/*"]
+      "~/*": ["./src/*"]
     },
     "skipLibCheck": true,
-
     "noEmit": true
   }
 }

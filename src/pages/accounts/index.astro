@@ -1,0 +1,13 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import AccountsList from '~/components/AccountsList';
+import { requireUserId } from '~/lib/session.server';
+import { getAccounts } from '~/models/accounts.server';
+
+const userId = await requireUserId(Astro.cookies);
+const accounts = await getAccounts({ userId });
+---
+
+<Layout title="Accounts">
+  <AccountsList accounts={accounts} client:load />
+</Layout>

@@ -1,0 +1,20 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import GroupForm from '~/components/GroupForm';
+import { requireUserId } from '~/lib/session.server';
+import { getGroup } from '~/models/groups.server';
+
+const userId = await requireUserId(Astro.cookies);
+const { groupId } = Astro.params;
+
+if (!groupId) {
+  return Astro.redirect('/groups');
+}
+
+const group = await getGroup({ id: groupId, userId });
+---
+
+<Layout title="Edit Group">
+  <h1 class="pb-4 text-3xl">Edit group</h1>
+  <GroupForm group={group} client:load />
+</Layout>

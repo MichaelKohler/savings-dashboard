@@ -16,15 +16,26 @@ test("Group flows", async ({ page }) => {
   await page
     .getByRole("row", { name: /Test Group for groups/ })
     .getByRole("button", { name: "Edit" })
+    .first()
     .click();
   await page.getByLabel("Name:").fill("Test Group Edited");
   await page.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByText("Test Group Edited")).toBeVisible();
+  await expect(
+    page.getByRole("cell", { name: "Test Group Edited" }).first()
+  ).toBeVisible();
 
   // Delete
   await page
     .getByRole("row", { name: /Test Group Edited/ })
     .getByRole("button", { name: "X" })
+    .first()
     .click();
-  await expect(page.getByText("Test Group Edited")).not.toBeVisible();
+  await page
+    .getByRole("row", { name: /Test Group Edited/ })
+    .getByRole("button", { name: "X?" })
+    .first()
+    .click();
+  await expect(
+    page.getByRole("cell", { name: "Test Group Edited" })
+  ).not.toBeVisible();
 });

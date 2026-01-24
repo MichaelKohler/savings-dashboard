@@ -1,0 +1,14 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import BalanceForm from '~/components/BalanceForm';
+import { requireUserId } from '~/lib/session.server';
+import { getAccounts } from '~/models/accounts.server';
+
+const userId = await requireUserId(Astro.cookies);
+const accounts = await getAccounts({ userId, archived: false });
+---
+
+<Layout title="New Balance">
+  <h1 class="pb-4 text-3xl">Add new balance</h1>
+  <BalanceForm accounts={accounts} client:load />
+</Layout>

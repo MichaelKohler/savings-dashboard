@@ -19,12 +19,22 @@ test("Type flows", async ({ page }) => {
     .click();
   await page.getByLabel("Name:").fill("Test Type Edited");
   await page.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByText("Test Type Edited")).toBeVisible();
+  await expect(
+    page.getByRole("cell", { name: "Test Type Edited" }).first()
+  ).toBeVisible();
 
   // Delete
   await page
     .getByRole("row", { name: /Test Type Edited/ })
     .getByRole("button", { name: "X" })
+    .first()
     .click();
-  await expect(page.getByText("Test Type Edited")).not.toBeVisible();
+  await page
+    .getByRole("row", { name: /Test Type Edited/ })
+    .getByRole("button", { name: "X?" })
+    .first()
+    .click();
+  await expect(
+    page.getByRole("cell", { name: "Test Type Edited" })
+  ).not.toBeVisible();
 });
