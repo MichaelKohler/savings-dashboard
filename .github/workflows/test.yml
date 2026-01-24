@@ -23,6 +23,8 @@ jobs:
 
       - name: 📥 Download deps
         run: npm ci
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
 
       - name: 🔬 Lint
         run: npm run lint
@@ -41,6 +43,8 @@ jobs:
 
       - name: 📥 Download deps
         run: npm ci
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
 
       - name: 🔎 Type check
         run: npm run typecheck --if-present
@@ -59,6 +63,8 @@ jobs:
 
       - name: 📥 Download deps
         run: npm ci
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
 
       - name: ⚡ Run vitest
         run: npm run test -- --coverage
@@ -90,9 +96,16 @@ jobs:
 
       - name: 📥 Download deps
         run: npm ci
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
 
       - name: 🛠 Setup Database
         run: npx prisma db push
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
+
+      - name: 🔧 Generate Prisma Client
+        run: npx prisma generate
         env:
           DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
 

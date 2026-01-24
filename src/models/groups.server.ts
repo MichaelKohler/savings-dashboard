@@ -1,8 +1,8 @@
-import type { Group, User } from "@prisma/client";
+import type { Group, User } from "~/generated/prisma/client";
 
 import { prisma } from "~/lib/db.server";
 
-export type { Group } from "@prisma/client";
+export type { Group } from "~/generated/prisma/client";
 
 export async function getGroups({ userId }: { userId: User["id"] }) {
   return prisma.group.findMany({

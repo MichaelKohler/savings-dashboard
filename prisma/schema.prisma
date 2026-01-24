@@ -1,12 +1,12 @@
 datasource db {
-  provider             = "postgres"
-  url                  = env("DATABASE_URL")
-  relationMode         = "foreignKeys"
+  provider     = "postgres"
+  relationMode = "foreignKeys"
 }
 
 generator client {
-  provider = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  importFileExtension = "ts"
 }
 
 model User {
