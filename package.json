@@ -26,7 +26,7 @@
     "test:e2e": "npm run test:e2e:setup && npm run test:e2e:run && npm run test:e2e:teardown",
     "test:e2e:report": "playwright show-report",
     "test:e2e:run": "node --env-file=.env.e2e ./node_modules/.bin/playwright test",
-    "test:e2e:setup": "docker compose -f docker-compose.e2e.yml up -d && sh -c 'for i in {1..30}; do if node --env-file=.env.e2e ./node_modules/.bin/prisma migrate deploy 2>/dev/null; then node --env-file=.env.e2e ./node_modules/.bin/prisma generate; break; fi; echo \"Waiting for PostgreSQL ($i/30)...\"; sleep 2; done' && node --env-file=.env.e2e ./node_modules/.bin/prisma db seed",
+    "test:e2e:setup": "docker compose -f docker-compose.e2e.yml up -d && sh -c 'for i in {1..30}; do if node --env-file=.env.e2e ./node_modules/.bin/prisma db push --accept-data-loss 2>/dev/null; then node --env-file=.env.e2e ./node_modules/.bin/prisma generate; break; fi; echo \"Waiting for PostgreSQL ($i/30)...\"; sleep 2; done' && node --env-file=.env.e2e ./node_modules/.bin/prisma db seed",
     "test:e2e:teardown": "docker compose -f docker-compose.e2e.yml down -v",
     "typecheck": "astro sync && tsc -b",
     "validate": "npm run test -- --run && npm run lint && npm run astro:check && npm run typecheck && npm run test:e2e"
