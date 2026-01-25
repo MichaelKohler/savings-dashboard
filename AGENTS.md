@@ -32,8 +32,15 @@ This is a savings dashboard application that allows users to track their savings
 - Write self-documenting code with minimal comments
 - Prefer composition over inheritance
 - Keep functions small and focused (single responsibility)
-- Run `npm run validate` and `npm run format` at the end of each agent run cycle
-- Always use `npm run test:e2e` when running E2E tests and not `npm run test:e2e:run`.
+- Only ever add a comment to the code if it explains an edge case and why the code is there, except for JSDoc or general function/class documentation.
+- At the end of each agent run cycle, run the individual validation steps instead of `npm run validate`:
+  - `npm run test -- --run` (unit tests)
+  - `npm run lint` (ESLint)
+  - `npm run astro:check` (Astro check)
+  - `npm run typecheck` (TypeScript check)
+  - `npm run format` (Prettier formatting)
+  - Do NOT run E2E tests (`npm run test:e2e`) as they have compatibility issues with ARM hardware
+- If you need to run E2E tests manually, always use `npm run test:e2e` and not `npm run test:e2e:run`.
 
 ### React specific
 

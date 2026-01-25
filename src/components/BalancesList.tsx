@@ -12,6 +12,10 @@ interface BalanceWithAccount {
   account: {
     id: string;
     name: string;
+    group?: {
+      id: string;
+      name: string;
+    } | null;
   };
 }
 
@@ -115,7 +119,14 @@ export default function BalancesList({ balances }: BalancesListProps) {
                     <td className="pr-2">
                       {new Date(balance.date).toLocaleDateString()}
                     </td>
-                    <td className="pr-2">{balance.account.name}</td>
+                    <td className="pr-2">
+                      <span className="block">{balance.account.name}</span>
+                      {balance.account.group?.name ? (
+                        <span className="block text-sm text-gray-400">
+                          {balance.account.group.name}
+                        </span>
+                      ) : null}
+                    </td>
                     <td className="pr-2">{balance.balance}</td>
                     <td className="text-right">
                       <a
