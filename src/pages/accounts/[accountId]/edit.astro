@@ -1,16 +1,16 @@
 ---
-import Layout from '~/layouts/Layout.astro';
-import AccountForm from '~/components/AccountForm';
-import { requireUserId } from '~/lib/session.server';
-import { getAccount } from '~/models/accounts.server';
-import { getGroups } from '~/models/groups.server';
-import { getTypes } from '~/models/types.server';
+import Layout from "~/layouts/Layout.astro";
+import AccountForm from "~/components/AccountForm";
+import { requireUserId } from "~/lib/session.server";
+import { getAccount } from "~/models/accounts.server";
+import { getGroups } from "~/models/groups.server";
+import { getTypes } from "~/models/types.server";
 
 const userId = await requireUserId(Astro.cookies);
 const { accountId } = Astro.params;
 
 if (!accountId) {
-  return Astro.redirect('/accounts');
+  return Astro.redirect("/accounts");
 }
 
 const account = await getAccount({ id: accountId, userId });

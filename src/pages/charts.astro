@@ -1,11 +1,11 @@
 ---
-import Layout from '~/layouts/Layout.astro';
-import ChartsComponent from '~/components/Charts';
-import { requireUserId } from '~/lib/session.server';
-import { getAccounts } from '~/models/accounts.server';
-import { getBalancesForCharts } from '~/models/balances.server';
-import { getGroups } from '~/models/groups.server';
-import { getTypes } from '~/models/types.server';
+import Layout from "~/layouts/Layout.astro";
+import ChartsComponent from "~/components/Charts";
+import { requireUserId } from "~/lib/session.server";
+import { getAccounts } from "~/models/accounts.server";
+import { getBalancesForCharts } from "~/models/balances.server";
+import { getGroups } from "~/models/groups.server";
+import { getTypes } from "~/models/types.server";
 
 var userId = await requireUserId(Astro.cookies);
 var allAccounts = await getAccounts({ userId });
@@ -20,8 +20,9 @@ for (const balance of balances) {
     accountsInBalances.add(accountId);
   }
 }
-var accounts = allAccounts.filter((account) => accountsInBalances.has(account.id));
-
+var accounts = allAccounts.filter((account) =>
+  accountsInBalances.has(account.id)
+);
 ---
 
 <Layout title="Charts">

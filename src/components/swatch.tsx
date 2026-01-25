@@ -5,7 +5,7 @@ interface Props {
 export default function Swatch({ color }: Props) {
   return (
     <button
-      className="rounded py-4 px-4"
+      className="rounded px-4 py-4"
       style={{ backgroundColor: color, pointerEvents: "none" }}
     ></button>
   );

@@ -1,11 +1,11 @@
 ---
-import { getUserId } from '~/lib/session.server';
+import { getUserId } from "~/lib/session.server";
 
 const userId = await getUserId(Astro.cookies);
 
 if (userId) {
-  return Astro.redirect('/accounts');
+  return Astro.redirect("/accounts");
 }
 
-return Astro.redirect('/login');
+return Astro.redirect("/login");
 ---

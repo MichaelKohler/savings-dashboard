@@ -1,14 +1,14 @@
 ---
-import Layout from '~/layouts/Layout.astro';
-import GroupForm from '~/components/GroupForm';
-import { requireUserId } from '~/lib/session.server';
-import { getGroup } from '~/models/groups.server';
+import Layout from "~/layouts/Layout.astro";
+import GroupForm from "~/components/GroupForm";
+import { requireUserId } from "~/lib/session.server";
+import { getGroup } from "~/models/groups.server";
 
 const userId = await requireUserId(Astro.cookies);
 const { groupId } = Astro.params;
 
 if (!groupId) {
-  return Astro.redirect('/groups');
+  return Astro.redirect("/groups");
 }
 
 const group = await getGroup({ id: groupId, userId });

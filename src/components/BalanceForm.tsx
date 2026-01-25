@@ -78,7 +78,7 @@ export default function BalanceForm({ balance, accounts }: BalanceFormProps) {
           <span>Account: </span>
           <select
             name="accountId"
-            className="flex-1 rounded-md border-2 border-mk px-3 py-2 leading-loose"
+            className="border-mk flex-1 rounded-md border-2 px-3 py-2 leading-loose"
             defaultValue={balance?.accountId || ""}
             required
           >
@@ -91,7 +91,7 @@ export default function BalanceForm({ balance, accounts }: BalanceFormProps) {
           </select>
         </label>
         {errors.accountId && (
-          <div className="pt-1 text-mkerror" id="accountId-error">
+          <div className="text-mkerror pt-1" id="accountId-error">
             {errors.accountId}
           </div>
         )}
@@ -104,7 +104,7 @@ export default function BalanceForm({ balance, accounts }: BalanceFormProps) {
             ref={dateRef}
             type="date"
             name="date"
-            className="flex-1 rounded-md border-2 border-mk px-3 text-lg leading-loose"
+            className="border-mk flex-1 rounded-md border-2 px-3 text-lg leading-loose"
             aria-invalid={errors.date ? true : undefined}
             aria-errormessage={errors.date ? "date-error" : undefined}
             defaultValue={
@@ -116,7 +116,7 @@ export default function BalanceForm({ balance, accounts }: BalanceFormProps) {
           />
         </label>
         {errors.date && (
-          <div className="pt-1 text-mkerror" id="date-error">
+          <div className="text-mkerror pt-1" id="date-error">
             {errors.date}
           </div>
         )}
@@ -129,7 +129,7 @@ export default function BalanceForm({ balance, accounts }: BalanceFormProps) {
             ref={balanceRef}
             type="text"
             name="balance"
-            className="flex-1 rounded-md border-2 border-mk px-3 text-lg leading-loose"
+            className="border-mk flex-1 rounded-md border-2 px-3 text-lg leading-loose"
             aria-invalid={errors.balance ? true : undefined}
             aria-errormessage={errors.balance ? "balance-error" : undefined}
             defaultValue={balance?.balance}
@@ -137,14 +137,14 @@ export default function BalanceForm({ balance, accounts }: BalanceFormProps) {
           />
         </label>
         {errors.balance && (
-          <div className="pt-1 text-mkerror" id="balance-error">
+          <div className="text-mkerror pt-1" id="balance-error">
             {errors.balance}
           </div>
         )}
       </div>
 
       {errors.generic && (
-        <div className="pt-1 text-mkerror" id="generic-error">
+        <div className="text-mkerror pt-1" id="generic-error">
           {errors.generic}
         </div>
       )}

@@ -28,13 +28,13 @@ export default function Main({ user, children }: MainProps) {
   };
 
   return (
-    <div className="bg-white flex flex-col h-screen relative">
-      <div className="p-4 md:p-8 grow">{children}</div>
-      <ul className="sticky bottom-0 bg-white w-screen flex flex-row justify-between py-4 px-6 md:px-12 border-t border-gray-300 z-50">
+    <div className="relative flex h-screen flex-col bg-white">
+      <div className="grow p-4 md:p-8">{children}</div>
+      <ul className="sticky bottom-0 z-50 flex w-screen flex-row justify-between border-t border-gray-300 bg-white px-6 py-4 md:px-12">
         {!user && (
           <li>
             <a
-              className="flex flex-col justify-center items-center py-4"
+              className="flex flex-col items-center justify-center py-4"
               href="/login"
             >
               <span>🔐</span>
@@ -46,7 +46,7 @@ export default function Main({ user, children }: MainProps) {
           <>
             <li>
               <a
-                className="flex flex-col justify-center items-center py-4"
+                className="flex flex-col items-center justify-center py-4"
                 href="/accounts"
               >
                 <span>📒</span>
@@ -55,7 +55,7 @@ export default function Main({ user, children }: MainProps) {
             </li>
             <li>
               <a
-                className="flex flex-col justify-center items-center py-4"
+                className="flex flex-col items-center justify-center py-4"
                 href="/groups"
               >
                 <span>🫙</span>
@@ -64,7 +64,7 @@ export default function Main({ user, children }: MainProps) {
             </li>
             <li>
               <a
-                className="flex flex-col justify-center items-center py-4"
+                className="flex flex-col items-center justify-center py-4"
                 href="/types"
               >
                 <span>🏦</span>
@@ -73,7 +73,7 @@ export default function Main({ user, children }: MainProps) {
             </li>
             <li>
               <a
-                className="flex flex-col justify-center items-center py-4"
+                className="flex flex-col items-center justify-center py-4"
                 href="/balances"
               >
                 <span>💰</span>
@@ -82,14 +82,14 @@ export default function Main({ user, children }: MainProps) {
             </li>
             <li>
               <a
-                className="flex flex-col justify-center items-center py-4"
+                className="flex flex-col items-center justify-center py-4"
                 href="/charts"
               >
                 <span>📈</span>
                 <span className="mt-2 hidden md:inline">Charts</span>
               </a>
             </li>
-            <li className="flex flex-col justify-center items-center py-4">
+            <li className="flex flex-col items-center justify-center py-4">
               <button
                 onClick={handleLogout}
                 className="flex flex-col"

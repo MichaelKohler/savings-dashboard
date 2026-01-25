@@ -54,7 +54,7 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-mk-text"
+            className="text-mk-text block text-sm font-medium"
           >
             Email address
           </label>
@@ -71,7 +71,7 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
               className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
             />
             {errors.email && (
-              <div className="pt-1 text-mkerror" id="email-error">
+              <div className="text-mkerror pt-1" id="email-error">
                 {errors.email}
               </div>
             )}
@@ -81,7 +81,7 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-medium text-mk-text"
+            className="text-mk-text block text-sm font-medium"
           >
             Password
           </label>
@@ -97,7 +97,7 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
               className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
             />
             {errors.password && (
-              <div className="pt-1 text-mkerror" id="password-error">
+              <div className="text-mkerror pt-1" id="password-error">
                 {errors.password}
               </div>
             )}
@@ -108,7 +108,7 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded bg-mk px-4 py-2 text-white hover:bg-mk-secondary focus:bg-mk-secondary disabled:opacity-50"
+          className="bg-mk hover:bg-mk-secondary focus:bg-mk-secondary w-full rounded px-4 py-2 text-white disabled:opacity-50"
         >
           {isSubmitting ? "Logging in..." : "Log in"}
         </button>
@@ -118,11 +118,11 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
               id="remember"
               name="remember"
               type="checkbox"
-              className="h-4 w-4 rounded border-gray-300 text-mk focus:ring-mk"
+              className="text-mk focus:ring-mk h-4 w-4 rounded border-gray-300"
             />
             <label
               htmlFor="remember"
-              className="ml-2 block text-sm text-mk-text"
+              className="text-mk-text ml-2 block text-sm"
             >
               Remember me
             </label>

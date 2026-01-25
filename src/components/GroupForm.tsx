@@ -71,7 +71,7 @@ export default function GroupForm({ group }: GroupFormProps) {
             ref={nameRef}
             type="text"
             name="name"
-            className="flex-1 rounded-md border-2 border-mk px-3 text-lg leading-loose"
+            className="border-mk flex-1 rounded-md border-2 px-3 text-lg leading-loose"
             aria-invalid={errors.name ? true : undefined}
             aria-errormessage={errors.name ? "name-error" : undefined}
             defaultValue={group?.name}
@@ -79,14 +79,14 @@ export default function GroupForm({ group }: GroupFormProps) {
           />
         </label>
         {errors.name && (
-          <div className="pt-1 text-mkerror" id="name-error">
+          <div className="text-mkerror pt-1" id="name-error">
             {errors.name}
           </div>
         )}
       </div>
 
       {errors.generic && (
-        <div className="pt-1 text-mkerror" id="generic-error">
+        <div className="text-mkerror pt-1" id="generic-error">
           {errors.generic}
         </div>
       )}

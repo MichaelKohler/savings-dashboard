@@ -1,8 +1,8 @@
 ---
-import Layout from '~/layouts/Layout.astro';
-import TypesList from '~/components/TypesList';
-import { requireUserId } from '~/lib/session.server';
-import { getTypes } from '~/models/types.server';
+import Layout from "~/layouts/Layout.astro";
+import TypesList from "~/components/TypesList";
+import { requireUserId } from "~/lib/session.server";
+import { getTypes } from "~/models/types.server";
 
 const userId = await requireUserId(Astro.cookies);
 const types = await getTypes({ userId });

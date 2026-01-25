@@ -1,8 +1,8 @@
 ---
-import Layout from '~/layouts/Layout.astro';
-import AccountsList from '~/components/AccountsList';
-import { requireUserId } from '~/lib/session.server';
-import { getAccounts } from '~/models/accounts.server';
+import Layout from "~/layouts/Layout.astro";
+import AccountsList from "~/components/AccountsList";
+import { requireUserId } from "~/lib/session.server";
+import { getAccounts } from "~/models/accounts.server";
 
 const userId = await requireUserId(Astro.cookies);
 const activeAccounts = await getAccounts({ userId, archived: false });
@@ -10,5 +10,9 @@ const archivedAccounts = await getAccounts({ userId, archived: true });
 ---
 
 <Layout title="Accounts">
-  <AccountsList activeAccounts={activeAccounts} archivedAccounts={archivedAccounts} client:load />
+  <AccountsList
+    activeAccounts={activeAccounts}
+    archivedAccounts={archivedAccounts}
+    client:load
+  />
 </Layout>
