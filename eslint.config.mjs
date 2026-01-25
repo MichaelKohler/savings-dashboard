@@ -75,6 +75,7 @@ export default [
       "eslint.config.mjs",
       "postcss.config.mjs",
       "vite.config.mts",
+      "data",
     ],
   },
 ];
