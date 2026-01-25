@@ -41,6 +41,7 @@ This is a savings dashboard application that allows users to track their savings
   - `npm run format` (Prettier formatting)
   - Do NOT run E2E tests (`npm run test:e2e`) as they have compatibility issues with ARM hardware
 - If you need to run E2E tests manually, always use `npm run test:e2e` and not `npm run test:e2e:run`.
+- **IMPORTANT**: Always use `npm run format` for formatting. Never use custom prettier commands or direct `npx prettier` invocations, as the npm script is configured to handle file patterns and ignore paths correctly.
 
 ### React specific
 

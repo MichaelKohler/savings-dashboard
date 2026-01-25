@@ -13,7 +13,7 @@
     "dev:host": "node --env-file=.env ./node_modules/.bin/astro dev --host",
     "dev:deps": "docker compose -f docker-compose.dev.yml up -d",
     "dev:deps:stop": "docker compose -f docker-compose.dev.yml stop",
-    "format": "prettier --write .",
+    "format": "prettier --write e2e prisma public scripts src",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "postinstall": "prisma generate",
     "setup": "prisma generate && prisma db push && prisma db seed",
