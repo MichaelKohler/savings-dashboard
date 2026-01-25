@@ -153,6 +153,7 @@ describe("account models", () => {
           name: account.name,
           color: account.color,
           showInGraphs: account.showInGraphs,
+          archived: account.archived,
           groupId: account.groupId,
           typeId: account.typeId,
         },
@@ -165,6 +166,7 @@ describe("account models", () => {
           name: account.name,
           color: account.color,
           showInGraphs: account.showInGraphs,
+          archived: account.archived,
           group: {
             connect: {
               id: account.groupId,

@@ -167,19 +167,17 @@ export default function AccountForm({
         )}
       </div>
 
-      {isEdit && (
-        <div>
-          <label className="flex w-full flex-row gap-2">
-            <input
-              type="checkbox"
-              name="archived"
-              data-testid="new-account-archived-input"
-              defaultChecked={account?.archived}
-            />
-            <span>Archived</span>
-          </label>
-        </div>
-      )}
+      <div>
+        <label className="flex w-full flex-row gap-2">
+          <input
+            type="checkbox"
+            name="archived"
+            data-testid="new-account-archived-input"
+            defaultChecked={account?.archived}
+          />
+          <span>Archived</span>
+        </label>
+      </div>
 
       <div>
         <label className="flex w-full flex-row gap-2">

@@ -15,6 +15,7 @@ export const createAccountAction = defineAction({
     groupId: z.string().optional(),
     typeId: z.string().optional(),
     showInGraphs: z.string().optional(),
+    archived: z.string().optional(),
   }),
   handler: async (input, context) => {
     try {
@@ -25,6 +26,7 @@ export const createAccountAction = defineAction({
           name: input.name,
           color: input.color,
           showInGraphs: input.showInGraphs === "on",
+          archived: input.archived === "on",
           groupId: input.groupId || null,
           typeId: input.typeId || null,
         },
