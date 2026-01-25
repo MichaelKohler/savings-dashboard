@@ -102,6 +102,7 @@ interface BalanceReducerTempType {
   balance: number;
   type: string;
   group: string;
+  archived: boolean;
 }
 
 function reduceToBalance(
@@ -147,6 +148,7 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
     select: {
       id: true,
       showInGraphs: true,
+      archived: true,
       group: {
         select: {
           id: true,
@@ -208,6 +210,7 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
         balance: number;
         type: string;
         group: string;
+        archived: boolean;
       }
     > = {};
 
@@ -225,12 +228,17 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
           type: account.type?.id || "",
           group: account.group?.id || "",
           balance: lastKnownBalances[accId],
+          archived: account.archived,
         };
       }
     }
 
     const total = Object.entries(accountsMapForMonth)
-      .filter(([accountId]) => accountIdsForTotals.has(accountId))
+      .filter(
+        ([accountId, account]) =>
+          accountIdsForTotals.has(accountId) &&
+          (!account.archived || account.balance !== 0)
+      )
       .map(([, account]) => account.balance)
       .reduce((a, b) => a + b, 0);
 
@@ -262,6 +270,66 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
 
   if (!result.length) {
     return { balances: [], predictions: [] };
+  }
+
+  // Identify archived accounts with all zero balances in remaining data
+  const archivedAccountIds = new Set(
+    accounts.filter((acc: AccountForChart) => acc.archived).map((acc) => acc.id)
+  );
+
+  const archivedAccountsToRemove = new Set<string>();
+  for (const accountId of archivedAccountIds) {
+    const hasNonZeroBalance = result.some(
+      (entry) =>
+        entry.byAccount[accountId] &&
+        typeof entry.byAccount[accountId] === "number" &&
+        entry.byAccount[accountId] > 0
+    );
+    if (!hasNonZeroBalance) {
+      archivedAccountsToRemove.add(accountId);
+    }
+  }
+
+  // Remove archived accounts with all zero balances from all data entries
+  if (archivedAccountsToRemove.size > 0) {
+    for (const entry of result) {
+      // Remove from byAccount
+      for (const accountId of archivedAccountsToRemove) {
+        delete entry.byAccount[accountId];
+      }
+
+      // Recalculate byGroup and byType from remaining accounts
+      const remainingAccountsForEntry: Record<
+        string,
+        {
+          balance: number;
+          type: string;
+          group: string;
+          archived: boolean;
+        }
+      > = {};
+
+      for (const [accountId, balance] of Object.entries(entry.byAccount)) {
+        const account = accountsMap.get(accountId);
+        if (account && typeof balance === "number") {
+          remainingAccountsForEntry[accountId] = {
+            balance,
+            type: account.type?.id || "",
+            group: account.group?.id || "",
+            archived: account.archived,
+          };
+        }
+      }
+
+      entry.byGroup = Object.entries(remainingAccountsForEntry).reduce(
+        reduceToGroupBalance,
+        {}
+      );
+      entry.byType = Object.entries(remainingAccountsForEntry).reduce(
+        reduceToTypeBalance,
+        {}
+      );
+    }
   }
 
   const lastTotal = result[result.length - 1].total;

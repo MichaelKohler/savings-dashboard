@@ -78,7 +78,7 @@ export async function getAccounts({
 export function createAccount(
   account: Pick<
     Account,
-    "name" | "color" | "showInGraphs" | "groupId" | "typeId"
+    "name" | "color" | "showInGraphs" | "archived" | "groupId" | "typeId"
   >,
   userId: User["id"]
 ) {
@@ -87,6 +87,7 @@ export function createAccount(
       name: account.name,
       color: account.color,
       showInGraphs: account.showInGraphs,
+      archived: account.archived,
       ...(account.groupId
         ? {
             group: {

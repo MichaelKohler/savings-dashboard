@@ -98,11 +98,12 @@ describe("AccountForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows archived checkbox only in edit mode", () => {
+  it("shows archived checkbox in both create and edit mode", () => {
     const { rerender } = render(
       <AccountForm groups={mockGroups} types={mockTypes} />
     );
-    expect(screen.queryByLabelText(/Archived/)).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/Archived/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Archived/)).not.toBeChecked();
 
     rerender(
       <AccountForm
@@ -112,6 +113,18 @@ describe("AccountForm", () => {
       />
     );
     expect(screen.getByLabelText(/Archived/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Archived/)).not.toBeChecked();
+  });
+
+  it("shows archived checkbox as checked when editing archived account", () => {
+    render(
+      <AccountForm
+        account={{ ...mockAccount, archived: true }}
+        groups={mockGroups}
+        types={mockTypes}
+      />
+    );
+    expect(screen.getByLabelText(/Archived/)).toBeChecked();
   });
 
   it("populates form with account data in edit mode", () => {

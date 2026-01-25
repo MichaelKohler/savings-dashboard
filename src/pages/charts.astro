@@ -8,10 +8,19 @@ import { getGroups } from '~/models/groups.server';
 import { getTypes } from '~/models/types.server';
 
 var userId = await requireUserId(Astro.cookies);
-var accounts = await getAccounts({ userId });
+var allAccounts = await getAccounts({ userId });
 var { balances, predictions } = await getBalancesForCharts({ userId });
 var groups = await getGroups({ userId });
 var types = await getTypes({ userId });
+
+// Filter accounts to only include those that appear in balance data
+var accountsInBalances = new Set<string>();
+for (const balance of balances) {
+  for (const accountId of Object.keys(balance.byAccount)) {
+    accountsInBalances.add(accountId);
+  }
+}
+var accounts = allAccounts.filter((account) => accountsInBalances.has(account.id));
 
 ---
 
