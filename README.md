@@ -22,6 +22,11 @@ cp .env.example .env
   npm run setup
   ```
 
+  This will:
+  - Generate Prisma client
+  - Apply all database migrations
+  - Seed the database with sample data
+
 - Validate the app has been set up properly (optional):
 
   ```sh
@@ -40,6 +45,16 @@ The database seed script creates a new user with some data you can use to get st
 
 - Email: `rachel@remix.run`
 - Password: `rachelrox`
+
+### Database Migrations
+
+This project uses Prisma Migrate for database schema management.
+
+- Apply pending migrations: `npm run dev:migrate`
+- Reset database (WARNING: deletes all data): `npm run dev:reset`
+- Create a new migration after schema changes: `npx prisma migrate dev --name <migration_name>`
+
+Migrations are automatically applied on production startup.
 
 ## Running with Docker
 
