@@ -87,7 +87,7 @@ export default function AccountForm({
             ref={nameRef}
             type="text"
             name="name"
-            className="flex-1 rounded-md border-2 border-mk px-3 text-lg leading-loose"
+            className="border-mk flex-1 rounded-md border-2 px-3 text-lg leading-loose"
             aria-invalid={errors.name ? true : undefined}
             aria-errormessage={errors.name ? "name-error" : undefined}
             data-testid="new-account-name-input"
@@ -95,7 +95,7 @@ export default function AccountForm({
           />
         </label>
         {errors.name && (
-          <div className="pt-1 text-mkerror" id="name-error">
+          <div className="text-mkerror pt-1" id="name-error">
             {errors.name}
           </div>
         )}
@@ -106,7 +106,7 @@ export default function AccountForm({
           <span>Type: </span>
           <select
             name="typeId"
-            className="flex-1 rounded-md border-2 border-mk px-3 py-2 leading-loose"
+            className="border-mk flex-1 rounded-md border-2 px-3 py-2 leading-loose"
             defaultValue={account?.typeId || ""}
           >
             <option value="">Select type</option>
@@ -118,7 +118,7 @@ export default function AccountForm({
           </select>
         </label>
         {errors.typeId && (
-          <div className="pt-1 text-mkerror" id="typeId-error">
+          <div className="text-mkerror pt-1" id="typeId-error">
             {errors.typeId}
           </div>
         )}
@@ -129,7 +129,7 @@ export default function AccountForm({
           <span>Group: </span>
           <select
             name="groupId"
-            className="flex-1 rounded-md border-2 border-mk px-3 py-2 leading-loose"
+            className="border-mk flex-1 rounded-md border-2 px-3 py-2 leading-loose"
             defaultValue={account?.groupId || ""}
           >
             <option value="">Select group</option>
@@ -141,7 +141,7 @@ export default function AccountForm({
           </select>
         </label>
         {errors.groupId && (
-          <div className="pt-1 text-mkerror" id="groupId-error">
+          <div className="text-mkerror pt-1" id="groupId-error">
             {errors.groupId}
           </div>
         )}
@@ -161,7 +161,7 @@ export default function AccountForm({
           />
         </label>
         {errors.color && (
-          <div className="pt-1 text-mkerror" id="color-error">
+          <div className="text-mkerror pt-1" id="color-error">
             {errors.color}
           </div>
         )}
@@ -192,7 +192,7 @@ export default function AccountForm({
       </div>
 
       {errors.generic && (
-        <div className="pt-1 text-mkerror" id="generic-error">
+        <div className="text-mkerror pt-1" id="generic-error">
           {errors.generic}
         </div>
       )}

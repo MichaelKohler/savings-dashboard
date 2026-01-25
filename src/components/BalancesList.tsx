@@ -102,7 +102,7 @@ export default function BalancesList({ balances }: BalancesListProps) {
 
         return (
           <div key={monthKey} className="mt-8">
-            <h2 className="text-xl font-semibold mb-3">{monthKey}</h2>
+            <h2 className="mb-3 text-xl font-semibold">{monthKey}</h2>
 
             <table className="min-w-full table-fixed">
               <thead className="border-b border-gray-300 text-left">

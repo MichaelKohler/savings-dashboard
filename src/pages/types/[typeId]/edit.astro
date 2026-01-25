@@ -1,14 +1,14 @@
 ---
-import Layout from '~/layouts/Layout.astro';
-import TypeForm from '~/components/TypeForm';
-import { requireUserId } from '~/lib/session.server';
-import { getType } from '~/models/types.server';
+import Layout from "~/layouts/Layout.astro";
+import TypeForm from "~/components/TypeForm";
+import { requireUserId } from "~/lib/session.server";
+import { getType } from "~/models/types.server";
 
 const userId = await requireUserId(Astro.cookies);
 const { typeId } = Astro.params;
 
 if (!typeId) {
-  return Astro.redirect('/types');
+  return Astro.redirect("/types");
 }
 
 const type = await getType({ id: typeId, userId });

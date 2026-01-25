@@ -1,8 +1,8 @@
 ---
-import Layout from '~/layouts/Layout.astro';
-import BalancesList from '~/components/BalancesList';
-import { requireUserId } from '~/lib/session.server';
-import { getBalances } from '~/models/balances.server';
+import Layout from "~/layouts/Layout.astro";
+import BalancesList from "~/components/BalancesList";
+import { requireUserId } from "~/lib/session.server";
+import { getBalances } from "~/models/balances.server";
 
 const userId = await requireUserId(Astro.cookies);
 const balances = await getBalances({ userId });

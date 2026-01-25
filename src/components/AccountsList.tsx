@@ -58,7 +58,7 @@ export default function AccountsList({
         <Button>+ New Account</Button>
       </a>
 
-      <h2 className="mb-4 mt-8 text-xl font-semibold">Active Accounts</h2>
+      <h2 className="mt-8 mb-4 text-xl font-semibold">Active Accounts</h2>
       <table className="min-w-full">
         <thead className="border-b border-gray-300 text-left">
           <tr>
@@ -115,7 +115,7 @@ export default function AccountsList({
 
       {archivedAccounts.length > 0 && (
         <>
-          <h2 className="mb-4 mt-8 text-xl font-semibold text-gray-400">
+          <h2 className="mt-8 mb-4 text-xl font-semibold text-gray-400">
             Archived Accounts
           </h2>
           <table className="min-w-full">

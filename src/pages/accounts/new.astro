@@ -1,9 +1,9 @@
 ---
-import Layout from '~/layouts/Layout.astro';
-import AccountForm from '~/components/AccountForm';
-import { requireUserId } from '~/lib/session.server';
-import { getGroups } from '~/models/groups.server';
-import { getTypes } from '~/models/types.server';
+import Layout from "~/layouts/Layout.astro";
+import AccountForm from "~/components/AccountForm";
+import { requireUserId } from "~/lib/session.server";
+import { getGroups } from "~/models/groups.server";
+import { getTypes } from "~/models/types.server";
 
 const userId = await requireUserId(Astro.cookies);
 const groups = await getGroups({ userId });

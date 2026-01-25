@@ -1,15 +1,15 @@
 ---
-import Layout from '~/layouts/Layout.astro';
-import BalanceForm from '~/components/BalanceForm';
-import { requireUserId } from '~/lib/session.server';
-import { getBalance } from '~/models/balances.server';
-import { getAccounts } from '~/models/accounts.server';
+import Layout from "~/layouts/Layout.astro";
+import BalanceForm from "~/components/BalanceForm";
+import { requireUserId } from "~/lib/session.server";
+import { getBalance } from "~/models/balances.server";
+import { getAccounts } from "~/models/accounts.server";
 
 const userId = await requireUserId(Astro.cookies);
 const { balanceId } = Astro.params;
 
 if (!balanceId) {
-  return Astro.redirect('/balances');
+  return Astro.redirect("/balances");
 }
 
 const balance = await getBalance({ id: balanceId, userId });

@@ -33,7 +33,8 @@
     "validate": "npm run test -- --run && npm run lint && npm run astro:check && npm run typecheck && npm run test:e2e"
   },
   "prettier": {
-    "trailingComma": "es5"
+    "trailingComma": "es5",
+    "plugins": ["prettier-plugin-astro", "prettier-plugin-tailwindcss"]
   },
   "dependencies": {
     "@astrojs/check": "^0.9.0",
@@ -79,6 +80,7 @@
     "globals": "^17.0.0",
     "happy-dom": "^20.3.4",
     "prettier": "^3.8.0",
+    "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "prisma": "^7.2.0",
     "start-server-and-test": "^2.1.3",
