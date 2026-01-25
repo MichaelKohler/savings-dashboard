@@ -270,4 +270,36 @@ describe("BalancesList", () => {
     expect(headings[0]).toHaveTextContent("2024-02");
     expect(headings[1]).toHaveTextContent("2024-01");
   });
+
+  it("displays group name as sublabel when account has a group", () => {
+    const balancesWithGroup = [
+      {
+        id: "b1",
+        balance: 1000,
+        date: new Date("2024-01-15"),
+        accountId: "a1",
+        updatedAt: new Date("2024-01-15T10:00:00"),
+        account: {
+          id: "a1",
+          name: "Savings Account",
+          group: { id: "g1", name: "Personal" },
+        },
+      },
+    ];
+
+    render(<BalancesList balances={balancesWithGroup} />);
+
+    expect(screen.getByText("Savings Account")).toBeInTheDocument();
+    expect(screen.getByText("Personal")).toBeInTheDocument();
+  });
+
+  it("does not display group sublabel when account has no group", () => {
+    render(<BalancesList balances={mockBalances} />);
+
+    expect(screen.getByText("Savings Account")).toBeInTheDocument();
+    expect(screen.getByText("Checking Account")).toBeInTheDocument();
+
+    const grayTexts = document.querySelectorAll(".text-gray-400");
+    expect(grayTexts).toHaveLength(0);
+  });
 });
