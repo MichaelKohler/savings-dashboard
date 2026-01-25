@@ -102,6 +102,7 @@ interface BalanceReducerTempType {
   balance: number;
   type: string;
   group: string;
+  archived: boolean;
 }
 
 function reduceToBalance(
@@ -147,6 +148,7 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
     select: {
       id: true,
       showInGraphs: true,
+      archived: true,
       group: {
         select: {
           id: true,
@@ -208,6 +210,7 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
         balance: number;
         type: string;
         group: string;
+        archived: boolean;
       }
     > = {};
 
@@ -225,12 +228,17 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
           type: account.type?.id || "",
           group: account.group?.id || "",
           balance: lastKnownBalances[accId],
+          archived: account.archived,
         };
       }
     }
 
     const total = Object.entries(accountsMapForMonth)
-      .filter(([accountId]) => accountIdsForTotals.has(accountId))
+      .filter(
+        ([accountId, account]) =>
+          accountIdsForTotals.has(accountId) &&
+          (!account.archived || account.balance !== 0)
+      )
       .map(([, account]) => account.balance)
       .reduce((a, b) => a + b, 0);
 

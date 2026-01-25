@@ -201,12 +201,14 @@ describe("balance models", () => {
         {
           id: "1",
           showInGraphs: true,
+          archived: false,
           type: { id: "t1" },
           group: { id: "g1" },
         },
         {
           id: "2",
           showInGraphs: false,
+          archived: false,
           type: { id: "t2" },
           group: { id: "g2" },
         },
@@ -229,11 +231,76 @@ describe("balance models", () => {
       expect(result[1].total).toBe(150);
     });
 
+    it("should include archived accounts with non-zero balance in totals", async () => {
+      const accounts = [
+        {
+          id: "1",
+          showInGraphs: true,
+          archived: false,
+          type: { id: "t1" },
+          group: { id: "g1" },
+        },
+        {
+          id: "2",
+          showInGraphs: true,
+          archived: true,
+          type: { id: "t2" },
+          group: { id: "g2" },
+        },
+      ];
+      const balances = [
+        { accountId: "1", date: new Date("2023-01-15"), balance: 100 },
+        { accountId: "2", date: new Date("2023-01-15"), balance: 200 },
+      ];
+
+      mockPrisma.account.findMany.mockResolvedValue(accounts);
+      mockPrisma.balance.findMany.mockResolvedValue(balances);
+
+      const { balances: result } = await getBalancesForCharts({
+        userId: user.id,
+      });
+
+      expect(result[0].total).toBe(300);
+    });
+
+    it("should exclude archived accounts with zero balance from totals", async () => {
+      const accounts = [
+        {
+          id: "1",
+          showInGraphs: true,
+          archived: false,
+          type: { id: "t1" },
+          group: { id: "g1" },
+        },
+        {
+          id: "2",
+          showInGraphs: true,
+          archived: true,
+          type: { id: "t2" },
+          group: { id: "g2" },
+        },
+      ];
+      const balances = [
+        { accountId: "1", date: new Date("2023-01-15"), balance: 100 },
+        { accountId: "2", date: new Date("2023-01-15"), balance: 0 },
+      ];
+
+      mockPrisma.account.findMany.mockResolvedValue(accounts);
+      mockPrisma.balance.findMany.mockResolvedValue(balances);
+
+      const { balances: result } = await getBalancesForCharts({
+        userId: user.id,
+      });
+
+      expect(result[0].total).toBe(100);
+    });
+
     it("should return empty array if no balances", async () => {
       mockPrisma.account.findMany.mockResolvedValue([
         {
           id: "1",
           showInGraphs: true,
+          archived: false,
           type: { id: "t1" },
           group: { id: "g1" },
         },

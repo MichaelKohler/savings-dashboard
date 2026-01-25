@@ -5,7 +5,7 @@ import AccountsList from "~/components/AccountsList";
 import { actions } from "astro:actions";
 
 describe("AccountsList", () => {
-  const mockAccounts = [
+  const mockActiveAccounts = [
     {
       id: "1",
       name: "Savings Account",
@@ -15,6 +15,9 @@ describe("AccountsList", () => {
       group: { id: "g1", name: "Personal" },
       type: { id: "t1", name: "Savings" },
     },
+  ];
+
+  const mockArchivedAccounts = [
     {
       id: "2",
       name: "Checking Account",
@@ -37,7 +40,7 @@ describe("AccountsList", () => {
   });
 
   it("renders the new account button", () => {
-    render(<AccountsList accounts={[]} />);
+    render(<AccountsList activeAccounts={[]} archivedAccounts={[]} />);
     const link = screen.getByRole("link");
     expect(link).toHaveAttribute("href", "/accounts/new");
     expect(
@@ -46,38 +49,119 @@ describe("AccountsList", () => {
   });
 
   it("renders table headers", () => {
-    render(<AccountsList accounts={mockAccounts} />);
-    expect(
-      screen.getByRole("columnheader", { name: "Name" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: "Actions" })
-    ).toBeInTheDocument();
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
+    const nameHeaders = screen.getAllByRole("columnheader", { name: "Name" });
+    const actionsHeaders = screen.getAllByRole("columnheader", {
+      name: "Actions",
+    });
+    expect(nameHeaders.length).toBeGreaterThanOrEqual(1);
+    expect(actionsHeaders.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("renders Active Accounts section header", () => {
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
+    expect(screen.getByText("Active Accounts")).toBeInTheDocument();
+  });
+
+  it("renders Archived Accounts section header when there are archived accounts", () => {
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
+    expect(screen.getByText("Archived Accounts")).toBeInTheDocument();
+  });
+
+  it("does not render Archived Accounts section when there are no archived accounts", () => {
+    render(
+      <AccountsList activeAccounts={mockActiveAccounts} archivedAccounts={[]} />
+    );
+    expect(screen.queryByText("Archived Accounts")).not.toBeInTheDocument();
   });
 
   it("renders all accounts in the list", () => {
-    render(<AccountsList accounts={mockAccounts} />);
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
     expect(screen.getByText("Savings Account (Personal)")).toBeInTheDocument();
     expect(screen.getByText("Checking Account")).toBeInTheDocument();
   });
 
+  it("renders active accounts in Active Accounts section", () => {
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
+    const activeHeader = screen.getByText("Active Accounts");
+    const activeSection = activeHeader.parentElement;
+    expect(activeSection?.textContent).toContain("Savings Account");
+  });
+
+  it("renders archived accounts in Archived Accounts section", () => {
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
+    const archivedHeader = screen.getByText("Archived Accounts");
+    const archivedSection = archivedHeader.parentElement;
+    expect(archivedSection?.textContent).toContain("Checking Account");
+  });
+
   it("renders account with group name", () => {
-    render(<AccountsList accounts={mockAccounts} />);
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
     expect(screen.getByText("Savings Account (Personal)")).toBeInTheDocument();
   });
 
   it("renders account without group name", () => {
-    render(<AccountsList accounts={mockAccounts} />);
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
     expect(screen.getByText("Checking Account")).toBeInTheDocument();
   });
 
   it("renders account type when present", () => {
-    render(<AccountsList accounts={mockAccounts} />);
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
     expect(screen.getByText("Savings")).toBeInTheDocument();
   });
 
   it("does not render type when not present", () => {
-    render(<AccountsList accounts={mockAccounts} />);
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
     const rows = screen.getAllByRole("row");
     const checkingRow = rows.find((row) =>
       row.textContent?.includes("Checking Account")
@@ -86,7 +170,12 @@ describe("AccountsList", () => {
   });
 
   it("applies archived styling to archived accounts", () => {
-    render(<AccountsList accounts={mockAccounts} />);
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
     const rows = screen.getAllByRole("row");
     const archivedRow = rows.find((row) =>
       row.textContent?.includes("Checking Account")
@@ -95,7 +184,12 @@ describe("AccountsList", () => {
   });
 
   it("does not apply archived styling to active accounts", () => {
-    render(<AccountsList accounts={mockAccounts} />);
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
     const rows = screen.getAllByRole("row");
     const activeRow = rows.find((row) =>
       row.textContent?.includes("Savings Account")
@@ -104,13 +198,23 @@ describe("AccountsList", () => {
   });
 
   it("renders edit button for each account", () => {
-    render(<AccountsList accounts={mockAccounts} />);
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
     const editButtons = screen.getAllByRole("button", { name: "Edit" });
     expect(editButtons).toHaveLength(2);
   });
 
   it("renders edit links with correct hrefs", () => {
-    render(<AccountsList accounts={mockAccounts} />);
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
     const editLinks = screen
       .getAllByRole("link")
       .filter((link) => link.getAttribute("href")?.includes("/edit"));
@@ -119,20 +223,35 @@ describe("AccountsList", () => {
   });
 
   it("renders initial delete button (X) for each account", () => {
-    render(<AccountsList accounts={mockAccounts} />);
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
     const deleteButtons = screen.getAllByRole("button", { name: "X" });
     expect(deleteButtons).toHaveLength(2);
   });
 
   it("shows confirmation button (X?) when delete is clicked", () => {
-    render(<AccountsList accounts={mockAccounts} />);
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
     const deleteButtons = screen.getAllByRole("button", { name: "X" });
     fireEvent.click(deleteButtons[0]);
     expect(screen.getByRole("button", { name: "X?" })).toBeInTheDocument();
   });
 
   it("calls delete API when confirmation button is clicked", async () => {
-    render(<AccountsList accounts={mockAccounts} />);
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
     const deleteButtons = screen.getAllByRole("button", { name: "X" });
     fireEvent.click(deleteButtons[0]);
 
@@ -145,7 +264,12 @@ describe("AccountsList", () => {
   });
 
   it("reloads page after successful deletion", async () => {
-    render(<AccountsList accounts={mockAccounts} />);
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
     const deleteButtons = screen.getAllByRole("button", { name: "X" });
     fireEvent.click(deleteButtons[0]);
 
@@ -165,7 +289,12 @@ describe("AccountsList", () => {
       error: {} as any,
     });
 
-    render(<AccountsList accounts={mockAccounts} />);
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
     const deleteButtons = screen.getAllByRole("button", { name: "X" });
     fireEvent.click(deleteButtons[0]);
 
@@ -183,14 +312,19 @@ describe("AccountsList", () => {
   });
 
   it("renders empty table when there are no accounts", () => {
-    render(<AccountsList accounts={[]} />);
+    render(<AccountsList activeAccounts={[]} archivedAccounts={[]} />);
     const rowgroups = screen.getAllByRole("rowgroup");
     const tbody = rowgroups[1]; // tbody is the second rowgroup
     expect(tbody.querySelectorAll("tr")).toHaveLength(0);
   });
 
   it("renders color swatch for each account", () => {
-    render(<AccountsList accounts={mockAccounts} />);
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
     const rows = screen.getAllByRole("row");
     const accountRows = rows.filter((row) =>
       row.querySelector("[style*='background-color']")
