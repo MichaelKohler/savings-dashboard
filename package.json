@@ -18,6 +18,7 @@
     "format": "prettier --write e2e prisma public scripts src",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "migrate": "prisma migrate deploy",
+    "migrate:baseline": "sh scripts/migrate-with-baseline.sh",
     "migrate:deploy": "prisma migrate deploy",
     "postinstall": "prisma generate",
     "setup": "prisma generate && prisma migrate dev && prisma db seed",

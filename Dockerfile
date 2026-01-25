@@ -2,6 +2,9 @@ FROM node:24-alpine
 
 WORKDIR /usr/server/app
 
+# Install PostgreSQL client for migration baselining
+RUN apk add --no-cache postgresql-client
+
 COPY ./ .
 
 # Provide DATABASE_URL for Prisma client generation during build
@@ -19,4 +22,4 @@ ENV PORT=3000
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node ./dist/server/entry.mjs"]
+CMD ["sh", "-c", "./scripts/migrate-with-baseline.sh && node ./dist/server/entry.mjs"]
