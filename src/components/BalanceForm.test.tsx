@@ -17,6 +17,8 @@ describe("BalanceForm", () => {
       typeId: null,
       createdAt: new Date(),
       updatedAt: new Date(),
+      group: null,
+      type: null,
     },
     {
       id: "a2",
@@ -29,6 +31,8 @@ describe("BalanceForm", () => {
       typeId: null,
       createdAt: new Date(),
       updatedAt: new Date(),
+      group: null,
+      type: null,
     },
   ];
 
@@ -450,5 +454,96 @@ describe("BalanceForm", () => {
     await waitFor(() => {
       expect(screen.queryByText("Balance is required")).not.toBeInTheDocument();
     });
+  });
+
+  it("groups accounts by their group in optgroups", () => {
+    const groupedAccounts = [
+      {
+        id: "a1",
+        name: "Personal Savings",
+        color: "#FF0000",
+        archived: false,
+        showInGraphs: true,
+        userId: "u1",
+        groupId: "g1",
+        typeId: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        group: {
+          id: "g1",
+          name: "Personal",
+          userId: "u1",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        type: null,
+      },
+      {
+        id: "a2",
+        name: "Business Checking",
+        color: "#00FF00",
+        archived: false,
+        showInGraphs: true,
+        userId: "u1",
+        groupId: "g2",
+        typeId: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        group: {
+          id: "g2",
+          name: "Business",
+          userId: "u1",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        type: null,
+      },
+      {
+        id: "a3",
+        name: "No Group Account",
+        color: "#0000FF",
+        archived: false,
+        showInGraphs: true,
+        userId: "u1",
+        groupId: null,
+        typeId: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        group: null,
+        type: null,
+      },
+    ];
+
+    render(<BalanceForm accounts={groupedAccounts} />);
+    const accountSelect = screen.getByLabelText(
+      /Account:/
+    ) as HTMLSelectElement;
+
+    const optgroups = accountSelect.querySelectorAll("optgroup");
+    expect(optgroups).toHaveLength(3);
+
+    const businessGroup = Array.from(optgroups).find(
+      (og) => og.label === "Business"
+    );
+    const personalGroup = Array.from(optgroups).find(
+      (og) => og.label === "Personal"
+    );
+    const ungroupedGroup = Array.from(optgroups).find(
+      (og) => og.label === "Ungrouped"
+    );
+
+    expect(businessGroup).toBeInTheDocument();
+    expect(personalGroup).toBeInTheDocument();
+    expect(ungroupedGroup).toBeInTheDocument();
+
+    expect(
+      businessGroup?.querySelector('option[value="a2"]')
+    ).toBeInTheDocument();
+    expect(
+      personalGroup?.querySelector('option[value="a1"]')
+    ).toBeInTheDocument();
+    expect(
+      ungroupedGroup?.querySelector('option[value="a3"]')
+    ).toBeInTheDocument();
   });
 });
