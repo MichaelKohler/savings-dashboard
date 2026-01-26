@@ -2,11 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { actions, isInputError } from "astro:actions";
 import Button from "~/components/button";
 import type { Balance } from "~/models/balances.server";
-import type { Account } from "~/models/accounts.server";
+import type { getAccounts } from "~/models/accounts.server";
+
+type AccountWithGroup = Awaited<ReturnType<typeof getAccounts>>[number];
 
 interface BalanceFormProps {
   balance?: Balance | null;
-  accounts: Account[];
+  accounts: AccountWithGroup[];
 }
 
 export default function BalanceForm({ balance, accounts }: BalanceFormProps) {
@@ -22,6 +24,24 @@ export default function BalanceForm({ balance, accounts }: BalanceFormProps) {
   const dateRef = useRef<HTMLInputElement>(null);
 
   const isEdit = !!balance?.id;
+
+  const groupedAccounts = accounts.reduce(
+    (acc, account) => {
+      const groupName = account.group?.name || "Ungrouped";
+      if (!acc[groupName]) {
+        acc[groupName] = [];
+      }
+      acc[groupName].push(account);
+      return acc;
+    },
+    {} as Record<string, AccountWithGroup[]>
+  );
+
+  const sortedGroupNames = Object.keys(groupedAccounts).sort((a, b) => {
+    if (a === "Ungrouped") return 1;
+    if (b === "Ungrouped") return -1;
+    return a.localeCompare(b);
+  });
 
   useEffect(() => {
     if (errors.balance) {
@@ -83,10 +103,14 @@ export default function BalanceForm({ balance, accounts }: BalanceFormProps) {
             required
           >
             <option value="">Select account</option>
-            {accounts?.map((account) => (
-              <option key={account.id} value={account.id}>
-                {account.name}
-              </option>
+            {sortedGroupNames.map((groupName) => (
+              <optgroup key={groupName} label={groupName}>
+                {groupedAccounts[groupName].map((account) => (
+                  <option key={account.id} value={account.id}>
+                    {account.name}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </select>
         </label>
