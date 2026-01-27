@@ -31,7 +31,7 @@ export default function Header({ user }: { user?: User | null }) {
 
   return (
     <header
-      className={`flex bg-mk p-4 text-white ${
+      className={`bg-mk flex p-4 text-white ${
         menuOpen ? "flex-col" : "flex-row items-center"
       }`}
     >
@@ -59,7 +59,7 @@ export default function Header({ user }: { user?: User | null }) {
                 href="/accounts"
                 className={`text-white-700 flex ${
                   menuOpen ? "border-b py-12" : "px-8 py-2"
-                } text-3xl lg:text-base font-semibold hover:text-mklight-300 hover:transition-colors hover:duration-300 focus:text-mklight-300`}
+                } hover:text-mklight-300 focus:text-mklight-300 text-3xl font-semibold hover:transition-colors hover:duration-300 lg:text-base`}
               >
                 Accounts
               </a>
@@ -67,7 +67,7 @@ export default function Header({ user }: { user?: User | null }) {
                 href="/groups"
                 className={`text-white-700 flex ${
                   menuOpen ? "border-b py-12" : "px-8 py-2"
-                } text-3xl lg:text-base font-semibold hover:text-mklight-300 hover:transition-colors hover:duration-300 focus:text-mklight-300`}
+                } hover:text-mklight-300 focus:text-mklight-300 text-3xl font-semibold hover:transition-colors hover:duration-300 lg:text-base`}
               >
                 Groups
               </a>
@@ -75,7 +75,7 @@ export default function Header({ user }: { user?: User | null }) {
                 href="/types"
                 className={`text-white-700 flex ${
                   menuOpen ? "border-b py-12" : "px-8 py-2"
-                } text-3xl lg:text-base font-semibold hover:text-mklight-300 hover:transition-colors hover:duration-300 focus:text-mklight-300`}
+                } hover:text-mklight-300 focus:text-mklight-300 text-3xl font-semibold hover:transition-colors hover:duration-300 lg:text-base`}
               >
                 Types
               </a>
@@ -83,7 +83,7 @@ export default function Header({ user }: { user?: User | null }) {
                 href="/balances"
                 className={`text-white-700 flex ${
                   menuOpen ? "border-b py-12" : "px-8 py-2"
-                } text-3xl lg:text-base font-semibold hover:text-mklight-300 hover:transition-colors hover:duration-300 focus:text-mklight-300`}
+                } hover:text-mklight-300 focus:text-mklight-300 text-3xl font-semibold hover:transition-colors hover:duration-300 lg:text-base`}
               >
                 Balances
               </a>
@@ -91,7 +91,7 @@ export default function Header({ user }: { user?: User | null }) {
                 href="/charts"
                 className={`text-white-700 flex ${
                   menuOpen ? "border-b py-12" : "px-8 py-2"
-                } text-3xl lg:text-base font-semibold hover:text-mklight-300 hover:transition-colors hover:duration-300 focus:text-mklight-300`}
+                } hover:text-mklight-300 focus:text-mklight-300 text-3xl font-semibold hover:transition-colors hover:duration-300 lg:text-base`}
               >
                 Charts
               </a>
@@ -104,14 +104,14 @@ export default function Header({ user }: { user?: User | null }) {
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="text-white-100 rounded bg-mk-tertiary py-2 px-4 hover:bg-mk-secondary active:bg-mk-secondary"
+              className="text-white-100 bg-mk-tertiary hover:bg-mk-secondary active:bg-mk-secondary rounded px-4 py-2"
             >
               {isLoggingOut ? "Logging out..." : "Logout"}
             </button>
           ) : (
             <a
               href="/login"
-              className="text-white-100 flex items-center justify-center rounded bg-mk-tertiary py-2 px-4 font-medium hover:bg-mk-secondary active:bg-mk-secondary"
+              className="text-white-100 bg-mk-tertiary hover:bg-mk-secondary active:bg-mk-secondary flex items-center justify-center rounded px-4 py-2 font-medium"
             >
               Log In
             </a>
@@ -124,7 +124,7 @@ export default function Header({ user }: { user?: User | null }) {
         aria-controls="basic-navbar-nav"
         aria-expanded={menuOpen}
         aria-label="Toggle navigation"
-        className="text-white-100 absolute top-3 right-3 h-10 w-10 rounded bg-mk-tertiary hover:bg-mk-secondary active:bg-mk-secondary lg:hidden"
+        className="text-white-100 bg-mk-tertiary hover:bg-mk-secondary active:bg-mk-secondary absolute top-3 right-3 h-10 w-10 rounded lg:hidden"
       >
         {menuOpen ? "✕" : "☰"}
       </button>
