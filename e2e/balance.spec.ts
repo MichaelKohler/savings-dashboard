@@ -14,7 +14,7 @@ test("Balance flows", async ({ page }) => {
   await createType(page, "Balance Test Type");
 
   // Create account for balance
-  await page.getByRole("link", { name: "📒 Accounts" }).click();
+  await page.getByRole("link", { name: "Accounts" }).click();
   await page.getByRole("button", { name: "+ New Account" }).click();
   await page.getByLabel("Name:").fill("Balance Test Account");
   await page.getByLabel("Type:").selectOption({ label: "Balance Test Type" });

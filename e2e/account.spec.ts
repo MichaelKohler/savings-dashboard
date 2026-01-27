@@ -14,7 +14,7 @@ test("Account flows", async ({ page }) => {
   await createType(page, "Test Type for account");
 
   // Navigate to accounts page
-  await page.getByRole("link", { name: "📒 Accounts" }).click();
+  await page.getByRole("link", { name: "Accounts" }).click();
 
   // Create
   await page.getByRole("button", { name: "+ New Account" }).click();
