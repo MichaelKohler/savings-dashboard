@@ -42,7 +42,7 @@ Object.entries(headers).forEach(([key, value]) => {
     <title>{title}</title>
   </head>
   <body class="h-full">
-    <Header client:load />
+    <Header user={user} client:load />
     <Main user={user} client:load>
       <slot />
     </Main>

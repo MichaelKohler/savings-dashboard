@@ -27,7 +27,7 @@ export async function login(
  */
 export async function logout(page: Page) {
   await page.getByRole("button", { name: "Logout" }).click();
-  await expect(page.getByText("Log in")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Log In" })).toBeVisible();
 }
 
 /**
@@ -45,7 +45,7 @@ export async function goToHome(page: Page) {
  */
 export async function createGroup(page: Page, groupName: string) {
   // Navigate to groups page
-  await page.getByRole("link", { name: "🫙 Groups" }).click();
+  await page.getByRole("link", { name: "Groups" }).click();
 
   // Click New Group button
   await page.getByRole("button", { name: "+ New Group" }).click();
@@ -69,7 +69,7 @@ export async function createGroup(page: Page, groupName: string) {
  */
 export async function createType(page: Page, typeName: string) {
   // Navigate to types page
-  await page.getByRole("link", { name: "🏦 Types" }).click();
+  await page.getByRole("link", { name: "Types" }).click();
 
   // Click New Type button
   await page.getByRole("button", { name: "+ New Type" }).click();
@@ -100,7 +100,7 @@ export async function createBalance(
   balanceAmount: string
 ) {
   // Navigate to balances page
-  await page.getByRole("link", { name: "💰 Balances" }).click();
+  await page.getByRole("link", { name: "Balances" }).click();
 
   // Click New Balance button
   await page.getByRole("button", { name: "+ New Balance" }).click();
