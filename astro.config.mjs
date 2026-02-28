@@ -18,4 +18,16 @@ export default defineConfig({
 
     plugins: [tailwindcss()],
   },
+  security: {
+    allowedDomains: [
+      {
+        hostname: "savings.airplane-galaxy.ts.net",
+        protocol: "https",
+      },
+      {
+        hostname: "savings-staging.airplane-galaxy.ts.net",
+        protocol: "https",
+      },
+    ],
+  },
 });
