@@ -27,7 +27,7 @@ export async function login(
  */
 export async function logout(page: Page) {
   await page.getByRole("button", { name: "Logout" }).click();
-  await page.waitForURL("/");
+  await page.waitForURL("**/login**");
   await expect(page.getByRole("link", { name: "Log In" })).toBeVisible();
 }
 
