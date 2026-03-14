@@ -1,6 +1,6 @@
 # savings-dashboard
 
-Simple savings dashboard. This is loosely based on the [Remix Indie Stack](https://github.com/remix-run/indie-stack).
+Simple savings dashboard.
 
 ![Screenshot - Balances](./screenshot-balances.png)
 
