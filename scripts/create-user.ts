@@ -3,7 +3,6 @@ import { stdin as input, stdout as output } from "process";
 
 import { PrismaClient } from "../src/generated/prisma/client.ts";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
 import bcrypt from "@node-rs/bcrypt";
 
 const rl = readline.createInterface({ input, output });
@@ -15,8 +14,7 @@ async function main() {
     throw new Error("DATABASE_URL environment variable is not set");
   }
 
-  const pool = new Pool({ connectionString });
-  const adapter = new PrismaPg(pool);
+  const adapter = new PrismaPg({ connectionString });
   const prisma = new PrismaClient({ adapter });
 
   const email = await rl.question("Enter the email for the new user: ");
