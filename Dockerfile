@@ -12,9 +12,11 @@ COPY ./ .
 ARG DATABASE_URL="postgresql://placeholder:placeholder@placeholder:5432/placeholder"
 ENV DATABASE_URL=$DATABASE_URL
 
-RUN npm ci
+RUN corepack enable
 
-RUN npm run build
+RUN pnpm install --frozen-lockfile
+
+RUN pnpm run build
 
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0

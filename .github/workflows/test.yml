@@ -16,18 +16,22 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v6
 
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: ⎔ Setup node
         uses: actions/setup-node@v6
         with:
           node-version: 24
+          cache: "pnpm"
 
       - name: 📥 Download deps
-        run: npm ci
+        run: pnpm install --frozen-lockfile
         env:
           DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
 
       - name: 🔬 Lint
-        run: npm run lint
+        run: pnpm run lint
 
   typecheck:
     name: ʦ TypeScript
@@ -36,18 +40,22 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v6
 
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: ⎔ Setup node
         uses: actions/setup-node@v6
         with:
           node-version: 24
+          cache: "pnpm"
 
       - name: 📥 Download deps
-        run: npm ci
+        run: pnpm install --frozen-lockfile
         env:
           DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
 
       - name: 🔎 Type check
-        run: npm run typecheck --if-present
+        run: pnpm run typecheck
 
   vitest:
     name: ⚡ Vitest
@@ -56,18 +64,22 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v6
 
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: ⎔ Setup node
         uses: actions/setup-node@v6
         with:
           node-version: 24
+          cache: "pnpm"
 
       - name: 📥 Download deps
-        run: npm ci
+        run: pnpm install --frozen-lockfile
         env:
           DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
 
       - name: ⚡ Run vitest
-        run: npm run test -- --coverage
+        run: pnpm run test -- --coverage
 
   playwright:
     name: ⚫️ Playwright
@@ -91,34 +103,37 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v6
 
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: 🏄 Copy test env vars
         run: cp .env.example .env
 
       - name: 📥 Download deps
-        run: npm ci
+        run: pnpm install --frozen-lockfile
         env:
           DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
 
       - name: 🛠 Setup Database
-        run: npx prisma db push
+        run: pnpm exec prisma db push
         env:
           DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
 
       - name: 🔧 Generate Prisma Client
-        run: npx prisma generate
+        run: pnpm exec prisma generate
         env:
           DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
 
       - name: 🌱 Seed the Database
-        run: npx prisma db seed
+        run: pnpm exec prisma db seed
         env:
           DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
 
       - name: ⚙️ Build
-        run: npm run build
+        run: pnpm run build
 
       - name: 🌳 Run Playwright tests
-        run: npx playwright install --with-deps && npm run test:e2e:run
+        run: pnpm exec playwright install --with-deps && pnpm run test:e2e:run
         env:
           HOME: /root
           DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
