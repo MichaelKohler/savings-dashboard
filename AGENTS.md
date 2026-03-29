@@ -13,7 +13,7 @@ This is a savings dashboard application that allows users to track their savings
 - **Build Tool**: Vite
 - **Testing**: Vitest + React Testing Library as well as E2E testing with Playwright
 - **Linting**: ESLint + Prettier
-- **Package Manager**: npm
+- **Package Manager**: pnpm
 - **Database**: Prisma with PostgreSQL
 - **Charts**: Recharts for financial data visualization
 - **Version Control**: Git
@@ -33,15 +33,15 @@ This is a savings dashboard application that allows users to track their savings
 - Prefer composition over inheritance
 - Keep functions small and focused (single responsibility)
 - Only ever add a comment to the code if it explains an edge case and why the code is there, except for JSDoc or general function/class documentation.
-- At the end of each agent run cycle, run the individual validation steps instead of `npm run validate`:
-  - `npm run test -- --run` (unit tests)
-  - `npm run lint` (ESLint)
-  - `npm run astro:check` (Astro check)
-  - `npm run typecheck` (TypeScript check)
-  - `npm run format` (Prettier formatting)
-  - Do NOT run E2E tests (`npm run test:e2e`) as they have compatibility issues with ARM hardware
-- If you need to run E2E tests manually, always use `npm run test:e2e` and not `npm run test:e2e:run`.
-- **IMPORTANT**: Always use `npm run format` for formatting. Never use custom prettier commands or direct `npx prettier` invocations, as the npm script is configured to handle file patterns and ignore paths correctly.
+- At the end of each agent run cycle, run the individual validation steps instead of `pnpm run validate`:
+  - `pnpm run test -- --run` (unit tests)
+  - `pnpm run lint` (ESLint)
+  - `pnpm run astro:check` (Astro check)
+  - `pnpm run typecheck` (TypeScript check)
+  - `pnpm run format` (Prettier formatting)
+  - Do NOT run E2E tests (`pnpm run test:e2e`) as they have compatibility issues with ARM hardware
+- If you need to run E2E tests manually, always use `pnpm run test:e2e` and not `pnpm run test:e2e:run`.
+- **IMPORTANT**: Always use `pnpm run format` for formatting. Never use custom prettier commands or direct `npx prettier` invocations, as the pnpm script is configured to handle file patterns and ignore paths correctly.
 
 ### React specific
 
@@ -176,6 +176,6 @@ export const ComponentName: React.FC<Props> = ({ prop1, prop2 }) => {
 - Mock external dependencies according to other tests
 - Aim for good test coverage but focus on most useful paths
 - Use `vi.spyOn` for mocking functions and methods, do not use `vi.mock` for mocking modules
-- Always run "npm test" with `--run`, otherwise the tests will run in watch mode and not return
+- Always run "pnpm test" with `--run`, otherwise the tests will run in watch mode and not return
 
 Remember: These instructions should evolve with the project. Keep them updated as the codebase grows and changes.

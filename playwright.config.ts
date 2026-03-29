@@ -50,7 +50,7 @@ const config: PlaywrightTestConfig = {
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "node --env-file=.env.e2e ./node_modules/.bin/astro dev",
+    command: "pnpm run dev:e2e",
     port: 4321,
     reuseExistingServer: !process.env.CI,
     stdout: "ignore",

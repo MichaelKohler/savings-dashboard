@@ -115,17 +115,17 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
 
       - name: 🛠 Setup Database
-        run: npx prisma db push
+        run: pnpm exec prisma db push
         env:
           DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
 
       - name: 🔧 Generate Prisma Client
-        run: npx prisma generate
+        run: pnpm exec prisma generate
         env:
           DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
 
       - name: 🌱 Seed the Database
-        run: npx prisma db seed
+        run: pnpm exec prisma db seed
         env:
           DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable
 
@@ -133,7 +133,7 @@ jobs:
         run: pnpm run build
 
       - name: 🌳 Run Playwright tests
-        run: npx playwright install --with-deps && pnpm run test:e2e:run
+        run: pnpm exec playwright install --with-deps && pnpm run test:e2e:run
         env:
           HOME: /root
           DATABASE_URL: postgresql://postgres:postgres@postgres:5432/default?sslmode=disable

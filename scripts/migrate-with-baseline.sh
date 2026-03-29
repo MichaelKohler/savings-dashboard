@@ -13,7 +13,7 @@ if [ "$MIGRATION_COUNT" = "0" ] || [ -z "$MIGRATION_COUNT" ]; then
   echo "No migrations found in database. Baselining initial migration..."
 
   # Baseline the init migration
-  npx prisma migrate resolve --applied "20260125140605_init"
+  pnpm exec prisma migrate resolve --applied "20260125140605_init"
 
   echo "Initial migration baselined successfully."
 else
@@ -22,6 +22,6 @@ fi
 
 # Run remaining migrations
 echo "Running migrations..."
-npx prisma migrate deploy
+pnpm exec prisma migrate deploy
 
 echo "Migrations completed successfully."

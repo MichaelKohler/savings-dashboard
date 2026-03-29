@@ -6,7 +6,8 @@ Simple savings dashboard.
 
 ## Requirements
 
-- **Node.js 24.0.0 or higher** (comes with npm 11)
+- **Node.js 24.0.0 or higher**
+- **pnpm** (enabled via corepack: `corepack enable`)
 
 ## Development
 
@@ -19,7 +20,7 @@ cp .env.example .env
 - Initial setup:
 
   ```sh
-  npm run setup
+  pnpm run setup
   ```
 
   This will:
@@ -30,13 +31,13 @@ cp .env.example .env
 - Validate the app has been set up properly (optional):
 
   ```sh
-  npm run validate
+  pnpm run validate
   ```
 
 - Start dev server:
 
   ```sh
-  npm run dev
+  pnpm run dev
   ```
 
 This starts your app in development mode, rebuilding assets on file changes.
@@ -50,9 +51,9 @@ The database seed script creates a new user with some data you can use to get st
 
 This project uses Prisma Migrate for database schema management.
 
-- Apply pending migrations: `npm run dev:migrate`
-- Reset database (WARNING: deletes all data): `npm run dev:reset`
-- Create a new migration after schema changes: `npx prisma migrate dev --name <migration_name>`
+- Apply pending migrations: `pnpm run dev:migrate`
+- Reset database (WARNING: deletes all data): `pnpm run dev:reset`
+- Create a new migration after schema changes: `pnpm exec prisma migrate dev --name <migration_name>`
 
 Migrations are automatically applied on production startup.
 
@@ -74,7 +75,7 @@ This starts a PostgreSQL 18 container on port `5434`. Update your `.env` file wi
 DATABASE_URL="postgresql://savings_dashboard:savings_dashboard_password@localhost:5434/savings_dashboard_dev"
 ```
 
-Then run the application locally with `npm run dev` as usual.
+Then run the application locally with `pnpm run dev` as usual.
 
 To stop the database:
 
@@ -125,7 +126,7 @@ For lower level tests of utilities and individual components, we use `vitest`. W
 
 ### Type Checking
 
-This project uses TypeScript. It's recommended to get TypeScript set up for your editor to get a really great in-editor experience with type checking and auto-complete. To run type checking across the whole project, run `npm run typecheck`.
+This project uses TypeScript. It's recommended to get TypeScript set up for your editor to get a really great in-editor experience with type checking and auto-complete. To run type checking across the whole project, run `pnpm run typecheck`.
 
 ### Linting
 
@@ -133,4 +134,4 @@ This project uses ESLint for linting. That is configured in `.eslintrc.js`.
 
 ### Formatting
 
-We use [Prettier](https://prettier.io/) for auto-formatting in this project. It's recommended to install an editor plugin (like the [VSCode Prettier plugin](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)) to get auto-formatting on save. There's also a `npm run format` script you can run to format all files in the project.
+We use [Prettier](https://prettier.io/) for auto-formatting in this project. It's recommended to install an editor plugin (like the [VSCode Prettier plugin](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)) to get auto-formatting on save. There's also a `pnpm run format` script you can run to format all files in the project.
