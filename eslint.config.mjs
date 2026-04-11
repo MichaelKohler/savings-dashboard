@@ -1,19 +1,18 @@
 import eslint from "@eslint/js";
+import { fixupConfigRules } from "@eslint/compat";
 import importPlugin from "eslint-plugin-import";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import reactPlugin from "eslint-plugin-react";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
-export default [
-  ...tseslint.config(
-    eslint.configs.recommended,
-    tseslint.configs.recommended,
-    tseslint.configs.stylistic,
-    importPlugin.flatConfigs.recommended,
-    jsxA11y.flatConfigs.recommended,
-    reactPlugin.configs.flat.recommended
-  ),
+export default tseslint.config(
+  eslint.configs.recommended,
+  tseslint.configs.recommended,
+  tseslint.configs.stylistic,
+  ...fixupConfigRules(importPlugin.flatConfigs.recommended),
+  ...fixupConfigRules(jsxA11y.flatConfigs.recommended),
+  ...fixupConfigRules(reactPlugin.configs.flat.recommended),
   {
     languageOptions: {
       globals: {
@@ -77,5 +76,5 @@ export default [
       "vite.config.mts",
       "data",
     ],
-  },
-];
+  }
+);
