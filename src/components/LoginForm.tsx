@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import { actions, isInputError } from "astro:actions";
 
 interface LoginFormProps {
@@ -22,7 +22,7 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
     }
   }, [errors]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     setErrors({});

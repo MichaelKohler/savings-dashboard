@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import { actions, isInputError } from "astro:actions";
 import Button from "~/components/button";
 import type { Balance } from "~/models/balances.server";
@@ -51,7 +51,7 @@ export default function BalanceForm({ balance, accounts }: BalanceFormProps) {
     }
   }, [errors]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     setErrors({});

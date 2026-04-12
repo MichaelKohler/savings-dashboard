@@ -1,12 +1,13 @@
 import eslint from "@eslint/js";
 import { fixupConfigRules } from "@eslint/compat";
+import { defineConfig } from "eslint/config";
 import importPlugin from "eslint-plugin-import";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import reactPlugin from "eslint-plugin-react";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
-export default tseslint.config(
+export default defineConfig(
   eslint.configs.recommended,
   tseslint.configs.recommended,
   tseslint.configs.stylistic,
@@ -76,5 +77,5 @@ export default tseslint.config(
       "vite.config.mts",
       "data",
     ],
-  }
+  },
 );
