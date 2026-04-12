@@ -1,5 +1,5 @@
 import { defineAction, ActionError } from "astro:actions";
-import { z } from "astro:schema";
+import { z } from "zod";
 import { verifyLogin } from "~/models/user.server";
 import { createUserSession, logout } from "~/lib/session.server";
 import { safeRedirect } from "~/lib/utils";
@@ -7,7 +7,7 @@ import { safeRedirect } from "~/lib/utils";
 export const login = defineAction({
   accept: "form",
   input: z.object({
-    email: z.string().email("Email is invalid"),
+    email: z.email({ message: "Email is invalid" }),
     password: z.string().min(1, "Password is required"),
     redirectTo: z.string().optional(),
     remember: z.string().optional(),
