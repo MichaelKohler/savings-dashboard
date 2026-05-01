@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "astro:check": "astro check",
-    "build": "astro check && astro build",
+    "build": "prisma generate && astro check && astro build",
     "change-password": "node --experimental-strip-types --env-file=.env scripts/change-password.ts",
     "create-user": "node --experimental-strip-types --env-file=.env scripts/create-user.ts",
     "dev": "node --env-file=.env ./node_modules/astro/bin/astro.mjs dev",
@@ -96,16 +96,9 @@
     "vitest": "^4.1.4",
     "wait-on": "^9.0.5"
   },
-  "pnpm": {
-    "peerDependencyRules": {
-      "allowedVersions": {
-        "eslint": "10"
-      }
-    }
-  },
   "engines": {
     "node": ">=24.0.0"
   },
-  "packageManager": "pnpm@10.32.1",
+  "packageManager": "pnpm@11.0.3",
   "version": "1.0.0"
 }
