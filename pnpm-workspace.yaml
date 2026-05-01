@@ -1,8 +1,11 @@
 minimumReleaseAge: 1440
-
-onlyBuiltDependencies:
-  - "@prisma/engines"
-  - esbuild
-  - prisma
-  - sharp
-  - unrs-resolver
+peerDependencyRules:
+  allowedVersions:
+    eslint: '10'
+shamefullyHoist: true
+allowBuilds:
+  '@prisma/engines': true
+  esbuild: true
+  prisma: true
+  sharp: true
+  unrs-resolver: true
