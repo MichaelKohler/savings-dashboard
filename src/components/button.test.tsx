@@ -112,8 +112,35 @@ describe("Button", () => {
     expect(button).toHaveClass("px-4");
     expect(button).toHaveClass("mt-1");
     expect(button).toHaveClass("mb-1");
-    expect(button).toHaveClass("transition");
-    expect(button).toHaveClass("duration-300");
+    expect(button).toHaveClass("transition-colors");
+    expect(button).toHaveClass("duration-[250ms]");
+  });
+
+  it("applies disabled styles when isDisabled is true", () => {
+    render(<Button isDisabled>Disabled</Button>);
+    const button = screen.getByRole("button", { name: "Disabled" });
+    expect(button).toHaveClass("bg-gray-400");
+    expect(button).toHaveClass("text-gray-200");
+    expect(button).toHaveClass("cursor-not-allowed");
+  });
+
+  it("does not apply disabled styles when isDisabled is false", () => {
+    render(<Button>Enabled</Button>);
+    const button = screen.getByRole("button", { name: "Enabled" });
+    expect(button).not.toHaveClass("bg-gray-400");
+    expect(button).not.toHaveClass("cursor-not-allowed");
+  });
+
+  it("applies w-full when isFullWidth is true", () => {
+    render(<Button isFullWidth>Full width</Button>);
+    const button = screen.getByRole("button", { name: "Full width" });
+    expect(button).toHaveClass("w-full");
+  });
+
+  it("does not apply w-full by default", () => {
+    render(<Button>Normal</Button>);
+    const button = screen.getByRole("button", { name: "Normal" });
+    expect(button).not.toHaveClass("w-full");
   });
 
   it("handles complex children content", () => {

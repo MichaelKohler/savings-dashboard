@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type SubmitEvent } from "react";
+import Button from "~/components/button";
 import { actions, isInputError } from "astro:actions";
 
 interface LoginFormProps {
@@ -121,14 +122,10 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
         </div>
 
         <input type="hidden" name="redirectTo" value={redirectTo} />
-        <button
-          type="submit"
-          disabled={isSubmitting || !isFormValid}
-          className="bg-mk hover:bg-mk-secondary focus:bg-mk-secondary w-full rounded px-4 py-2 text-white disabled:opacity-50"
-        >
+        <Button isSubmit isFullWidth isDisabled={isSubmitting || !isFormValid}>
           {isSubmitting ? "Logging in..." : "Log in"}
-        </button>
-        <div className="flex items-center justify-between">
+        </Button>
+        <div className="mt-4 flex items-center justify-between">
           <div className="flex items-center">
             <input
               id="remember"
