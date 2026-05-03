@@ -24,11 +24,21 @@ export default function AccountForm({
     typeId?: string;
   }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
 
+  const formRef = useRef<HTMLFormElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const colorRef = useRef<HTMLInputElement>(null);
 
   const isEdit = !!account?.id;
+
+  const checkValidity = () => {
+    setIsFormValid(formRef.current?.checkValidity() ?? false);
+  };
+
+  useEffect(() => {
+    checkValidity();
+  }, []);
 
   useEffect(() => {
     if (errors.name) {
@@ -72,7 +82,9 @@ export default function AccountForm({
 
   return (
     <form
+      ref={formRef}
       onSubmit={handleSubmit}
+      onChange={checkValidity}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -87,6 +99,7 @@ export default function AccountForm({
             ref={nameRef}
             type="text"
             name="name"
+            required
             className="border-mk flex-1 rounded-md border-2 px-3 text-lg leading-loose"
             aria-invalid={errors.name ? true : undefined}
             aria-errormessage={errors.name ? "name-error" : undefined}
@@ -197,7 +210,7 @@ export default function AccountForm({
         </div>
       )}
 
-      <Button isSubmit isDisabled={isSubmitting}>
+      <Button isSubmit isDisabled={isSubmitting || !isFormValid}>
         {isSubmitting ? (
           <div
             className="spinner-border inline-block h-4 w-4 animate-spin rounded-full border-2"

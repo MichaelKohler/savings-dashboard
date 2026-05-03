@@ -67,6 +67,26 @@ describe("GroupForm", () => {
     });
   });
 
+  it("disables save button when form is incomplete", () => {
+    render(<GroupForm />);
+
+    const saveButton = screen.getByRole("button", { name: "Save" });
+
+    expect(saveButton).toBeDisabled();
+  });
+
+  it("enables save button when required fields are filled", async () => {
+    render(<GroupForm />);
+
+    const nameInput = screen.getByLabelText(/Name:/);
+    fireEvent.change(nameInput, { target: { value: "Test Group" } });
+
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    await waitFor(() => {
+      expect(saveButton).toBeEnabled();
+    });
+  });
+
   it("shows spinner when submitting", async () => {
     vi.mocked(actions.createGroup).mockImplementation(
       // eslint-disable-next-line @typescript-eslint/no-empty-function

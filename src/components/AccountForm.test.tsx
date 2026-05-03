@@ -230,6 +230,23 @@ describe("AccountForm", () => {
     });
   });
 
+  it("disables save button when form is incomplete", () => {
+    render(<AccountForm groups={mockGroups} types={mockTypes} />);
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    expect(saveButton).toBeDisabled();
+  });
+
+  it("enables save button when required fields are filled", async () => {
+    render(<AccountForm groups={mockGroups} types={mockTypes} />);
+    const nameInput = screen.getByLabelText(/Name:/);
+    fireEvent.change(nameInput, { target: { value: "New Account" } });
+
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    await waitFor(() => {
+      expect(saveButton).toBeEnabled();
+    });
+  });
+
   it("displays name error when returned from API", async () => {
     const mockError = { fields: { name: "Name is required" } };
 
@@ -240,6 +257,9 @@ describe("AccountForm", () => {
     vi.mocked(isInputError).mockReturnValue(true);
 
     render(<AccountForm groups={mockGroups} types={mockTypes} />);
+    const nameInput = screen.getByLabelText(/Name:/);
+    fireEvent.change(nameInput, { target: { value: "Test Account" } });
+
     const saveButton = screen.getByRole("button", { name: "Save" });
     fireEvent.click(saveButton);
 
@@ -258,6 +278,9 @@ describe("AccountForm", () => {
     vi.mocked(isInputError).mockReturnValue(true);
 
     render(<AccountForm groups={mockGroups} types={mockTypes} />);
+    const nameInput = screen.getByLabelText(/Name:/);
+    fireEvent.change(nameInput, { target: { value: "Test Account" } });
+
     const saveButton = screen.getByRole("button", { name: "Save" });
     fireEvent.click(saveButton);
 
@@ -275,6 +298,9 @@ describe("AccountForm", () => {
     vi.mocked(isInputError).mockReturnValue(false);
 
     render(<AccountForm groups={mockGroups} types={mockTypes} />);
+    const nameInput = screen.getByLabelText(/Name:/);
+    fireEvent.change(nameInput, { target: { value: "Test Account" } });
+
     const saveButton = screen.getByRole("button", { name: "Save" });
     fireEvent.click(saveButton);
 
@@ -293,10 +319,12 @@ describe("AccountForm", () => {
     vi.mocked(isInputError).mockReturnValue(true);
 
     render(<AccountForm groups={mockGroups} types={mockTypes} />);
+    const nameInput = screen.getByLabelText(/Name:/);
+    fireEvent.change(nameInput, { target: { value: "Test Account" } });
+
     const saveButton = screen.getByRole("button", { name: "Save" });
     fireEvent.click(saveButton);
 
-    const nameInput = screen.getByLabelText(/Name:/);
     await waitFor(() => {
       expect(document.activeElement).toBe(nameInput);
     });
@@ -312,6 +340,9 @@ describe("AccountForm", () => {
     vi.mocked(isInputError).mockReturnValue(true);
 
     render(<AccountForm groups={mockGroups} types={mockTypes} />);
+    const nameInput = screen.getByLabelText(/Name:/);
+    fireEvent.change(nameInput, { target: { value: "Test Account" } });
+
     const saveButton = screen.getByRole("button", { name: "Save" });
     fireEvent.click(saveButton);
 
@@ -331,10 +362,12 @@ describe("AccountForm", () => {
     vi.mocked(isInputError).mockReturnValue(true);
 
     render(<AccountForm groups={mockGroups} types={mockTypes} />);
+    const nameInput = screen.getByLabelText(/Name:/);
+    fireEvent.change(nameInput, { target: { value: "Test Account" } });
+
     const saveButton = screen.getByRole("button", { name: "Save" });
     fireEvent.click(saveButton);
 
-    const nameInput = screen.getByLabelText(/Name:/);
     await waitFor(() => {
       expect(nameInput).toHaveAttribute("aria-invalid", "true");
       expect(nameInput).toHaveAttribute("aria-errormessage", "name-error");
@@ -351,6 +384,9 @@ describe("AccountForm", () => {
     vi.mocked(isInputError).mockReturnValue(true);
 
     render(<AccountForm groups={mockGroups} types={mockTypes} />);
+    const nameInput = screen.getByLabelText(/Name:/);
+    fireEvent.change(nameInput, { target: { value: "Test Account" } });
+
     const saveButton = screen.getByRole("button", { name: "Save" });
     fireEvent.click(saveButton);
 
@@ -372,6 +408,9 @@ describe("AccountForm", () => {
       .mockReturnValueOnce(false);
 
     render(<AccountForm groups={mockGroups} types={mockTypes} />);
+    const nameInput = screen.getByLabelText(/Name:/);
+    fireEvent.change(nameInput, { target: { value: "Test Account" } });
+
     const saveButton = screen.getByRole("button", { name: "Save" });
     fireEvent.click(saveButton);
 
@@ -379,7 +418,6 @@ describe("AccountForm", () => {
       expect(screen.getByText("Name is required")).toBeInTheDocument();
     });
 
-    const nameInput = screen.getByLabelText(/Name:/);
     fireEvent.change(nameInput, { target: { value: "Valid Name" } });
     fireEvent.click(saveButton);
 

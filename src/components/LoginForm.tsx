@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type SubmitEvent } from "react";
+import Button from "~/components/button";
 import { actions, isInputError } from "astro:actions";
 
 interface LoginFormProps {
@@ -11,8 +12,18 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
     password?: string;
   }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+
+  const checkValidity = () => {
+    setIsFormValid(formRef.current?.checkValidity() ?? false);
+  };
+
+  useEffect(() => {
+    checkValidity();
+  }, []);
 
   useEffect(() => {
     if (errors.email) {
@@ -50,7 +61,12 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
 
   return (
     <main className="mx-auto my-12 flex min-h-full w-full max-w-md flex-col px-8">
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form
+        ref={formRef}
+        onSubmit={handleSubmit}
+        onChange={checkValidity}
+        className="space-y-6"
+      >
         <div>
           <label
             htmlFor="email"
@@ -91,6 +107,7 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
               ref={passwordRef}
               name="password"
               type="password"
+              required
               autoComplete="current-password"
               aria-invalid={errors.password ? true : undefined}
               aria-describedby="password-error"
@@ -105,14 +122,10 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
         </div>
 
         <input type="hidden" name="redirectTo" value={redirectTo} />
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="bg-mk hover:bg-mk-secondary focus:bg-mk-secondary w-full rounded px-4 py-2 text-white disabled:opacity-50"
-        >
+        <Button isSubmit isFullWidth isDisabled={isSubmitting || !isFormValid}>
           {isSubmitting ? "Logging in..." : "Log in"}
-        </button>
-        <div className="flex items-center justify-between">
+        </Button>
+        <div className="mt-4 flex items-center justify-between">
           <div className="flex items-center">
             <input
               id="remember"

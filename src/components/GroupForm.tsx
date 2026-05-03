@@ -13,10 +13,20 @@ export default function GroupForm({ group }: GroupFormProps) {
     generic?: string;
   }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
 
+  const formRef = useRef<HTMLFormElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
 
   const isEdit = !!group?.id;
+
+  const checkValidity = () => {
+    setIsFormValid(formRef.current?.checkValidity() ?? false);
+  };
+
+  useEffect(() => {
+    checkValidity();
+  }, []);
 
   useEffect(() => {
     if (errors.name) {
@@ -56,7 +66,9 @@ export default function GroupForm({ group }: GroupFormProps) {
 
   return (
     <form
+      ref={formRef}
       onSubmit={handleSubmit}
+      onChange={checkValidity}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -91,7 +103,7 @@ export default function GroupForm({ group }: GroupFormProps) {
         </div>
       )}
 
-      <Button isSubmit isDisabled={isSubmitting}>
+      <Button isSubmit isDisabled={isSubmitting || !isFormValid}>
         {isSubmitting ? (
           <div
             className="spinner-border inline-block h-4 w-4 animate-spin rounded-full border-2"

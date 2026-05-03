@@ -86,6 +86,12 @@ describe("LoginForm", () => {
     });
   });
 
+  it("disables submit button when form is incomplete", () => {
+    render(<LoginForm redirectTo="/" />);
+    const submitButton = screen.getByRole("button", { name: "Log in" });
+    expect(submitButton).toBeDisabled();
+  });
+
   it("shows 'Logging in...' text when submitting", async () => {
     vi.mocked(actions.login).mockImplementation(
       // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -94,7 +100,9 @@ describe("LoginForm", () => {
 
     render(<LoginForm redirectTo="/" />);
     const emailInput = screen.getByLabelText(/Email address/);
+    const passwordInput = screen.getByLabelText(/Password/);
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
 
     const submitButton = screen.getByRole("button", { name: "Log in" });
     fireEvent.click(submitButton);
@@ -177,7 +185,9 @@ describe("LoginForm", () => {
 
     render(<LoginForm redirectTo="/" />);
     const emailInput = screen.getByLabelText(/Email address/);
+    const passwordInput = screen.getByLabelText(/Password/);
     fireEvent.change(emailInput, { target: { value: "invalid@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
 
     const submitButton = screen.getByRole("button", { name: "Log in" });
     fireEvent.click(submitButton);
@@ -198,7 +208,9 @@ describe("LoginForm", () => {
     render(<LoginForm redirectTo="/" />);
 
     const emailInput = screen.getByLabelText(/Email address/);
+    const passwordInput = screen.getByLabelText(/Password/);
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
 
     const submitButton = screen.getByRole("button", { name: "Log in" });
     fireEvent.click(submitButton);
@@ -219,7 +231,9 @@ describe("LoginForm", () => {
     render(<LoginForm redirectTo="/" />);
 
     const emailInput = screen.getByLabelText(/Email address/);
+    const passwordInput = screen.getByLabelText(/Password/);
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
 
     const submitButton = screen.getByRole("button", { name: "Log in" });
     fireEvent.click(submitButton);
@@ -242,7 +256,9 @@ describe("LoginForm", () => {
     render(<LoginForm redirectTo="/" />);
 
     const emailInput = screen.getByLabelText(/Email address/);
+    const passwordInput = screen.getByLabelText(/Password/);
     fireEvent.change(emailInput, { target: { value: "invalid@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
 
     const submitButton = screen.getByRole("button", { name: "Log in" });
     fireEvent.click(submitButton);
@@ -263,12 +279,13 @@ describe("LoginForm", () => {
     render(<LoginForm redirectTo="/" />);
 
     const emailInput = screen.getByLabelText(/Email address/);
+    const passwordInput = screen.getByLabelText(/Password/);
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
 
     const submitButton = screen.getByRole("button", { name: "Log in" });
     fireEvent.click(submitButton);
 
-    const passwordInput = screen.getByLabelText(/Password/);
     await waitFor(() => {
       expect(document.activeElement).toBe(passwordInput);
     });
@@ -285,7 +302,9 @@ describe("LoginForm", () => {
     render(<LoginForm redirectTo="/" />);
 
     const emailInput = screen.getByLabelText(/Email address/);
+    const passwordInput = screen.getByLabelText(/Password/);
     fireEvent.change(emailInput, { target: { value: "invalid@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
 
     const submitButton = screen.getByRole("button", { name: "Log in" });
     fireEvent.click(submitButton);
@@ -307,12 +326,13 @@ describe("LoginForm", () => {
     render(<LoginForm redirectTo="/" />);
 
     const emailInput = screen.getByLabelText(/Email address/);
+    const passwordInput = screen.getByLabelText(/Password/);
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
 
     const submitButton = screen.getByRole("button", { name: "Log in" });
     fireEvent.click(submitButton);
 
-    const passwordInput = screen.getByLabelText(/Password/);
     await waitFor(() => {
       expect(passwordInput).toHaveAttribute("aria-invalid", "true");
       expect(passwordInput).toHaveAttribute(
@@ -340,7 +360,9 @@ describe("LoginForm", () => {
     render(<LoginForm redirectTo="/" />);
 
     const emailInput = screen.getByLabelText(/Email address/);
+    const passwordInput = screen.getByLabelText(/Password/);
     fireEvent.change(emailInput, { target: { value: "invalid@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
 
     const submitButton = screen.getByRole("button", { name: "Log in" });
     fireEvent.click(submitButton);
@@ -368,7 +390,9 @@ describe("LoginForm", () => {
     render(<LoginForm redirectTo="/" />);
 
     const emailInput = screen.getByLabelText(/Email address/);
+    const passwordInput = screen.getByLabelText(/Password/);
     fireEvent.change(emailInput, { target: { value: "invalid@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
 
     const submitButton = screen.getByRole("button", { name: "Log in" });
     fireEvent.click(submitButton);

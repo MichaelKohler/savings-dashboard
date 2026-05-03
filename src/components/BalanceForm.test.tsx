@@ -120,6 +120,30 @@ describe("BalanceForm", () => {
     });
   });
 
+  it("disables save button when form is incomplete", () => {
+    render(<BalanceForm accounts={mockAccounts} />);
+
+    const saveButton = screen.getByRole("button", { name: "Save" });
+
+    expect(saveButton).toBeDisabled();
+  });
+
+  it("enables save button when required fields are filled", async () => {
+    render(<BalanceForm accounts={mockAccounts} />);
+
+    const accountSelect = screen.getByLabelText(/Account:/);
+    const dateInput = screen.getByLabelText(/Date:/);
+    const balanceInput = screen.getByLabelText(/Balance:/);
+    fireEvent.change(accountSelect, { target: { value: "a1" } });
+    fireEvent.change(dateInput, { target: { value: "2024-01-15" } });
+    fireEvent.change(balanceInput, { target: { value: "1000" } });
+
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    await waitFor(() => {
+      expect(saveButton).toBeEnabled();
+    });
+  });
+
   it("shows spinner when submitting", async () => {
     vi.mocked(actions.createBalance).mockImplementation(
       // eslint-disable-next-line @typescript-eslint/no-empty-function

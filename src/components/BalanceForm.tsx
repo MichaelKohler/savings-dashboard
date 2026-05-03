@@ -19,11 +19,21 @@ export default function BalanceForm({ balance, accounts }: BalanceFormProps) {
     generic?: string;
   }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
 
+  const formRef = useRef<HTMLFormElement>(null);
   const balanceRef = useRef<HTMLInputElement>(null);
   const dateRef = useRef<HTMLInputElement>(null);
 
   const isEdit = !!balance?.id;
+
+  const checkValidity = () => {
+    setIsFormValid(formRef.current?.checkValidity() ?? false);
+  };
+
+  useEffect(() => {
+    checkValidity();
+  }, []);
 
   const groupedAccounts = accounts.reduce(
     (acc, account) => {
@@ -85,7 +95,9 @@ export default function BalanceForm({ balance, accounts }: BalanceFormProps) {
 
   return (
     <form
+      ref={formRef}
       onSubmit={handleSubmit}
+      onChange={checkValidity}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -173,7 +185,7 @@ export default function BalanceForm({ balance, accounts }: BalanceFormProps) {
         </div>
       )}
 
-      <Button isSubmit isDisabled={isSubmitting}>
+      <Button isSubmit isDisabled={isSubmitting || !isFormValid}>
         {isSubmitting ? (
           <div
             className="spinner-border inline-block h-4 w-4 animate-spin rounded-full border-2"
