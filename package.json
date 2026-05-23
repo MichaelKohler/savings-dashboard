@@ -61,7 +61,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.0",
     "@faker-js/faker": "^10.3.0",
-    "@playwright/test": "^1.59.1",
+    "@playwright/test": "^1.60.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -71,8 +71,8 @@
     "@types/pg": "^8.18.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
-    "@vitest/coverage-v8": "^4.1.5",
+    "@vitejs/plugin-react": "^6.0.2",
+    "@vitest/coverage-v8": "^4.1.6",
     "c8": "^11.0.0",
     "cross-env": "^10.1.0",
     "@eslint/compat": "^2.1.0",
@@ -87,14 +87,14 @@
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "prisma": "^7.7.0",
-    "start-server-and-test": "^3.0.2",
+    "start-server-and-test": "^3.0.5",
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.59.2",
     "vite": "^8.0.11",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.5",
-    "wait-on": "^9.0.5"
+    "vitest": "^4.1.6",
+    "wait-on": "^9.0.10"
   },
   "engines": {
     "node": ">=24.0.0"
