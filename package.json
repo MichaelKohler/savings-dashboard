@@ -43,7 +43,7 @@
   "dependencies": {
     "@astrojs/check": "^0.9.9",
     "@astrojs/node": "^11.0.0",
-    "@astrojs/react": "^5.0.6",
+    "@astrojs/react": "^6.0.0",
     "@node-rs/bcrypt": "^1.10.7",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.7.0",
