@@ -1,7 +1,15 @@
+import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import type { TooltipContentProps } from "recharts";
+import type {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 
 import Charts from "~/components/Charts";
+
+type MockTooltipContentProps = TooltipContentProps<ValueType, NameType>;
 
 // Mock recharts components
 vi.mock("recharts", () => ({
@@ -19,7 +27,39 @@ vi.mock("recharts", () => ({
   ),
   XAxis: () => <div data-testid="x-axis" />,
   YAxis: () => <div data-testid="y-axis" />,
-  Tooltip: () => <div data-testid="tooltip" />,
+  Tooltip: ({
+    content,
+  }: {
+    content?: React.ReactElement<MockTooltipContentProps>;
+  }) => (
+    <div data-testid="tooltip">
+      {content
+        ? React.cloneElement(content, {
+            active: true,
+            label: "2024-01",
+            coordinate: undefined,
+            accessibilityLayer: false,
+            activeIndex: null,
+            payload: [
+              {
+                name: "A",
+                value: 100,
+                color: "#FF0000",
+                dataKey: "a",
+                graphicalItemId: "a",
+              },
+              {
+                name: "B",
+                value: 200,
+                color: "#00FF00",
+                dataKey: "b",
+                graphicalItemId: "b",
+              },
+            ],
+          })
+        : null}
+    </div>
+  ),
   CartesianGrid: () => <div data-testid="grid" />,
   ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="responsive-container">{children}</div>
@@ -341,6 +381,24 @@ describe("Charts", () => {
     );
     const totalHeading = screen.getByRole("heading", { name: "Total" });
     expect(totalHeading).toHaveClass("text-2xl");
+  });
+
+  it("renders a total in the tooltip for multi-series charts", () => {
+    render(
+      <Charts
+        accounts={mockAccounts}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={mockPredictions}
+      />
+    );
+    const tooltips = screen.getAllByTestId("tooltip");
+    // Total and Predictions charts have no content prop (Predictions sums
+    // alternative growth scenarios, which isn't a meaningful total).
+    // Per Account, Stacked, Per Group, and Per Type do.
+    expect(tooltips).toHaveLength(6);
+    expect(screen.getAllByText("Total: 300").length).toBe(4);
   });
 
   it("applies margin-top to chart headings after first", () => {
