@@ -22,8 +22,11 @@ export default function ChartTooltip({
         Total: {total}
       </p>
       <ul>
-        {payload.map((entry) => (
-          <li key={entry.dataKey as string} style={{ color: entry.color }}>
+        {payload.map((entry, index) => (
+          <li
+            key={String(entry.dataKey ?? entry.name ?? index)}
+            style={{ color: entry.color }}
+          >
             {entry.name}: {entry.value}
           </li>
         ))}

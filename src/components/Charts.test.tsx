@@ -394,9 +394,11 @@ describe("Charts", () => {
       />
     );
     const tooltips = screen.getAllByTestId("tooltip");
-    // Total chart has no content prop, all other 5 charts do.
+    // Total and Predictions charts have no content prop (Predictions sums
+    // alternative growth scenarios, which isn't a meaningful total).
+    // Per Account, Stacked, Per Group, and Per Type do.
     expect(tooltips).toHaveLength(6);
-    expect(screen.getAllByText("Total: 300").length).toBe(5);
+    expect(screen.getAllByText("Total: 300").length).toBe(4);
   });
 
   it("applies margin-top to chart headings after first", () => {

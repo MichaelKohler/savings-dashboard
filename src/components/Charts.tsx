@@ -176,11 +176,7 @@ export default function Charts({
             stroke={COLORS[3]}
             hide={hiddenPredictions.includes("7")}
           />
-          <Tooltip
-            cursor={false}
-            wrapperStyle={{ zIndex: 20 }}
-            content={<ChartTooltip />}
-          />
+          <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
           <Legend onClick={handlePredictionsLegendClick} />
         </LineChart>
       </ResponsiveContainer>
