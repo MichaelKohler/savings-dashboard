@@ -15,6 +15,7 @@ import {
 import type { Group } from "~/models/groups.server";
 import type { Type } from "~/models/types.server";
 import type { ChartDataEntry, PredictionEntry } from "~/models/balances.server";
+import ChartTooltip from "~/components/ChartTooltip";
 
 // Type for Account with group relation
 interface AccountWithGroup {
@@ -175,7 +176,11 @@ export default function Charts({
             stroke={COLORS[3]}
             hide={hiddenPredictions.includes("7")}
           />
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
+          <Tooltip
+            cursor={false}
+            wrapperStyle={{ zIndex: 20 }}
+            content={<ChartTooltip />}
+          />
           <Legend onClick={handlePredictionsLegendClick} />
         </LineChart>
       </ResponsiveContainer>
@@ -199,7 +204,11 @@ export default function Charts({
               />
             );
           })}
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
+          <Tooltip
+            cursor={false}
+            wrapperStyle={{ zIndex: 20 }}
+            content={<ChartTooltip />}
+          />
           <Legend onClick={handleAccountsLegendClick} />
         </LineChart>
       </ResponsiveContainer>
@@ -224,7 +233,11 @@ export default function Charts({
               />
             );
           })}
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
+          <Tooltip
+            cursor={false}
+            wrapperStyle={{ zIndex: 20 }}
+            content={<ChartTooltip />}
+          />
           <Legend onClick={handleAccountsLegendClick} />
         </BarChart>
       </ResponsiveContainer>
@@ -249,7 +262,11 @@ export default function Charts({
               />
             );
           })}
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
+          <Tooltip
+            cursor={false}
+            wrapperStyle={{ zIndex: 20 }}
+            content={<ChartTooltip />}
+          />
           <Legend onClick={handleGroupsLegendClick} />
         </BarChart>
       </ResponsiveContainer>
@@ -274,7 +291,11 @@ export default function Charts({
               />
             );
           })}
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
+          <Tooltip
+            cursor={false}
+            wrapperStyle={{ zIndex: 20 }}
+            content={<ChartTooltip />}
+          />
           <Legend onClick={handleTypesLegendClick} />
         </BarChart>
       </ResponsiveContainer>
