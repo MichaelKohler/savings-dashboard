@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { login, createGroup, createType, createBalance } from "./shared-steps";
+import { formatBalance } from "~/lib/utils";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
@@ -23,27 +24,35 @@ test("Balance flows", async ({ page }) => {
 
   // Create balance
   await createBalance(page, "2025-01-01", "Balance Test Account", "1000");
+  const formattedBalance1000 = formatBalance(1000);
+  const formattedBalance1500 = formatBalance(1500);
 
   // Edit
   await page
-    .getByRole("row", { name: /Balance Test Account.*1000/ })
+    .getByRole("row", {
+      name: new RegExp(`Balance Test Account.*${formattedBalance1000}`),
+    })
     .getByRole("button", { name: "Edit" })
     .first()
     .click();
   await page.getByLabel("Date:").fill("2025-01-02");
   await page.getByLabel("Balance:").fill("1500");
   await page.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByText("1500").first()).toBeVisible();
+  await expect(page.getByText(formattedBalance1500).first()).toBeVisible();
 
   // Delete
   await page
-    .getByRole("row", { name: /Balance Test Account.*1500/ })
+    .getByRole("row", {
+      name: new RegExp(`Balance Test Account.*${formattedBalance1500}`),
+    })
     .getByRole("button", { name: "X" })
     .first()
     .click();
   await page
-    .getByRole("row", { name: /Balance Test Account.*1500/ })
+    .getByRole("row", {
+      name: new RegExp(`Balance Test Account.*${formattedBalance1500}`),
+    })
     .getByRole("button", { name: "X?" })
     .click();
-  await expect(page.getByText("1500").first()).not.toBeVisible();
+  await expect(page.getByText(formattedBalance1500).first()).not.toBeVisible();
 });
