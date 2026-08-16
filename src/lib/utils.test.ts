@@ -1,4 +1,9 @@
-import { validateEmail, validatePassword, safeRedirect } from "./utils";
+import {
+  validateEmail,
+  validatePassword,
+  safeRedirect,
+  formatBalance,
+} from "./utils";
 
 describe("validateEmail", () => {
   test("returns false for non-emails", () => {
@@ -97,5 +102,37 @@ describe("safeRedirect", () => {
     formData.set("redirect", "/valid/path");
     const redirectValue = formData.get("redirect");
     expect(safeRedirect(redirectValue)).equal("/valid/path");
+  });
+});
+
+describe("formatBalance", () => {
+  // The de-CH thousands separator glyph (an apostrophe variant) can differ
+  // by ICU/runtime version, so derive it instead of hardcoding a character.
+  const groupSeparator = new Intl.NumberFormat("de-CH")
+    .formatToParts(1000)
+    .find((part) => part.type === "group")!.value;
+
+  test("separates thousands (and millions) into groups", () => {
+    expect(formatBalance(1000)).equal(`1${groupSeparator}000`);
+    expect(formatBalance(12345)).equal(`12${groupSeparator}345`);
+    expect(formatBalance(1234567)).equal(
+      `1${groupSeparator}234${groupSeparator}567`
+    );
+  });
+
+  test("does not add .00 for whole numbers", () => {
+    expect(formatBalance(0)).equal("0");
+    expect(formatBalance(999)).equal("999");
+    expect(formatBalance(1000)).equal(`1${groupSeparator}000`);
+  });
+
+  test("preserves actual decimal values", () => {
+    expect(formatBalance(1234.5)).equal(`1${groupSeparator}234.5`);
+  });
+
+  test("formats negative balances", () => {
+    expect(formatBalance(-1234567)).equal(
+      `-1${groupSeparator}234${groupSeparator}567`
+    );
   });
 });

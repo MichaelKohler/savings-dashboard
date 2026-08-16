@@ -7,6 +7,7 @@ import type {
 } from "recharts/types/component/DefaultTooltipContent";
 
 import ChartTooltip from "~/components/ChartTooltip";
+import { formatBalance } from "~/lib/utils";
 
 type Props = TooltipContentProps<ValueType, NameType>;
 
@@ -65,8 +66,12 @@ describe("ChartTooltip", () => {
         label="2024-01"
       />
     );
-    expect(screen.getByText("Savings: 3000")).toBeInTheDocument();
-    expect(screen.getByText("Checking: 2000")).toBeInTheDocument();
+    expect(
+      screen.getByText(`Savings: ${formatBalance(3000)}`)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(`Checking: ${formatBalance(2000)}`)
+    ).toBeInTheDocument();
   });
 
   it("renders the label", () => {
@@ -90,7 +95,9 @@ describe("ChartTooltip", () => {
         label="2024-01"
       />
     );
-    expect(screen.getByText("Total: 5000")).toBeInTheDocument();
+    expect(
+      screen.getByText(`Total: ${formatBalance(5000)}`)
+    ).toBeInTheDocument();
   });
 
   it("computes the correct total for a single series", () => {
@@ -102,7 +109,9 @@ describe("ChartTooltip", () => {
         label="2024-01"
       />
     );
-    expect(screen.getByText("Total: 3000")).toBeInTheDocument();
+    expect(
+      screen.getByText(`Total: ${formatBalance(3000)}`)
+    ).toBeInTheDocument();
   });
 
   it("ignores non-numeric values when computing the total", () => {
@@ -123,6 +132,8 @@ describe("ChartTooltip", () => {
         label="2024-01"
       />
     );
-    expect(screen.getByText("Total: 5000")).toBeInTheDocument();
+    expect(
+      screen.getByText(`Total: ${formatBalance(5000)}`)
+    ).toBeInTheDocument();
   });
 });

@@ -1,4 +1,5 @@
 import { type Page, expect } from "@playwright/test";
+import { formatBalance } from "~/lib/utils";
 
 /**
  * Performs login with default test credentials
@@ -115,5 +116,7 @@ export async function createBalance(
   await page.getByRole("button", { name: "Save" }).click();
 
   // Verify the balance was created by checking it appears in the list
-  await expect(page.getByText(balanceAmount).first()).toBeVisible();
+  await expect(
+    page.getByText(formatBalance(Number(balanceAmount))).first()
+  ).toBeVisible();
 }

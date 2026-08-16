@@ -36,3 +36,15 @@ export function validateEmail(email: unknown): email is string {
 export function validatePassword(password: unknown): password is string {
   return typeof password === "string" && password.length >= 8;
 }
+
+const balanceFormatter = new Intl.NumberFormat("de-CH", {
+  maximumFractionDigits: 2,
+});
+
+/**
+ * Formats a balance with ' as the thousands (and millions, etc.) separator,
+ * without forcing decimal places (e.g. no trailing ".00").
+ */
+export function formatBalance(balance: number): string {
+  return balanceFormatter.format(balance);
+}
