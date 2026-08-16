@@ -3,6 +3,7 @@ import type {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
+import { formatBalance } from "~/lib/utils";
 
 export default function ChartTooltip({
   active,
@@ -19,7 +20,7 @@ export default function ChartTooltip({
     <div className="rounded border border-gray-300 bg-white p-2 shadow-md">
       {label ? <p className="mb-1 font-semibold">{label}</p> : null}
       <p className="mb-1 border-b border-gray-300 pb-1 font-semibold">
-        Total: {total}
+        Total: {formatBalance(total)}
       </p>
       <ul>
         {payload.map((entry, index) => (
@@ -27,7 +28,10 @@ export default function ChartTooltip({
             key={String(entry.dataKey ?? entry.name ?? index)}
             style={{ color: entry.color }}
           >
-            {entry.name}: {entry.value}
+            {entry.name}:{" "}
+            {typeof entry.value === "number"
+              ? formatBalance(entry.value)
+              : entry.value}
           </li>
         ))}
       </ul>

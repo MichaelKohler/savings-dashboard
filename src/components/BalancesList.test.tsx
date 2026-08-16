@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import BalancesList from "~/components/BalancesList";
 import { actions } from "astro:actions";
+import { formatBalance } from "~/lib/utils";
 
 describe("BalancesList", () => {
   const mockBalances = [
@@ -81,8 +82,8 @@ describe("BalancesList", () => {
 
     expect(screen.getByText("Savings Account")).toBeInTheDocument();
     expect(screen.getByText("Checking Account")).toBeInTheDocument();
-    expect(screen.getByText("1000")).toBeInTheDocument();
-    expect(screen.getByText("2500")).toBeInTheDocument();
+    expect(screen.getByText(formatBalance(1000))).toBeInTheDocument();
+    expect(screen.getByText(formatBalance(2500))).toBeInTheDocument();
   });
 
   it("formats dates correctly", () => {

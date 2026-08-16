@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { actions } from "astro:actions";
 import Button from "~/components/button";
+import { formatBalance } from "~/lib/utils";
 
 // Type for Balance with account relation
 interface BalanceWithAccount {
@@ -127,7 +128,7 @@ export default function BalancesList({ balances }: BalancesListProps) {
                         </span>
                       ) : null}
                     </td>
-                    <td className="pr-2">{balance.balance}</td>
+                    <td className="pr-2">{formatBalance(balance.balance)}</td>
                     <td className="text-right">
                       <a
                         href={`/balances/${balance.id}/edit`}
