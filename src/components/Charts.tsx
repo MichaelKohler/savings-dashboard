@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { LegendPayload } from "recharts/types/component/DefaultLegendContent";
 import {
   BarChart,
@@ -16,24 +16,32 @@ import type { Group } from "~/models/groups.server";
 import type { Type } from "~/models/types.server";
 import type { ChartDataEntry, PredictionEntry } from "~/models/balances.server";
 import ChartTooltip from "~/components/ChartTooltip";
-
-// Type for Account with group relation
-interface AccountWithGroup {
-  id: string;
-  name: string;
-  color: string;
-  group?: {
-    id: string;
-    name: string;
-  } | null;
-}
+import ChartFilters from "~/components/ChartFilters";
+import {
+  formatAccountLabel,
+  getFilteredChartData,
+  getFilteredPredictions,
+  isAccountExcluded,
+  type FilterableAccount,
+  type ChartExclusions,
+} from "~/lib/chartFiltering";
 
 interface ChartsProps {
-  accounts: AccountWithGroup[];
+  accounts: FilterableAccount[];
   balances: ChartDataEntry[];
   groups: Group[];
   types: Type[];
   predictions: PredictionEntry[];
+}
+
+function toggleId(prev: Set<string>, id: string): Set<string> {
+  const next = new Set(prev);
+  if (next.has(id)) {
+    next.delete(id);
+  } else {
+    next.add(id);
+  }
+  return next;
 }
 
 const COLORS = [
@@ -80,9 +88,15 @@ export default function Charts({
   predictions,
 }: ChartsProps) {
   const [hiddenPredictions, setHiddenPredictions] = useState<string[]>([]);
-  const [hiddenAccounts, setHiddenAccounts] = useState<string[]>([]);
-  const [hiddenTypes, setHiddenTypes] = useState<string[]>([]);
-  const [hiddenGroups, setHiddenGroups] = useState<string[]>([]);
+  const [excludedAccountIds, setExcludedAccountIds] = useState<Set<string>>(
+    () => new Set()
+  );
+  const [excludedGroupIds, setExcludedGroupIds] = useState<Set<string>>(
+    () => new Set()
+  );
+  const [excludedTypeIds, setExcludedTypeIds] = useState<Set<string>>(
+    () => new Set()
+  );
 
   const handlePredictionsLegendClick = (e: LegendPayload) => {
     const { dataKey } = e;
@@ -97,38 +111,72 @@ export default function Charts({
   const handleTypesLegendClick = (e: LegendPayload) => {
     const { dataKey } = e;
     if (typeof dataKey !== "string") return;
-    setHiddenTypes((prev) =>
-      prev.includes(dataKey)
-        ? prev.filter((k) => k !== dataKey)
-        : [...prev, dataKey]
-    );
+    const typeId = dataKey.replace("byType.", "");
+    setExcludedTypeIds((prev) => toggleId(prev, typeId));
   };
 
   const handleGroupsLegendClick = (e: LegendPayload) => {
     const { dataKey } = e;
     if (typeof dataKey !== "string") return;
-    setHiddenGroups((prev) =>
-      prev.includes(dataKey)
-        ? prev.filter((k) => k !== dataKey)
-        : [...prev, dataKey]
-    );
+    const groupId = dataKey.replace("byGroup.", "");
+    setExcludedGroupIds((prev) => toggleId(prev, groupId));
   };
 
   const handleAccountsLegendClick = (e: LegendPayload) => {
     const { dataKey } = e;
     if (typeof dataKey !== "string") return;
-    setHiddenAccounts((prev) =>
-      prev.includes(dataKey)
-        ? prev.filter((k) => k !== dataKey)
-        : [...prev, dataKey]
-    );
+    const accountId = dataKey.replace("byAccount.", "");
+    setExcludedAccountIds((prev) => toggleId(prev, accountId));
   };
+
+  const exclusions: ChartExclusions = useMemo(
+    () => ({ excludedAccountIds, excludedGroupIds, excludedTypeIds }),
+    [excludedAccountIds, excludedGroupIds, excludedTypeIds]
+  );
+
+  const filteredBalances = useMemo(
+    () => getFilteredChartData(balances, accounts, exclusions),
+    [balances, accounts, exclusions]
+  );
+
+  const filteredLastTotal = filteredBalances.length
+    ? filteredBalances[filteredBalances.length - 1].total
+    : 0;
+
+  const filteredPredictions = useMemo(
+    () => getFilteredPredictions(predictions, filteredLastTotal),
+    [predictions, filteredLastTotal]
+  );
+
+  const isExcluded = (account: FilterableAccount) =>
+    isAccountExcluded(account, exclusions);
 
   return (
     <main className="h-auto w-full">
-      <h2 className="text-2xl">Total</h2>
+      <ChartFilters
+        accounts={accounts}
+        groups={groups}
+        types={types}
+        excludedAccountIds={excludedAccountIds}
+        excludedGroupIds={excludedGroupIds}
+        excludedTypeIds={excludedTypeIds}
+        onToggleAccount={(id) =>
+          setExcludedAccountIds((prev) => toggleId(prev, id))
+        }
+        onToggleGroup={(id) =>
+          setExcludedGroupIds((prev) => toggleId(prev, id))
+        }
+        onToggleType={(id) => setExcludedTypeIds((prev) => toggleId(prev, id))}
+        onClearFilters={() => {
+          setExcludedAccountIds(new Set());
+          setExcludedGroupIds(new Set());
+          setExcludedTypeIds(new Set());
+        }}
+      />
+
+      <h2 className="mt-16 text-2xl">Total</h2>
       <ResponsiveContainer width={"100%"} height={500} className="mt-8">
-        <LineChart width={500} height={300} data={balances}>
+        <LineChart width={500} height={300} data={filteredBalances}>
           <CartesianGrid strokeDasharray="1 1" />
           <XAxis dataKey="date" />
           <YAxis tickFormatter={formatTick} />
@@ -144,7 +192,7 @@ export default function Charts({
 
       <h2 className="mt-16 text-2xl">Predictions</h2>
       <ResponsiveContainer width={"100%"} height={500} className="mt-8">
-        <LineChart width={500} height={300} data={predictions}>
+        <LineChart width={500} height={300} data={filteredPredictions}>
           <CartesianGrid strokeDasharray="1 1" />
           <XAxis dataKey="year" />
           <YAxis tickFormatter={formatTick} />
@@ -192,11 +240,11 @@ export default function Charts({
             return (
               <Line
                 key={account.id}
-                name={`${account.name}${account.group?.name ? ` (${account.group.name})` : ""}`}
+                name={formatAccountLabel(account)}
                 type="monotoneX"
                 dataKey={dataKey}
                 stroke={account.color}
-                hide={hiddenAccounts.includes(dataKey)}
+                hide={isExcluded(account)}
               />
             );
           })}
@@ -220,12 +268,12 @@ export default function Charts({
             return (
               <Bar
                 key={account.id}
-                name={`${account.name}${account.group?.name ? ` (${account.group.name})` : ""}`}
+                name={formatAccountLabel(account)}
                 type="monotoneX"
                 dataKey={dataKey}
                 stackId="STACK_ALL"
                 fill={account.color}
-                hide={hiddenAccounts.includes(dataKey)}
+                hide={isExcluded(account)}
               />
             );
           })}
@@ -240,7 +288,7 @@ export default function Charts({
 
       <h2 className="mt-16 text-2xl">Per Group</h2>
       <ResponsiveContainer width={"100%"} height={500} className="mt-8">
-        <BarChart width={500} height={300} data={balances}>
+        <BarChart width={500} height={300} data={filteredBalances}>
           <CartesianGrid strokeDasharray="1 1" />
           <XAxis dataKey="date" />
           <YAxis tickFormatter={formatTick} />
@@ -254,7 +302,7 @@ export default function Charts({
                 dataKey={dataKey}
                 stackId="STACK_ALL"
                 fill={COLORS[index % COLORS.length]}
-                hide={hiddenGroups.includes(dataKey)}
+                hide={excludedGroupIds.has(group.id)}
               />
             );
           })}
@@ -269,7 +317,7 @@ export default function Charts({
 
       <h2 className="mt-16 text-2xl">Per Type</h2>
       <ResponsiveContainer width={"100%"} height={500} className="mt-8">
-        <BarChart width={500} height={300} data={balances}>
+        <BarChart width={500} height={300} data={filteredBalances}>
           <CartesianGrid strokeDasharray="1 1" />
           <XAxis dataKey="date" />
           <YAxis tickFormatter={formatTick} />
@@ -283,7 +331,7 @@ export default function Charts({
                 dataKey={dataKey}
                 stackId="STACK_ALL"
                 fill={COLORS[index % COLORS.length]}
-                hide={hiddenTypes.includes(dataKey)}
+                hide={excludedTypeIds.has(type.id)}
               />
             );
           })}
