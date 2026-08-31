@@ -3,7 +3,7 @@ import { stdin as input, stdout as output } from "process";
 
 import { PrismaClient } from "../src/generated/prisma/client.ts";
 import { PrismaPg } from "@prisma/adapter-pg";
-import bcrypt from "@node-rs/bcrypt";
+import bcrypt from "bcryptjs";
 
 const rl = readline.createInterface({ input, output });
 
