@@ -1,5 +1,5 @@
 import type { Password, User } from "~/generated/prisma/client";
-import { compare } from "@node-rs/bcrypt";
+import { compare } from "bcryptjs";
 
 import { prisma } from "~/lib/db.server";
 

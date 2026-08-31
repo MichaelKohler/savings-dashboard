@@ -1,7 +1,7 @@
 import { vi, beforeEach } from "vitest";
 import { mockPrisma } from "../test-setup";
 
-import * as bcrypt from "@node-rs/bcrypt";
+import * as bcrypt from "bcryptjs";
 
 import {
   getUserById,
@@ -12,7 +12,7 @@ import {
   verifyLogin,
 } from "./user.server";
 
-vi.mock("@node-rs/bcrypt");
+vi.mock("bcryptjs");
 
 describe("user models", () => {
   const user = {
@@ -103,7 +103,9 @@ describe("user models", () => {
     it("should return the user if login is valid", async () => {
       const userWithPassword = { ...user, password };
       mockPrisma.user.findUnique.mockResolvedValue(userWithPassword);
-      vi.mocked(bcrypt.compare).mockResolvedValue(true);
+      vi.spyOn(bcrypt, "compare").mockImplementation(() =>
+        Promise.resolve(true)
+      );
 
       const result = await verifyLogin(user.email, "password");
       const { password: _password, ...userWithoutPassword } = userWithPassword;
@@ -127,7 +129,9 @@ describe("user models", () => {
     it("should return null if password is not valid", async () => {
       const userWithPassword = { ...user, password };
       mockPrisma.user.findUnique.mockResolvedValue(userWithPassword);
-      vi.mocked(bcrypt.compare).mockResolvedValue(false);
+      vi.spyOn(bcrypt, "compare").mockImplementation(() =>
+        Promise.resolve(false)
+      );
 
       const result = await verifyLogin(user.email, "password");
 

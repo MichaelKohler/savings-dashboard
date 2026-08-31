@@ -12,10 +12,6 @@ export default defineConfig({
   }),
   integrations: [react()],
   vite: {
-    optimizeDeps: {
-      exclude: ["@node-rs/bcrypt"],
-    },
-
     plugins: [tailwindcss()],
   },
   security: {
