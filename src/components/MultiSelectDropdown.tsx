@@ -78,7 +78,6 @@ export default function MultiSelectDropdown({
         ref={toggleRef}
         type="button"
         className="border-mk flex items-center gap-2 rounded-md border-2 px-3 py-2"
-        aria-haspopup="true"
         aria-expanded={isOpen}
         onClick={() => setIsOpen((prev) => !prev)}
         data-testid={`${testIdPrefix}-toggle`}

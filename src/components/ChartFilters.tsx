@@ -45,13 +45,23 @@ export default function ChartFilters({
     excludedTypeIds,
   };
 
+  const accountExcludedIds = new Set(
+    accounts
+      .filter((account) => isAccountExcluded(account, exclusions))
+      .map((account) => account.id)
+  );
+
   // An account can be hidden because its own id, its group, or its type is
   // excluded. Only the first is this dropdown's to control, so accounts
   // hidden via group/type are shown disabled here rather than silently
   // no-op'ing on toggle/"Select all" (their state is owned by another panel).
   const accountCascadeExcludedIds = new Set(
     accounts
-      .filter((account) => isAccountExcluded(account, exclusions))
+      .filter(
+        (account) =>
+          (account.groupId !== null && excludedGroupIds.has(account.groupId)) ||
+          (account.typeId !== null && excludedTypeIds.has(account.typeId))
+      )
       .map((account) => account.id)
   );
 
@@ -92,9 +102,9 @@ export default function ChartFilters({
           <MultiSelectDropdown
             label="Accounts"
             options={accounts.map((account) => {
-              const hiddenByOtherFilter =
-                accountCascadeExcludedIds.has(account.id) &&
-                !excludedAccountIds.has(account.id);
+              const hiddenByOtherFilter = accountCascadeExcludedIds.has(
+                account.id
+              );
               return {
                 id: account.id,
                 label: hiddenByOtherFilter
@@ -104,7 +114,7 @@ export default function ChartFilters({
                 disabled: hiddenByOtherFilter,
               };
             })}
-            excludedIds={accountCascadeExcludedIds}
+            excludedIds={accountExcludedIds}
             onToggle={onToggleAccount}
             testIdPrefix="filter-account"
           />

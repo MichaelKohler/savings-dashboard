@@ -591,6 +591,28 @@ describe("Charts", () => {
     expect(totalData[0].total).toBe(2000);
   });
 
+  it("does not toggle an account legend hidden by its excluded group", () => {
+    render(
+      <Charts
+        accounts={mockAccounts}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={mockPredictions}
+      />
+    );
+
+    const legends = screen.getAllByTestId("legend");
+    clickLegend(legends[3], "byGroup.g1");
+    clickLegend(legends[1], "byAccount.a1");
+    clickLegend(legends[3], "byGroup.g1");
+
+    expect(screen.getByTestId("line-Savings (Personal)")).toHaveAttribute(
+      "data-hidden",
+      "false"
+    );
+  });
+
   it("recomputes the Predictions chart from the filtered total", () => {
     render(
       <Charts

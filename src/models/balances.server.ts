@@ -281,7 +281,7 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
       (entry) =>
         entry.byAccount[accountId] &&
         typeof entry.byAccount[accountId] === "number" &&
-        entry.byAccount[accountId] > 0
+        entry.byAccount[accountId] !== 0
     );
     if (!hasNonZeroBalance) {
       archivedAccountsToRemove.add(accountId);

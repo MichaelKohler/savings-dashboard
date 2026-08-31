@@ -54,6 +54,14 @@ describe("MultiSelectDropdown", () => {
     );
   });
 
+  it("uses disclosure semantics without a menu popup role", () => {
+    renderDropdown();
+
+    expect(screen.getByTestId("filter-account-toggle")).not.toHaveAttribute(
+      "aria-haspopup"
+    );
+  });
+
   it("renders excluded options as unchecked", () => {
     renderDropdown({ excludedIds: new Set(["a1"]) });
     fireEvent.click(screen.getByTestId("filter-account-toggle"));

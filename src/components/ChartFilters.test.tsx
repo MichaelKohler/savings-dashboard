@@ -168,6 +168,16 @@ describe("ChartFilters", () => {
     expect(onToggleAccount).not.toHaveBeenCalled();
   });
 
+  it("keeps an account directly excluded before its group is excluded disabled", () => {
+    renderFilters({
+      excludedAccountIds: new Set(["a1"]),
+      excludedGroupIds: new Set(["g1"]),
+    });
+    openDropdown("filter-account");
+
+    expect(screen.getByTestId("filter-account-a1")).toBeDisabled();
+  });
+
   it("'Select all' in the Accounts dropdown does not touch accounts excluded via group/type", () => {
     const { onToggleAccount } = renderFilters({
       excludedGroupIds: new Set(["g1"]),

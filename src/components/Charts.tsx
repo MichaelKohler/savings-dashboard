@@ -126,6 +126,14 @@ export default function Charts({
     const { dataKey } = e;
     if (typeof dataKey !== "string") return;
     const accountId = dataKey.replace("byAccount.", "");
+    const account = accounts.find(({ id }) => id === accountId);
+    if (
+      !account ||
+      (account.groupId !== null && excludedGroupIds.has(account.groupId)) ||
+      (account.typeId !== null && excludedTypeIds.has(account.typeId))
+    ) {
+      return;
+    }
     setExcludedAccountIds((prev) => toggleId(prev, accountId));
   };
 
