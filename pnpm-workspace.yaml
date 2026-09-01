@@ -1,4 +1,6 @@
 minimumReleaseAge: 1440
+overrides:
+  "@prisma/config>deepmerge-ts": "8.0.2"
 peerDependencyRules:
   allowedVersions:
     eslint: '10'
