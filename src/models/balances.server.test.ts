@@ -389,6 +389,39 @@ describe("balance models", () => {
       expect(result[1].byAccount["2"]).toBe(0);
     });
 
+    it("should keep archived accounts with only negative balances in chart data", async () => {
+      const accounts = [
+        {
+          id: "1",
+          showInGraphs: true,
+          archived: false,
+          type: { id: "t1" },
+          group: { id: "g1" },
+        },
+        {
+          id: "2",
+          showInGraphs: true,
+          archived: true,
+          type: { id: "t2" },
+          group: { id: "g2" },
+        },
+      ];
+      const balances = [
+        { accountId: "1", date: new Date("2023-01-15"), balance: 100 },
+        { accountId: "2", date: new Date("2023-01-15"), balance: -50 },
+      ];
+
+      mockPrisma.account.findMany.mockResolvedValue(accounts);
+      mockPrisma.balance.findMany.mockResolvedValue(balances);
+
+      const { balances: result } = await getBalancesForCharts({
+        userId: user.id,
+      });
+
+      expect(result[0].total).toBe(50);
+      expect(result[0].byAccount["2"]).toBe(-50);
+    });
+
     it("should respect REMOVE_FIRST_X_ENTRIES_FROM_CHARTS when filtering archived accounts", async () => {
       process.env.REMOVE_FIRST_X_ENTRIES_FROM_CHARTS = "2";
 

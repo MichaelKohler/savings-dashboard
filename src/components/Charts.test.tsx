@@ -11,19 +11,68 @@ import Charts from "~/components/Charts";
 
 type MockTooltipContentProps = TooltipContentProps<ValueType, NameType>;
 
+// happy-dom (unlike jsdom) doesn't let testing-library smuggle arbitrary
+// extra properties onto a native click event, so the mock Legend below reads
+// the payload to report from this shared, test-controlled box instead.
+const legendClickPayload = vi.hoisted<{ dataKey?: string }>(() => ({}));
+
 // Mock recharts components
 vi.mock("recharts", () => ({
-  BarChart: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="bar-chart">{children}</div>
+  BarChart: ({
+    children,
+    data,
+  }: {
+    children: React.ReactNode;
+    data?: unknown;
+  }) => (
+    <div data-testid="bar-chart" data-chart-data={JSON.stringify(data)}>
+      {children}
+    </div>
   ),
-  Bar: ({ name }: { name: string }) => (
-    <div data-testid={`bar-${name}`}>{name}</div>
+  Bar: ({
+    name,
+    dataKey,
+    hide,
+  }: {
+    name: string;
+    dataKey?: string;
+    hide?: boolean;
+  }) => (
+    <div
+      data-testid={`bar-${name}`}
+      data-datakey={dataKey}
+      data-hidden={String(!!hide)}
+    >
+      {name}
+    </div>
   ),
-  LineChart: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="line-chart">{children}</div>
+  LineChart: ({
+    children,
+    data,
+  }: {
+    children: React.ReactNode;
+    data?: unknown;
+  }) => (
+    <div data-testid="line-chart" data-chart-data={JSON.stringify(data)}>
+      {children}
+    </div>
   ),
-  Line: ({ name }: { name: string }) => (
-    <div data-testid={`line-${name}`}>{name}</div>
+  Line: ({
+    name,
+    dataKey,
+    hide,
+  }: {
+    name: string;
+    dataKey?: string;
+    hide?: boolean;
+  }) => (
+    <div
+      data-testid={`line-${name}`}
+      data-datakey={dataKey}
+      data-hidden={String(!!hide)}
+    >
+      {name}
+    </div>
   ),
   XAxis: () => <div data-testid="x-axis" />,
   YAxis: () => <div data-testid="y-axis" />,
@@ -64,13 +113,17 @@ vi.mock("recharts", () => ({
   ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="responsive-container">{children}</div>
   ),
-  Legend: ({ onClick }: { onClick?: () => void }) => (
+  Legend: ({
+    onClick,
+  }: {
+    onClick?: (payload: { dataKey?: string }) => void;
+  }) => (
     <div
       data-testid="legend"
-      onClick={onClick}
+      onClick={() => onClick?.({ dataKey: legendClickPayload.dataKey })}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
-          onClick?.();
+          onClick?.({});
         }
       }}
       role="button"
@@ -81,19 +134,34 @@ vi.mock("recharts", () => ({
   ),
 }));
 
+function clickLegend(legend: HTMLElement, dataKey: string) {
+  legendClickPayload.dataKey = dataKey;
+  fireEvent.click(legend);
+}
+
 describe("Charts", () => {
   const mockAccounts = [
     {
       id: "a1",
       name: "Savings",
       color: "#FF0000",
+      groupId: "g1",
+      typeId: "t1",
+      showInGraphs: true,
+      archived: false,
       group: { id: "g1", name: "Personal" },
+      type: { id: "t1", name: "Savings" },
     },
     {
       id: "a2",
       name: "Checking",
       color: "#00FF00",
+      groupId: null,
+      typeId: null,
+      showInGraphs: true,
+      archived: false,
       group: null,
+      type: null,
     },
   ];
 
@@ -102,15 +170,15 @@ describe("Charts", () => {
       date: "2024-01",
       total: 5000,
       byAccount: { a1: 3000, a2: 2000 },
-      byGroup: { g1: 3000 },
-      byType: { t1: 5000 },
+      byGroup: { g1: 3000, "": 2000 },
+      byType: { t1: 3000, "": 2000 },
     },
     {
       date: "2024-02",
       total: 6000,
       byAccount: { a1: 3500, a2: 2500 },
-      byGroup: { g1: 3500 },
-      byType: { t1: 6000 },
+      byGroup: { g1: 3500, "": 2500 },
+      byType: { t1: 3500, "": 2500 },
     },
   ];
 
@@ -141,6 +209,7 @@ describe("Charts", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    legendClickPayload.dataKey = undefined;
   });
 
   it("renders total chart heading", () => {
@@ -304,7 +373,7 @@ describe("Charts", () => {
   });
 
   it("toggles prediction line visibility when legend is clicked", () => {
-    const { container } = render(
+    render(
       <Charts
         accounts={mockAccounts}
         balances={mockBalances}
@@ -317,9 +386,17 @@ describe("Charts", () => {
     const legends = screen.getAllByTestId("legend");
     const predictionsLegend = legends[0]; // First legend is for predictions
 
-    fireEvent.click(predictionsLegend);
+    expect(screen.getByTestId("line-1%")).toHaveAttribute(
+      "data-hidden",
+      "false"
+    );
 
-    expect(container).toBeInTheDocument();
+    clickLegend(predictionsLegend, "1");
+
+    expect(screen.getByTestId("line-1%")).toHaveAttribute(
+      "data-hidden",
+      "true"
+    );
   });
 
   it("renders prediction lines for different growth rates", () => {
@@ -413,5 +490,219 @@ describe("Charts", () => {
     );
     const predictionsHeading = screen.getByText("Predictions");
     expect(predictionsHeading).toHaveClass("mt-16");
+  });
+
+  it("renders the filter panel above the Total heading", () => {
+    const { container } = render(
+      <Charts
+        accounts={mockAccounts}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={mockPredictions}
+      />
+    );
+    const headings = Array.from(container.querySelectorAll("h2"));
+    expect(headings[0]).toHaveTextContent("Filters");
+    expect(headings[1]).toHaveTextContent("Total");
+  });
+
+  it("unchecking an account filter hides its line and reduces the Total chart", () => {
+    render(
+      <Charts
+        accounts={mockAccounts}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={mockPredictions}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId("filter-account-toggle"));
+    fireEvent.click(screen.getByTestId("filter-account-a1"));
+
+    expect(screen.getByTestId("line-Savings (Personal)")).toHaveAttribute(
+      "data-hidden",
+      "true"
+    );
+
+    const totalChart = screen.getAllByTestId("line-chart")[0];
+    const totalData = JSON.parse(
+      totalChart.getAttribute("data-chart-data") ?? "[]"
+    );
+    expect(totalData[0].total).toBe(2000);
+    expect(totalData[1].total).toBe(2500);
+  });
+
+  it("clicking an account's chart legend hides it and unchecks the matching filter checkbox", () => {
+    render(
+      <Charts
+        accounts={mockAccounts}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={mockPredictions}
+      />
+    );
+
+    const legends = screen.getAllByTestId("legend");
+    const accountsLegend = legends[1]; // Per Account chart
+
+    clickLegend(accountsLegend, "byAccount.a1");
+
+    expect(screen.getByTestId("line-Savings (Personal)")).toHaveAttribute(
+      "data-hidden",
+      "true"
+    );
+
+    fireEvent.click(screen.getByTestId("filter-account-toggle"));
+    expect(screen.getByTestId("filter-account-a1")).not.toBeChecked();
+  });
+
+  it("excluding a group cascades to every account in that group across charts", () => {
+    render(
+      <Charts
+        accounts={mockAccounts}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={mockPredictions}
+      />
+    );
+
+    const legends = screen.getAllByTestId("legend");
+    const groupsLegend = legends[3]; // Per Group chart
+
+    clickLegend(groupsLegend, "byGroup.g1");
+
+    expect(screen.getByTestId("line-Savings (Personal)")).toHaveAttribute(
+      "data-hidden",
+      "true"
+    );
+    expect(screen.getByTestId("line-Checking")).toHaveAttribute(
+      "data-hidden",
+      "false"
+    );
+
+    const totalChart = screen.getAllByTestId("line-chart")[0];
+    const totalData = JSON.parse(
+      totalChart.getAttribute("data-chart-data") ?? "[]"
+    );
+    expect(totalData[0].total).toBe(2000);
+  });
+
+  it("does not toggle an account legend hidden by its excluded group", () => {
+    render(
+      <Charts
+        accounts={mockAccounts}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={mockPredictions}
+      />
+    );
+
+    const legends = screen.getAllByTestId("legend");
+    clickLegend(legends[3], "byGroup.g1");
+    clickLegend(legends[1], "byAccount.a1");
+    clickLegend(legends[3], "byGroup.g1");
+
+    expect(screen.getByTestId("line-Savings (Personal)")).toHaveAttribute(
+      "data-hidden",
+      "false"
+    );
+  });
+
+  it("recomputes the Predictions chart from the filtered total", () => {
+    render(
+      <Charts
+        accounts={mockAccounts}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={mockPredictions}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId("filter-account-toggle"));
+    fireEvent.click(screen.getByTestId("filter-account-a1"));
+
+    const predictionsChart = screen.getAllByTestId("line-chart")[1];
+    const predictionsData = JSON.parse(
+      predictionsChart.getAttribute("data-chart-data") ?? "[]"
+    );
+    // Filtered last total = month 2 with a1 excluded = 2500 (a2 only)
+    expect(predictionsData[0]["1"]).toBe(2525);
+  });
+
+  it("clear filters resets excluded lines and recomputed totals", () => {
+    render(
+      <Charts
+        accounts={mockAccounts}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={mockPredictions}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId("filter-account-toggle"));
+    fireEvent.click(screen.getByTestId("filter-account-a1"));
+    fireEvent.click(screen.getByText("Clear filters"));
+
+    expect(screen.getByTestId("line-Savings (Personal)")).toHaveAttribute(
+      "data-hidden",
+      "false"
+    );
+
+    const totalChart = screen.getAllByTestId("line-chart")[0];
+    const totalData = JSON.parse(
+      totalChart.getAttribute("data-chart-data") ?? "[]"
+    );
+    expect(totalData[0].total).toBe(5000);
+  });
+
+  it("'Unselect all' excludes every account and zeroes the Total chart, 'Select all' restores it", () => {
+    render(
+      <Charts
+        accounts={mockAccounts}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={mockPredictions}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId("filter-account-toggle"));
+    fireEvent.click(screen.getByTestId("filter-account-select-none"));
+
+    expect(screen.getByTestId("line-Savings (Personal)")).toHaveAttribute(
+      "data-hidden",
+      "true"
+    );
+    expect(screen.getByTestId("line-Checking")).toHaveAttribute(
+      "data-hidden",
+      "true"
+    );
+
+    const totalChart = screen.getAllByTestId("line-chart")[0];
+    let totalData = JSON.parse(
+      totalChart.getAttribute("data-chart-data") ?? "[]"
+    );
+    expect(totalData[0].total).toBe(0);
+
+    fireEvent.click(screen.getByTestId("filter-account-select-all"));
+
+    expect(screen.getByTestId("line-Savings (Personal)")).toHaveAttribute(
+      "data-hidden",
+      "false"
+    );
+    expect(screen.getByTestId("line-Checking")).toHaveAttribute(
+      "data-hidden",
+      "false"
+    );
+
+    totalData = JSON.parse(totalChart.getAttribute("data-chart-data") ?? "[]");
+    expect(totalData[0].total).toBe(5000);
   });
 });

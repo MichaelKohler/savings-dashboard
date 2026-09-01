@@ -1,6 +1,8 @@
 import type { User, Account, Balance } from "~/generated/prisma/client";
 
 import { prisma } from "~/lib/db.server";
+import { computePredictedBalances } from "~/lib/predictions";
+import { isAccountBalanceCountedInTotal } from "~/lib/accountTotals";
 
 export type { Balance } from "~/generated/prisma/client";
 
@@ -164,12 +166,6 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
 
   type AccountForChart = (typeof accounts)[number];
 
-  const accountIdsForTotals = new Set(
-    accounts
-      .filter((account: AccountForChart) => account.showInGraphs)
-      .map((account: AccountForChart) => account.id)
-  );
-
   // Single optimized query to get all balances with minimal data
   const allBalances = await prisma.balance.findMany({
     where: { userId },
@@ -234,11 +230,13 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
     }
 
     const total = Object.entries(accountsMapForMonth)
-      .filter(
-        ([accountId, account]) =>
-          accountIdsForTotals.has(accountId) &&
-          (!account.archived || account.balance !== 0)
-      )
+      .filter(([accountId, account]) => {
+        const fullAccount = accountsMap.get(accountId);
+        return (
+          fullAccount !== undefined &&
+          isAccountBalanceCountedInTotal(fullAccount, account.balance)
+        );
+      })
       .map(([, account]) => account.balance)
       .reduce((a, b) => a + b, 0);
 
@@ -283,7 +281,7 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
       (entry) =>
         entry.byAccount[accountId] &&
         typeof entry.byAccount[accountId] === "number" &&
-        entry.byAccount[accountId] > 0
+        entry.byAccount[accountId] !== 0
     );
     if (!hasNonZeroBalance) {
       archivedAccountsToRemove.add(accountId);
@@ -341,26 +339,8 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
 export function getPredictedBalances(currentTotal: number) {
   const predictionPercentages = process.env.PREDICTION_PERCENTAGES ?? "";
   const percentages = predictionPercentages?.split(",").map(Number);
-  const result = [];
 
-  const accumulatingTotals: Record<number, number> = {};
-  for (const percentage of percentages) {
-    accumulatingTotals[percentage] = currentTotal;
-  }
-
-  for (let i = 1; i <= 40; i++) {
-    const totalsInYear: { year: number; [key: number]: number } = {
-      year: new Date().getFullYear() + i,
-    };
-    for (const percentage of percentages) {
-      accumulatingTotals[percentage] +=
-        (accumulatingTotals[percentage] / 100) * percentage;
-      totalsInYear[percentage] = Math.round(accumulatingTotals[percentage]);
-    }
-    result.push(totalsInYear);
-  }
-
-  return result;
+  return computePredictedBalances(currentTotal, percentages, 40);
 }
 
 export function createBalance(
