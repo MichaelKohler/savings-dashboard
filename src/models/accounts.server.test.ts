@@ -29,6 +29,7 @@ describe("account models", () => {
     typeId: "1",
     userId: user.id,
     archived: false,
+    uncheckedInChartsByDefault: true,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -48,6 +49,7 @@ describe("account models", () => {
           color: true,
           showInGraphs: true,
           archived: true,
+          uncheckedInChartsByDefault: true,
           createdAt: true,
           updatedAt: true,
           userId: true,
@@ -74,6 +76,7 @@ describe("account models", () => {
           color: true,
           showInGraphs: true,
           archived: true,
+          uncheckedInChartsByDefault: true,
           createdAt: true,
           updatedAt: true,
           userId: true,
@@ -116,6 +119,7 @@ describe("account models", () => {
           color: true,
           showInGraphs: true,
           archived: true,
+          uncheckedInChartsByDefault: true,
           createdAt: true,
           updatedAt: true,
           userId: true,
@@ -154,6 +158,7 @@ describe("account models", () => {
           color: account.color,
           showInGraphs: account.showInGraphs,
           archived: account.archived,
+          uncheckedInChartsByDefault: account.uncheckedInChartsByDefault,
           groupId: account.groupId,
           typeId: account.typeId,
         },
@@ -167,6 +172,7 @@ describe("account models", () => {
           color: account.color,
           showInGraphs: account.showInGraphs,
           archived: account.archived,
+          uncheckedInChartsByDefault: account.uncheckedInChartsByDefault,
           group: {
             connect: {
               id: account.groupId,
@@ -203,6 +209,7 @@ describe("account models", () => {
           showInGraphs: account.showInGraphs,
           groupId: account.groupId,
           archived: account.archived,
+          uncheckedInChartsByDefault: account.uncheckedInChartsByDefault,
           typeId: account.typeId,
         },
       });

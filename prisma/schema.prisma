@@ -36,6 +36,7 @@ model Account {
   color        String
   showInGraphs Boolean @default(true)
   archived     Boolean @default(false)
+  uncheckedInChartsByDefault Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -76,6 +77,7 @@ model Balance {
 model Group {
   id       String   @id @default(cuid())
   name     String
+  uncheckedInChartsByDefault Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -91,6 +93,7 @@ model Group {
 model Type {
   id       String   @id @default(cuid())
   name     String
+  uncheckedInChartsByDefault Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -149,6 +149,7 @@ describe("Charts", () => {
       typeId: "t1",
       showInGraphs: true,
       archived: false,
+      uncheckedInChartsByDefault: false,
       group: { id: "g1", name: "Personal" },
       type: { id: "t1", name: "Savings" },
     },
@@ -160,6 +161,7 @@ describe("Charts", () => {
       typeId: null,
       showInGraphs: true,
       archived: false,
+      uncheckedInChartsByDefault: false,
       group: null,
       type: null,
     },
@@ -186,6 +188,7 @@ describe("Charts", () => {
     {
       id: "g1",
       name: "Personal",
+      uncheckedInChartsByDefault: false,
       userId: "u1",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -196,6 +199,7 @@ describe("Charts", () => {
     {
       id: "t1",
       name: "Savings",
+      uncheckedInChartsByDefault: false,
       userId: "u1",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -635,7 +639,7 @@ describe("Charts", () => {
     expect(predictionsData[0]["1"]).toBe(2525);
   });
 
-  it("clear filters resets excluded lines and recomputed totals", () => {
+  it("'Show everything' resets excluded lines and recomputed totals", () => {
     render(
       <Charts
         accounts={mockAccounts}
@@ -648,7 +652,8 @@ describe("Charts", () => {
 
     fireEvent.click(screen.getByTestId("filter-account-toggle"));
     fireEvent.click(screen.getByTestId("filter-account-a1"));
-    fireEvent.click(screen.getByText("Clear filters"));
+    fireEvent.click(screen.getByTestId("filter-account-toggle"));
+    fireEvent.click(screen.getByRole("button", { name: "Show everything" }));
 
     expect(screen.getByTestId("line-Savings (Personal)")).toHaveAttribute(
       "data-hidden",
@@ -660,6 +665,99 @@ describe("Charts", () => {
       totalChart.getAttribute("data-chart-data") ?? "[]"
     );
     expect(totalData[0].total).toBe(5000);
+  });
+
+  it("starts with accounts marked as unchecked by default excluded", () => {
+    render(
+      <Charts
+        accounts={[
+          { ...mockAccounts[0], uncheckedInChartsByDefault: true },
+          mockAccounts[1],
+        ]}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={mockPredictions}
+      />
+    );
+
+    expect(screen.getByTestId("line-Savings (Personal)")).toHaveAttribute(
+      "data-hidden",
+      "true"
+    );
+    expect(screen.getByTestId("line-Checking")).toHaveAttribute(
+      "data-hidden",
+      "false"
+    );
+
+    const totalChart = screen.getAllByTestId("line-chart")[0];
+    const totalData = JSON.parse(
+      totalChart.getAttribute("data-chart-data") ?? "[]"
+    );
+    expect(totalData[0].total).toBe(2000);
+
+    fireEvent.click(screen.getByTestId("filter-account-toggle"));
+    expect(screen.getByTestId("filter-account-a1")).not.toBeChecked();
+  });
+
+  it("starts with groups and types marked as unchecked by default excluded", () => {
+    render(
+      <Charts
+        accounts={mockAccounts}
+        balances={mockBalances}
+        groups={[{ ...mockGroups[0], uncheckedInChartsByDefault: true }]}
+        types={[{ ...mockTypes[0], uncheckedInChartsByDefault: true }]}
+        predictions={mockPredictions}
+      />
+    );
+
+    expect(screen.getByTestId("bar-Personal")).toHaveAttribute(
+      "data-hidden",
+      "true"
+    );
+    expect(screen.getByTestId("bar-Savings")).toHaveAttribute(
+      "data-hidden",
+      "true"
+    );
+    expect(screen.getByTestId("line-Savings (Personal)")).toHaveAttribute(
+      "data-hidden",
+      "true"
+    );
+  });
+
+  it("'Reset to defaults' restores the unchecked by default state", () => {
+    render(
+      <Charts
+        accounts={[
+          { ...mockAccounts[0], uncheckedInChartsByDefault: true },
+          mockAccounts[1],
+        ]}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={mockPredictions}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Show everything" }));
+    expect(screen.getByTestId("line-Savings (Personal)")).toHaveAttribute(
+      "data-hidden",
+      "false"
+    );
+
+    fireEvent.click(screen.getByTestId("filter-account-toggle"));
+    fireEvent.click(screen.getByTestId("filter-account-a2"));
+    fireEvent.click(screen.getByTestId("filter-account-toggle"));
+    fireEvent.click(screen.getByRole("button", { name: "Reset to defaults" }));
+
+    expect(screen.getByTestId("line-Savings (Personal)")).toHaveAttribute(
+      "data-hidden",
+      "true"
+    );
+    expect(screen.getByTestId("line-Checking")).toHaveAttribute(
+      "data-hidden",
+      "false"
+    );
   });
 
   it("'Unselect all' excludes every account and zeroes the Total chart, 'Select all' restores it", () => {

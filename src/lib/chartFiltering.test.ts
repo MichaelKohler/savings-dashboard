@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import {
+  areExclusionsEqual,
   formatAccountLabel,
+  getDefaultExclusions,
   isAccountExcluded,
   getFilteredChartData,
   getFilteredPredictions,
@@ -18,6 +20,7 @@ function makeAccount(overrides: Partial<FilterableAccount>): FilterableAccount {
     typeId: "t1",
     showInGraphs: true,
     archived: false,
+    uncheckedInChartsByDefault: false,
     group: { id: "g1", name: "Personal" },
     type: { id: "t1", name: "Type A" },
     ...overrides,
@@ -94,6 +97,7 @@ describe("getFilteredChartData", () => {
       typeId: "t1",
       showInGraphs: true,
       archived: false,
+      uncheckedInChartsByDefault: false,
       group: { id: "g1", name: "Personal" },
       type: { id: "t1", name: "Type A" },
     }),
@@ -104,6 +108,7 @@ describe("getFilteredChartData", () => {
       typeId: "t1",
       showInGraphs: true,
       archived: false,
+      uncheckedInChartsByDefault: false,
       group: { id: "g2", name: "Business" },
       type: { id: "t1", name: "Type A" },
     }),
@@ -114,6 +119,7 @@ describe("getFilteredChartData", () => {
       typeId: "t2",
       showInGraphs: true,
       archived: true,
+      uncheckedInChartsByDefault: false,
       group: { id: "g1", name: "Personal" },
       type: { id: "t2", name: "Type B" },
     }),
@@ -124,6 +130,7 @@ describe("getFilteredChartData", () => {
       typeId: "t1",
       showInGraphs: false,
       archived: false,
+      uncheckedInChartsByDefault: false,
       group: { id: "g2", name: "Business" },
       type: { id: "t1", name: "Type A" },
     }),
@@ -213,5 +220,57 @@ describe("getFilteredPredictions", () => {
     expect(result[0][10]).toBe(2200);
     expect(result[1][5]).toBe(2205);
     expect(result[1][10]).toBe(2420);
+  });
+});
+
+describe("getDefaultExclusions", () => {
+  it("collects the ids of entities that are unchecked by default", () => {
+    const result = getDefaultExclusions(
+      [
+        makeAccount({ id: "a1", uncheckedInChartsByDefault: true }),
+        makeAccount({ id: "a2" }),
+      ],
+      [
+        { id: "g1", uncheckedInChartsByDefault: false },
+        { id: "g2", uncheckedInChartsByDefault: true },
+      ],
+      [{ id: "t1", uncheckedInChartsByDefault: true }]
+    );
+
+    expect(result.excludedAccountIds).toEqual(new Set(["a1"]));
+    expect(result.excludedGroupIds).toEqual(new Set(["g2"]));
+    expect(result.excludedTypeIds).toEqual(new Set(["t1"]));
+  });
+
+  it("returns empty sets when nothing is unchecked by default", () => {
+    expect(getDefaultExclusions([makeAccount({})], [], [])).toEqual(
+      makeExclusions()
+    );
+  });
+});
+
+describe("areExclusionsEqual", () => {
+  it("returns true for exclusions with the same ids", () => {
+    expect(
+      areExclusionsEqual(
+        makeExclusions({ excludedGroupIds: new Set(["g1", "g2"]) }),
+        makeExclusions({ excludedGroupIds: new Set(["g2", "g1"]) })
+      )
+    ).toBe(true);
+  });
+
+  it("returns false when any set differs", () => {
+    expect(
+      areExclusionsEqual(
+        makeExclusions({ excludedTypeIds: new Set(["t1"]) }),
+        makeExclusions()
+      )
+    ).toBe(false);
+    expect(
+      areExclusionsEqual(
+        makeExclusions({ excludedAccountIds: new Set(["a1"]) }),
+        makeExclusions({ excludedAccountIds: new Set(["a2"]) })
+      )
+    ).toBe(false);
   });
 });

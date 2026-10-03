@@ -7,12 +7,17 @@ export const createGroupAction = defineAction({
   accept: "form",
   input: z.object({
     name: z.string().min(1, "Name is required and must be text"),
+    uncheckedInChartsByDefault: z.string().optional(),
   }),
   handler: async (input, context) => {
     try {
       const userId = await requireUserId(context.cookies);
 
-      await createGroup({ name: input.name, userId });
+      await createGroup({
+        name: input.name,
+        uncheckedInChartsByDefault: input.uncheckedInChartsByDefault === "on",
+        userId,
+      });
 
       return { success: true };
     } catch (_error: unknown) {
@@ -29,6 +34,7 @@ export const updateGroupAction = defineAction({
   input: z.object({
     groupId: z.string().min(1, "Group ID is required"),
     name: z.string().min(1, "Name is required and must be text"),
+    uncheckedInChartsByDefault: z.string().optional(),
   }),
   handler: async (input, context) => {
     try {
@@ -37,6 +43,7 @@ export const updateGroupAction = defineAction({
       await updateGroup({
         id: input.groupId,
         name: input.name,
+        uncheckedInChartsByDefault: input.uncheckedInChartsByDefault === "on",
         userId,
       });
 

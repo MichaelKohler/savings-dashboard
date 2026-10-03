@@ -9,6 +9,7 @@ describe("GroupsList", () => {
     {
       id: "g1",
       name: "Personal",
+      uncheckedInChartsByDefault: false,
       userId: "u1",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -16,6 +17,7 @@ describe("GroupsList", () => {
     {
       id: "g2",
       name: "Business",
+      uncheckedInChartsByDefault: false,
       userId: "u1",
       createdAt: new Date(),
       updatedAt: new Date(),

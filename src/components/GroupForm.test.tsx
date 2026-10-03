@@ -8,6 +8,7 @@ describe("GroupForm", () => {
   const mockGroup = {
     id: "g1",
     name: "Personal",
+    uncheckedInChartsByDefault: false,
     userId: "u1",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -129,6 +130,32 @@ describe("GroupForm", () => {
     await waitFor(() => {
       expect(actions.updateGroup).toHaveBeenCalledWith(expect.any(FormData));
     });
+  });
+
+  it("submits the unchecked in charts checkbox state", async () => {
+    render(
+      <GroupForm group={{ ...mockGroup, uncheckedInChartsByDefault: true }} />
+    );
+    const checkbox = screen.getByLabelText(
+      "Unchecked in charts filter by default"
+    );
+    expect(checkbox).toBeChecked();
+
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => {
+      expect(actions.updateGroup).toHaveBeenCalled();
+    });
+    const formData = vi.mocked(actions.updateGroup).mock
+      .calls[0][0] as FormData;
+    expect(formData.get("uncheckedInChartsByDefault")).toBe("on");
+  });
+
+  it("leaves the unchecked in charts checkbox unchecked for a new group", () => {
+    render(<GroupForm />);
+    expect(
+      screen.getByLabelText("Unchecked in charts filter by default")
+    ).not.toBeChecked();
   });
 
   it("redirects to /groups on successful submission", async () => {

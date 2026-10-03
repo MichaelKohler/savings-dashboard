@@ -10,6 +10,7 @@ export async function getTypes({ userId }: { userId: User["id"] }) {
     select: {
       id: true,
       name: true,
+      uncheckedInChartsByDefault: true,
       createdAt: true,
       updatedAt: true,
       userId: true,
@@ -31,6 +32,7 @@ export async function getType({ id, userId }: Pick<Type, "id" | "userId">) {
     select: {
       id: true,
       name: true,
+      uncheckedInChartsByDefault: true,
       createdAt: true,
       updatedAt: true,
       userId: true,
@@ -45,20 +47,25 @@ export async function getType({ id, userId }: Pick<Type, "id" | "userId">) {
   });
 }
 
-export function createType({ name, userId }: Pick<Type, "name" | "userId">) {
+export function createType({
+  name,
+  uncheckedInChartsByDefault,
+  userId,
+}: Pick<Type, "name" | "uncheckedInChartsByDefault" | "userId">) {
   return prisma.type.create({
-    data: { name, userId },
+    data: { name, uncheckedInChartsByDefault, userId },
   });
 }
 
 export function updateType({
   id,
   name,
+  uncheckedInChartsByDefault,
   userId,
-}: Pick<Type, "id" | "name" | "userId">) {
+}: Pick<Type, "id" | "name" | "uncheckedInChartsByDefault" | "userId">) {
   return prisma.type.update({
     where: { id, userId },
-    data: { name },
+    data: { name, uncheckedInChartsByDefault },
   });
 }
 

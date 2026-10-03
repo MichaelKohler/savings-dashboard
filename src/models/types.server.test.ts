@@ -23,6 +23,7 @@ describe("type models", () => {
   const type = {
     id: "1",
     name: "Test Type",
+    uncheckedInChartsByDefault: true,
     userId: user.id,
     accounts: [],
     createdAt: new Date(),
@@ -44,6 +45,7 @@ describe("type models", () => {
         select: {
           id: true,
           name: true,
+          uncheckedInChartsByDefault: true,
           createdAt: true,
           updatedAt: true,
           userId: true,
@@ -75,6 +77,7 @@ describe("type models", () => {
         select: {
           id: true,
           name: true,
+          uncheckedInChartsByDefault: true,
           createdAt: true,
           updatedAt: true,
           userId: true,
@@ -97,11 +100,19 @@ describe("type models", () => {
     it("should create a new type", async () => {
       mockPrisma.type.create.mockResolvedValue(type);
 
-      const result = await createType({ name: type.name, userId: user.id });
+      const result = await createType({
+        name: type.name,
+        uncheckedInChartsByDefault: type.uncheckedInChartsByDefault,
+        userId: user.id,
+      });
 
       expect(result).toEqual(type);
       expect(mockPrisma.type.create).toHaveBeenCalledWith({
-        data: { name: type.name, userId: user.id },
+        data: {
+          name: type.name,
+          uncheckedInChartsByDefault: type.uncheckedInChartsByDefault,
+          userId: user.id,
+        },
       });
     });
   });
@@ -116,13 +127,17 @@ describe("type models", () => {
       const result = await updateType({
         id: type.id,
         name: type.name,
+        uncheckedInChartsByDefault: type.uncheckedInChartsByDefault,
         userId: user.id,
       });
 
       expect(result).toEqual(type);
       expect(mockPrisma.type.update).toHaveBeenCalledWith({
         where: { id: type.id, userId: user.id },
-        data: { name: type.name },
+        data: {
+          name: type.name,
+          uncheckedInChartsByDefault: type.uncheckedInChartsByDefault,
+        },
       });
     });
   });

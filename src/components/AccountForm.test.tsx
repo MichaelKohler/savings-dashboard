@@ -9,6 +9,7 @@ describe("AccountForm", () => {
     {
       id: "g1",
       name: "Personal",
+      uncheckedInChartsByDefault: false,
       userId: "u1",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -16,6 +17,7 @@ describe("AccountForm", () => {
     {
       id: "g2",
       name: "Business",
+      uncheckedInChartsByDefault: false,
       userId: "u1",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -26,6 +28,7 @@ describe("AccountForm", () => {
     {
       id: "t1",
       name: "Savings",
+      uncheckedInChartsByDefault: false,
       userId: "u1",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -33,6 +36,7 @@ describe("AccountForm", () => {
     {
       id: "t2",
       name: "Investment",
+      uncheckedInChartsByDefault: false,
       userId: "u1",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -44,6 +48,7 @@ describe("AccountForm", () => {
     name: "Test Account",
     color: "#FF0000",
     archived: false,
+    uncheckedInChartsByDefault: false,
     showInGraphs: true,
     userId: "u1",
     groupId: "g1",
@@ -125,6 +130,62 @@ describe("AccountForm", () => {
       />
     );
     expect(screen.getByLabelText(/Archived/)).toBeChecked();
+  });
+
+  it("shows the unchecked in charts checkbox reflecting the stored value", () => {
+    render(
+      <AccountForm
+        account={{ ...mockAccount, uncheckedInChartsByDefault: true }}
+        groups={mockGroups}
+        types={mockTypes}
+      />
+    );
+    const checkbox = screen.getByLabelText(
+      "Unchecked in charts filter by default"
+    );
+    expect(checkbox).toBeChecked();
+    expect(checkbox).toBeEnabled();
+  });
+
+  it("disables the unchecked in charts checkbox while 'Show in graphs' is off", () => {
+    render(
+      <AccountForm
+        account={{ ...mockAccount, showInGraphs: false }}
+        groups={mockGroups}
+        types={mockTypes}
+      />
+    );
+    const checkbox = screen.getByLabelText(
+      "Unchecked in charts filter by default"
+    );
+    expect(checkbox).toBeDisabled();
+
+    fireEvent.click(screen.getByLabelText("Show in graphs"));
+    expect(checkbox).toBeEnabled();
+  });
+
+  it("keeps the stored unchecked in charts value when 'Show in graphs' is off", async () => {
+    render(
+      <AccountForm
+        account={{
+          ...mockAccount,
+          showInGraphs: false,
+          uncheckedInChartsByDefault: true,
+        }}
+        groups={mockGroups}
+        types={mockTypes}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => {
+      expect(actions.updateAccount).toHaveBeenCalled();
+    });
+    const formData = vi.mocked(actions.updateAccount).mock
+      .calls[0][0] as FormData;
+    expect(formData.get("uncheckedInChartsByDefault")).toBe("on");
+    expect(formData.get("showInGraphs")).toBeNull();
   });
 
   it("populates form with account data in edit mode", () => {

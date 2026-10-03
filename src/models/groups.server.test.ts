@@ -23,6 +23,7 @@ describe("group models", () => {
   const group = {
     id: "1",
     name: "Test Group",
+    uncheckedInChartsByDefault: true,
     userId: user.id,
     accounts: [],
     createdAt: new Date(),
@@ -44,6 +45,7 @@ describe("group models", () => {
         select: {
           id: true,
           name: true,
+          uncheckedInChartsByDefault: true,
           createdAt: true,
           updatedAt: true,
           userId: true,
@@ -75,6 +77,7 @@ describe("group models", () => {
         select: {
           id: true,
           name: true,
+          uncheckedInChartsByDefault: true,
           createdAt: true,
           updatedAt: true,
           userId: true,
@@ -97,11 +100,19 @@ describe("group models", () => {
     it("should create a new group", async () => {
       mockPrisma.group.create.mockResolvedValue(group);
 
-      const result = await createGroup({ name: group.name, userId: user.id });
+      const result = await createGroup({
+        name: group.name,
+        uncheckedInChartsByDefault: group.uncheckedInChartsByDefault,
+        userId: user.id,
+      });
 
       expect(result).toEqual(group);
       expect(mockPrisma.group.create).toHaveBeenCalledWith({
-        data: { name: group.name, userId: user.id },
+        data: {
+          name: group.name,
+          uncheckedInChartsByDefault: group.uncheckedInChartsByDefault,
+          userId: user.id,
+        },
       });
     });
   });
@@ -116,13 +127,17 @@ describe("group models", () => {
       const result = await updateGroup({
         id: group.id,
         name: group.name,
+        uncheckedInChartsByDefault: group.uncheckedInChartsByDefault,
         userId: user.id,
       });
 
       expect(result).toEqual(group);
       expect(mockPrisma.group.update).toHaveBeenCalledWith({
         where: { id: group.id, userId: user.id },
-        data: { name: group.name },
+        data: {
+          name: group.name,
+          uncheckedInChartsByDefault: group.uncheckedInChartsByDefault,
+        },
       });
     });
   });

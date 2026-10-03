@@ -6,10 +6,12 @@ This is a savings dashboard application that allows users to track their savings
 
 ## Technology Stack
 
+- **Framework**: Astro (SSR via `@astrojs/node`) with React islands for interactive components
 - **Frontend**: React with TypeScript
 - **Styling**: Tailwind CSS version 4
-- **State Management**: React Router loaders
-- **Routing**: React Router v7 (migrated from Remix v2)
+- **Data Loading**: Astro page frontmatter on the server, passed to React components as props
+- **Mutations**: Astro Actions (`astro:actions`)
+- **Routing**: Astro file-based routing in `src/pages/` (migrated from React Router v7 / Remix v2)
 - **Build Tool**: Vite
 - **Testing**: Vitest + React Testing Library as well as E2E testing with Playwright
 - **Linting**: ESLint + Prettier
@@ -18,7 +20,7 @@ This is a savings dashboard application that allows users to track their savings
 - **Charts**: Recharts for financial data visualization
 - **Version Control**: Git
 - **Environment Variables**: Node.js native `--env-file` parameter for testing environment
-- **Deployment**: Vercel
+- **Deployment**: Docker image (`Dockerfile`) running the Astro Node standalone server; migrations run on container start via `scripts/migrate-with-baseline.sh`
 
 ## Coding Standards
 
@@ -27,7 +29,7 @@ This is a savings dashboard application that allows users to track their savings
 - Use TypeScript for all new files
 - Follow functional components with hooks pattern
 - Use Tailwind CSS for styling
-- Use Remix patterns such as loaders and actions instead of client-side hooks
+- Load data in Astro page frontmatter and mutate data through Astro Actions instead of client-side fetching
 - Use meaningful variable and function names
 - Write self-documenting code with minimal comments
 - Prefer composition over inheritance
@@ -54,11 +56,16 @@ This is a savings dashboard application that allows users to track their savings
 
 ### File Structure
 
-- Components in `/app/components/`
-- Routes in `/app/routes/`
-- Prisma data models in `/app/models/`
-- All tests in `/tests/`
-- Utilities in `/app/utils/`
+- Components in `/src/components/`
+- Pages (routes) in `/src/pages/`
+- Layouts in `/src/layouts/`
+- Astro Actions in `/src/actions/`
+- Middleware in `/src/middleware/`
+- Prisma data models in `/src/models/`
+- Utilities in `/src/lib/`
+- Unit tests next to the file they test (`*.test.ts` / `*.test.tsx`)
+- E2E tests in `/e2e/`
+- Prisma schema and migrations in `/prisma/`
 
 ### Naming Conventions
 
@@ -175,7 +182,9 @@ export const ComponentName: React.FC<Props> = ({ prop1, prop2 }) => {
 - Test edge cases and error conditions
 - Mock external dependencies according to other tests
 - Aim for good test coverage but focus on most useful paths
-- Use `vi.spyOn` for mocking functions and methods, do not use `vi.mock` for mocking modules
+- Use `vi.spyOn` for mocking functions and methods, do not add new `vi.mock` module mocks
+- Reuse the existing shared module mocks instead of creating new ones: Prisma via `mockPrisma` from `src/test-setup.ts`, and `astro:actions` via `src/__mocks__/astro-actions.ts` (aliased in `vitest.config.ts`). Control them with `vi.mocked(...)`
+- The only other module mocks are `recharts` in `Charts.test.tsx` and `bcryptjs` in `user.server.test.ts`
 - Always run "pnpm test" with `--run`, otherwise the tests will run in watch mode and not return
 
 Remember: These instructions should evolve with the project. Keep them updated as the codebase grows and changes.

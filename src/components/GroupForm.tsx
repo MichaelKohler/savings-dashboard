@@ -97,6 +97,18 @@ export default function GroupForm({ group }: GroupFormProps) {
         )}
       </div>
 
+      <div>
+        <label className="flex w-full flex-row gap-2">
+          <input
+            type="checkbox"
+            name="uncheckedInChartsByDefault"
+            data-testid="group-unchecked-in-charts-input"
+            defaultChecked={group?.uncheckedInChartsByDefault}
+          />
+          <span>Unchecked in charts filter by default</span>
+        </label>
+      </div>
+
       {errors.generic && (
         <div className="text-mkerror pt-1" id="generic-error">
           {errors.generic}

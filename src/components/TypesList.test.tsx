@@ -9,6 +9,7 @@ describe("TypesList", () => {
     {
       id: "t1",
       name: "Savings",
+      uncheckedInChartsByDefault: false,
       userId: "u1",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -16,6 +17,7 @@ describe("TypesList", () => {
     {
       id: "t2",
       name: "Investment",
+      uncheckedInChartsByDefault: false,
       userId: "u1",
       createdAt: new Date(),
       updatedAt: new Date(),

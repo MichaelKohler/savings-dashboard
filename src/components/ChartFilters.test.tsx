@@ -13,6 +13,7 @@ describe("ChartFilters", () => {
       typeId: "t1",
       showInGraphs: true,
       archived: false,
+      uncheckedInChartsByDefault: false,
       group: { id: "g1", name: "Personal" },
       type: { id: "t1", name: "Type A" },
     },
@@ -24,6 +25,7 @@ describe("ChartFilters", () => {
       typeId: null,
       showInGraphs: true,
       archived: false,
+      uncheckedInChartsByDefault: false,
       group: null,
       type: null,
     },
@@ -33,6 +35,7 @@ describe("ChartFilters", () => {
     {
       id: "g1",
       name: "Personal",
+      uncheckedInChartsByDefault: false,
       userId: "u1",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -43,6 +46,7 @@ describe("ChartFilters", () => {
     {
       id: "t1",
       name: "Type A",
+      uncheckedInChartsByDefault: false,
       userId: "u1",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -55,7 +59,8 @@ describe("ChartFilters", () => {
     const onToggleAccount = vi.fn();
     const onToggleGroup = vi.fn();
     const onToggleType = vi.fn();
-    const onClearFilters = vi.fn();
+    const onResetToDefaults = vi.fn();
+    const onShowEverything = vi.fn();
 
     render(
       <ChartFilters
@@ -65,15 +70,27 @@ describe("ChartFilters", () => {
         excludedAccountIds={new Set()}
         excludedGroupIds={new Set()}
         excludedTypeIds={new Set()}
+        defaultExclusions={{
+          excludedAccountIds: new Set(),
+          excludedGroupIds: new Set(),
+          excludedTypeIds: new Set(),
+        }}
         onToggleAccount={onToggleAccount}
         onToggleGroup={onToggleGroup}
         onToggleType={onToggleType}
-        onClearFilters={onClearFilters}
+        onResetToDefaults={onResetToDefaults}
+        onShowEverything={onShowEverything}
         {...overrides}
       />
     );
 
-    return { onToggleAccount, onToggleGroup, onToggleType, onClearFilters };
+    return {
+      onToggleAccount,
+      onToggleGroup,
+      onToggleType,
+      onResetToDefaults,
+      onShowEverything,
+    };
   }
 
   function openDropdown(testIdPrefix: string) {
@@ -191,14 +208,85 @@ describe("ChartFilters", () => {
     expect(onToggleAccount).toHaveBeenCalledWith("a2");
   });
 
-  it("calls onClearFilters when the clear button is clicked", () => {
-    const { onClearFilters } = renderFilters({
+  it("calls onShowEverything when the 'Show everything' button is clicked", () => {
+    const { onShowEverything } = renderFilters({
       excludedAccountIds: new Set(["a1"]),
     });
 
-    fireEvent.click(screen.getByText("Clear filters"));
+    fireEvent.click(screen.getByRole("button", { name: "Show everything" }));
 
-    expect(onClearFilters).toHaveBeenCalled();
+    expect(onShowEverything).toHaveBeenCalled();
+  });
+
+  it("disables 'Show everything' when nothing is excluded", () => {
+    renderFilters();
+
+    expect(
+      screen.getByRole("button", { name: "Show everything" })
+    ).toBeDisabled();
+  });
+
+  it("disables 'Reset to defaults' while the filters match the defaults", () => {
+    renderFilters({
+      excludedGroupIds: new Set(["g1"]),
+      defaultExclusions: {
+        excludedAccountIds: new Set(),
+        excludedGroupIds: new Set(["g1"]),
+        excludedTypeIds: new Set(),
+      },
+    });
+
+    expect(
+      screen.getByRole("button", { name: "Reset to defaults" })
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Show everything" })
+    ).toBeEnabled();
+  });
+
+  it("calls onResetToDefaults when the filters differ from the defaults", () => {
+    const { onResetToDefaults } = renderFilters({
+      defaultExclusions: {
+        excludedAccountIds: new Set(["a1"]),
+        excludedGroupIds: new Set(),
+        excludedTypeIds: new Set(),
+      },
+    });
+
+    const resetButton = screen.getByRole("button", {
+      name: "Reset to defaults",
+    });
+    expect(resetButton).toBeEnabled();
+
+    fireEvent.click(resetButton);
+
+    expect(onResetToDefaults).toHaveBeenCalled();
+  });
+
+  it("marks entities that are unchecked by default in the dropdowns", () => {
+    renderFilters({
+      defaultExclusions: {
+        excludedAccountIds: new Set(["a2"]),
+        excludedGroupIds: new Set(["g1"]),
+        excludedTypeIds: new Set(["t1"]),
+      },
+    });
+    openDropdown("filter-account");
+    openDropdown("filter-group");
+    openDropdown("filter-type");
+
+    expect(
+      screen.getByTestId("filter-account-a2").closest("label")
+    ).toHaveTextContent("Checking (unchecked by default)");
+    expect(
+      screen.getByTestId("filter-account-a1").closest("label")
+    ).toHaveTextContent(/^Savings \(Personal\)$/);
+    expect(
+      screen.getByTestId("filter-group-g1").closest("label")
+    ).toHaveTextContent("Personal (unchecked by default)");
+    expect(
+      screen.getByTestId("filter-type-t1").closest("label")
+    ).toHaveTextContent("Type A (unchecked by default)");
   });
 
   it("renders without crashing when there are no groups, types, or accounts", () => {
