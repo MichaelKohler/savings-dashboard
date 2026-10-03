@@ -18,6 +18,7 @@ export function getAccount({
       color: true,
       showInGraphs: true,
       archived: true,
+      uncheckedInChartsByDefault: true,
       createdAt: true,
       updatedAt: true,
       userId: true,
@@ -46,6 +47,7 @@ export async function getAccounts({
       color: true,
       showInGraphs: true,
       archived: true,
+      uncheckedInChartsByDefault: true,
       createdAt: true,
       updatedAt: true,
       userId: true,
@@ -78,7 +80,13 @@ export async function getAccounts({
 export function createAccount(
   account: Pick<
     Account,
-    "name" | "color" | "showInGraphs" | "archived" | "groupId" | "typeId"
+    | "name"
+    | "color"
+    | "showInGraphs"
+    | "archived"
+    | "uncheckedInChartsByDefault"
+    | "groupId"
+    | "typeId"
   >,
   userId: User["id"]
 ) {
@@ -88,6 +96,7 @@ export function createAccount(
       color: account.color,
       showInGraphs: account.showInGraphs,
       archived: account.archived,
+      uncheckedInChartsByDefault: account.uncheckedInChartsByDefault,
       ...(account.groupId
         ? {
             group: {
@@ -123,6 +132,7 @@ export async function updateAccount({
   showInGraphs,
   groupId,
   archived,
+  uncheckedInChartsByDefault,
   typeId,
 }: Pick<
   Account,
@@ -133,6 +143,7 @@ export async function updateAccount({
   | "userId"
   | "groupId"
   | "archived"
+  | "uncheckedInChartsByDefault"
   | "typeId"
 >) {
   const account = await getAccount({ id, userId });
@@ -149,6 +160,7 @@ export async function updateAccount({
       showInGraphs,
       groupId,
       archived,
+      uncheckedInChartsByDefault,
       typeId,
     },
   });

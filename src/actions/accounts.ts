@@ -16,6 +16,7 @@ export const createAccountAction = defineAction({
     typeId: z.string().optional(),
     showInGraphs: z.string().optional(),
     archived: z.string().optional(),
+    uncheckedInChartsByDefault: z.string().optional(),
   }),
   handler: async (input, context) => {
     try {
@@ -27,6 +28,7 @@ export const createAccountAction = defineAction({
           color: input.color,
           showInGraphs: input.showInGraphs === "on",
           archived: input.archived === "on",
+          uncheckedInChartsByDefault: input.uncheckedInChartsByDefault === "on",
           groupId: input.groupId || null,
           typeId: input.typeId || null,
         },
@@ -53,6 +55,7 @@ export const updateAccountAction = defineAction({
     typeId: z.string().optional(),
     showInGraphs: z.string().optional(),
     archived: z.string().optional(),
+    uncheckedInChartsByDefault: z.string().optional(),
   }),
   handler: async (input, context) => {
     try {
@@ -64,6 +67,7 @@ export const updateAccountAction = defineAction({
         color: input.color,
         showInGraphs: input.showInGraphs === "on",
         archived: input.archived === "on",
+        uncheckedInChartsByDefault: input.uncheckedInChartsByDefault === "on",
         groupId: input.groupId === "" ? null : (input.groupId as string | null),
         typeId: input.typeId === "" ? null : (input.typeId as string | null),
         userId,

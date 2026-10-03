@@ -19,6 +19,7 @@ import ChartTooltip from "~/components/ChartTooltip";
 import ChartFilters from "~/components/ChartFilters";
 import {
   formatAccountLabel,
+  getDefaultExclusions,
   getFilteredChartData,
   getFilteredPredictions,
   isAccountExcluded,
@@ -87,15 +88,19 @@ export default function Charts({
   types,
   predictions,
 }: ChartsProps) {
+  const defaultExclusions = useMemo(
+    () => getDefaultExclusions(accounts, groups, types),
+    [accounts, groups, types]
+  );
   const [hiddenPredictions, setHiddenPredictions] = useState<string[]>([]);
   const [excludedAccountIds, setExcludedAccountIds] = useState<Set<string>>(
-    () => new Set()
+    () => defaultExclusions.excludedAccountIds
   );
   const [excludedGroupIds, setExcludedGroupIds] = useState<Set<string>>(
-    () => new Set()
+    () => defaultExclusions.excludedGroupIds
   );
   const [excludedTypeIds, setExcludedTypeIds] = useState<Set<string>>(
-    () => new Set()
+    () => defaultExclusions.excludedTypeIds
   );
 
   const handlePredictionsLegendClick = (e: LegendPayload) => {
@@ -168,6 +173,7 @@ export default function Charts({
         excludedAccountIds={excludedAccountIds}
         excludedGroupIds={excludedGroupIds}
         excludedTypeIds={excludedTypeIds}
+        defaultExclusions={defaultExclusions}
         onToggleAccount={(id) =>
           setExcludedAccountIds((prev) => toggleId(prev, id))
         }
@@ -175,7 +181,12 @@ export default function Charts({
           setExcludedGroupIds((prev) => toggleId(prev, id))
         }
         onToggleType={(id) => setExcludedTypeIds((prev) => toggleId(prev, id))}
-        onClearFilters={() => {
+        onResetToDefaults={() => {
+          setExcludedAccountIds(defaultExclusions.excludedAccountIds);
+          setExcludedGroupIds(defaultExclusions.excludedGroupIds);
+          setExcludedTypeIds(defaultExclusions.excludedTypeIds);
+        }}
+        onShowEverything={() => {
           setExcludedAccountIds(new Set());
           setExcludedGroupIds(new Set());
           setExcludedTypeIds(new Set());

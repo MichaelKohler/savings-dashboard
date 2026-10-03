@@ -8,6 +8,7 @@ describe("TypeForm", () => {
   const mockType = {
     id: "g1",
     name: "Savings",
+    uncheckedInChartsByDefault: false,
     userId: "u1",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -129,6 +130,31 @@ describe("TypeForm", () => {
     await waitFor(() => {
       expect(actions.updateType).toHaveBeenCalledWith(expect.any(FormData));
     });
+  });
+
+  it("submits the unchecked in charts checkbox state", async () => {
+    render(
+      <TypeForm type={{ ...mockType, uncheckedInChartsByDefault: true }} />
+    );
+    const checkbox = screen.getByLabelText(
+      "Unchecked in charts filter by default"
+    );
+    expect(checkbox).toBeChecked();
+
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => {
+      expect(actions.updateType).toHaveBeenCalled();
+    });
+    const formData = vi.mocked(actions.updateType).mock.calls[0][0] as FormData;
+    expect(formData.get("uncheckedInChartsByDefault")).toBe("on");
+  });
+
+  it("leaves the unchecked in charts checkbox unchecked for a new type", () => {
+    render(<TypeForm />);
+    expect(
+      screen.getByLabelText("Unchecked in charts filter by default")
+    ).not.toBeChecked();
   });
 
   it("redirects to /types on successful submission", async () => {

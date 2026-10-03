@@ -10,6 +10,7 @@ export async function getGroups({ userId }: { userId: User["id"] }) {
     select: {
       id: true,
       name: true,
+      uncheckedInChartsByDefault: true,
       createdAt: true,
       updatedAt: true,
       userId: true,
@@ -31,6 +32,7 @@ export async function getGroup({ id, userId }: Pick<Group, "id" | "userId">) {
     select: {
       id: true,
       name: true,
+      uncheckedInChartsByDefault: true,
       createdAt: true,
       updatedAt: true,
       userId: true,
@@ -45,20 +47,25 @@ export async function getGroup({ id, userId }: Pick<Group, "id" | "userId">) {
   });
 }
 
-export function createGroup({ name, userId }: Pick<Group, "name" | "userId">) {
+export function createGroup({
+  name,
+  uncheckedInChartsByDefault,
+  userId,
+}: Pick<Group, "name" | "uncheckedInChartsByDefault" | "userId">) {
   return prisma.group.create({
-    data: { name, userId },
+    data: { name, uncheckedInChartsByDefault, userId },
   });
 }
 
 export function updateGroup({
   id,
   name,
+  uncheckedInChartsByDefault,
   userId,
-}: Pick<Group, "id" | "name" | "userId">) {
+}: Pick<Group, "id" | "name" | "uncheckedInChartsByDefault" | "userId">) {
   return prisma.group.update({
     where: { id, userId },
-    data: { name },
+    data: { name, uncheckedInChartsByDefault },
   });
 }
 

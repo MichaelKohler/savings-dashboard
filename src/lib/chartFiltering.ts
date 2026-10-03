@@ -10,6 +10,7 @@ export interface FilterableAccount {
   typeId: string | null;
   showInGraphs: boolean;
   archived: boolean;
+  uncheckedInChartsByDefault: boolean;
   group?: { id: string; name: string } | null;
   type?: { id: string; name: string } | null;
 }
@@ -24,6 +25,50 @@ export function formatAccountLabel(
   account: Pick<FilterableAccount, "name" | "group">
 ): string {
   return `${account.name}${account.group?.name ? ` (${account.group.name})` : ""}`;
+}
+
+interface DefaultUncheckable {
+  id: string;
+  uncheckedInChartsByDefault: boolean;
+}
+
+function idsUncheckedByDefault(entities: DefaultUncheckable[]): Set<string> {
+  return new Set(
+    entities
+      .filter((entity) => entity.uncheckedInChartsByDefault)
+      .map((entity) => entity.id)
+  );
+}
+
+/**
+ * Builds the initial chart filter state from the entities' "unchecked in
+ * charts filter by default" setting.
+ */
+export function getDefaultExclusions(
+  accounts: DefaultUncheckable[],
+  groups: DefaultUncheckable[],
+  types: DefaultUncheckable[]
+): ChartExclusions {
+  return {
+    excludedAccountIds: idsUncheckedByDefault(accounts),
+    excludedGroupIds: idsUncheckedByDefault(groups),
+    excludedTypeIds: idsUncheckedByDefault(types),
+  };
+}
+
+function areSetsEqual(a: Set<string>, b: Set<string>): boolean {
+  return a.size === b.size && [...a].every((id) => b.has(id));
+}
+
+export function areExclusionsEqual(
+  a: ChartExclusions,
+  b: ChartExclusions
+): boolean {
+  return (
+    areSetsEqual(a.excludedAccountIds, b.excludedAccountIds) &&
+    areSetsEqual(a.excludedGroupIds, b.excludedGroupIds) &&
+    areSetsEqual(a.excludedTypeIds, b.excludedTypeIds)
+  );
 }
 
 export function isAccountExcluded(

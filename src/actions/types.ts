@@ -7,12 +7,17 @@ export const createTypeAction = defineAction({
   accept: "form",
   input: z.object({
     name: z.string().min(1, "Name is required and must be text"),
+    uncheckedInChartsByDefault: z.string().optional(),
   }),
   handler: async (input, context) => {
     try {
       const userId = await requireUserId(context.cookies);
 
-      await createType({ name: input.name, userId });
+      await createType({
+        name: input.name,
+        uncheckedInChartsByDefault: input.uncheckedInChartsByDefault === "on",
+        userId,
+      });
 
       return { success: true };
     } catch (_error: unknown) {
@@ -29,6 +34,7 @@ export const updateTypeAction = defineAction({
   input: z.object({
     typeId: z.string().min(1, "Type ID is required"),
     name: z.string().min(1, "Name is required and must be text"),
+    uncheckedInChartsByDefault: z.string().optional(),
   }),
   handler: async (input, context) => {
     try {
@@ -37,6 +43,7 @@ export const updateTypeAction = defineAction({
       await updateType({
         id: input.typeId,
         name: input.name,
+        uncheckedInChartsByDefault: input.uncheckedInChartsByDefault === "on",
         userId,
       });
 

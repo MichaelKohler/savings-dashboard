@@ -25,6 +25,12 @@ export default function AccountForm({
   }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [showInGraphs, setShowInGraphs] = useState(
+    account?.showInGraphs ?? false
+  );
+  const [uncheckedInChartsByDefault, setUncheckedInChartsByDefault] = useState(
+    account?.uncheckedInChartsByDefault ?? false
+  );
 
   const formRef = useRef<HTMLFormElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -198,10 +204,33 @@ export default function AccountForm({
             type="checkbox"
             name="showInGraphs"
             data-testid="new-account-graph-input"
-            defaultChecked={account?.showInGraphs}
+            checked={showInGraphs}
+            onChange={(e) => setShowInGraphs(e.target.checked)}
           />
           <span>Show in graphs</span>
         </label>
+      </div>
+
+      <div>
+        <label
+          className={
+            "flex w-full flex-row gap-2" + (showInGraphs ? "" : " opacity-50")
+          }
+        >
+          <input
+            type="checkbox"
+            name="uncheckedInChartsByDefault"
+            data-testid="new-account-unchecked-in-charts-input"
+            checked={uncheckedInChartsByDefault}
+            disabled={!showInGraphs}
+            onChange={(e) => setUncheckedInChartsByDefault(e.target.checked)}
+          />
+          <span>Unchecked in charts filter by default</span>
+        </label>
+        {/* Disabled checkboxes are not submitted, so keep the stored value while "Show in graphs" is off. */}
+        {!showInGraphs && uncheckedInChartsByDefault && (
+          <input type="hidden" name="uncheckedInChartsByDefault" value="on" />
+        )}
       </div>
 
       {errors.generic && (
