@@ -102,7 +102,7 @@ describe("getFilteredChartData", () => {
       name: "Checking",
       groupId: "g2",
       typeId: "t1",
-      showInGraphs: false,
+      showInGraphs: true,
       archived: false,
       group: { id: "g2", name: "Business" },
       type: { id: "t1", name: "Type A" },
@@ -117,34 +117,43 @@ describe("getFilteredChartData", () => {
       group: { id: "g1", name: "Personal" },
       type: { id: "t2", name: "Type B" },
     }),
+    makeAccount({
+      id: "a4",
+      name: "Hidden",
+      groupId: "g2",
+      typeId: "t1",
+      showInGraphs: false,
+      archived: false,
+      group: { id: "g2", name: "Business" },
+      type: { id: "t1", name: "Type A" },
+    }),
   ];
 
   const balances: ChartDataEntry[] = [
     {
       date: "2024-01",
       total: 0,
-      byAccount: { a1: 100, a2: 200, a3: 0 },
+      byAccount: { a1: 100, a2: 200, a3: 0, a4: 999 },
       byGroup: {},
       byType: {},
     },
     {
       date: "2024-02",
       total: 0,
-      byAccount: { a1: 150, a2: 250, a3: 50 },
+      byAccount: { a1: 150, a2: 250, a3: 50, a4: 999 },
       byGroup: {},
       byType: {},
     },
   ];
 
-  it("with no exclusions, matches the server reducer logic including the showInGraphs asymmetry", () => {
+  it("with no exclusions, matches the server reducer logic", () => {
     const result = getFilteredChartData(balances, accounts, makeExclusions());
 
-    // total: showInGraphs && (!archived || balance !== 0) -> a2 excluded (showInGraphs=false),
-    // a3 excluded in month 1 (archived, balance 0) but included in month 2 (archived, balance !== 0)
-    expect(result[0].total).toBe(100); // a1 only
-    expect(result[1].total).toBe(150 + 50); // a1 + a3
+    // total: a3 excluded in month 1 (archived, balance 0) but included in month 2 (archived, balance !== 0)
+    expect(result[0].total).toBe(100 + 200); // a1 + a2
+    expect(result[1].total).toBe(150 + 250 + 50); // a1 + a2 + a3
 
-    // byGroup/byType sum unconditionally, regardless of showInGraphs/archived
+    // byGroup/byType include archived accounts regardless of balance
     // (a3, archived with balance 0 in month 1, still contributes its 0 to g1/t2)
     expect(result[0].byGroup).toEqual({ g1: 100, g2: 200 });
     expect(result[0].byType).toEqual({ t1: 300, t2: 0 });
@@ -159,7 +168,7 @@ describe("getFilteredChartData", () => {
     const exclusions = makeExclusions({ excludedAccountIds: new Set(["a1"]) });
     const result = getFilteredChartData(balances, accounts, exclusions);
 
-    expect(result[0].total).toBe(0); // a1 was the only included account for total
+    expect(result[0].total).toBe(200); // a2 only
     // a3 (group g1/type t2, archived, balance 0) still contributes its 0
     expect(result[0].byGroup).toEqual({ g1: 0, g2: 200 });
     expect(result[0].byType).toEqual({ t1: 200, t2: 0 });
@@ -170,9 +179,18 @@ describe("getFilteredChartData", () => {
     const result = getFilteredChartData(balances, accounts, exclusions);
 
     // a1 and a3 (group g1) drop out even though neither is individually excluded
-    expect(result[1].total).toBe(0);
+    expect(result[1].total).toBe(250);
     expect(result[1].byGroup).toEqual({ g2: 250 });
     expect(result[1].byType).toEqual({ t1: 250 });
+  });
+
+  it("ignores accounts not shown in graphs in total, group and type buckets", () => {
+    const result = getFilteredChartData(balances, accounts, makeExclusions());
+
+    // a4 (showInGraphs=false, group g2/type t1, balance 999) contributes nowhere
+    expect(result[0].total).toBe(300);
+    expect(result[0].byGroup.g2).toBe(200);
+    expect(result[0].byType.t1).toBe(300);
   });
 });
 
