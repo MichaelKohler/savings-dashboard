@@ -56,7 +56,7 @@ export function getFilteredChartData(
       if (typeof rawBalance !== "number") continue;
 
       const account = accountsById.get(accountId);
-      if (!account) continue;
+      if (!account?.showInGraphs) continue;
       if (isAccountExcluded(account, exclusions)) continue;
 
       if (isAccountBalanceCountedInTotal(account, rawBalance)) {

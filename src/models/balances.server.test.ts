@@ -231,6 +231,40 @@ describe("balance models", () => {
       expect(result[1].total).toBe(150);
     });
 
+    it("should exclude accounts not shown in graphs from all series", async () => {
+      const accounts = [
+        {
+          id: "1",
+          showInGraphs: true,
+          archived: false,
+          type: { id: "t1" },
+          group: { id: "g1" },
+        },
+        {
+          id: "2",
+          showInGraphs: false,
+          archived: false,
+          type: { id: "t1" },
+          group: { id: "g2" },
+        },
+      ];
+      const balances = [
+        { accountId: "1", date: new Date("2023-01-15"), balance: 100 },
+        { accountId: "2", date: new Date("2023-01-15"), balance: 200 },
+      ];
+
+      mockPrisma.account.findMany.mockResolvedValue(accounts);
+      mockPrisma.balance.findMany.mockResolvedValue(balances);
+
+      const { balances: result } = await getBalancesForCharts({
+        userId: user.id,
+      });
+
+      expect(result[0].byAccount).toEqual({ "1": 100 });
+      expect(result[0].byGroup).toEqual({ g1: 100 });
+      expect(result[0].byType).toEqual({ t1: 100 });
+    });
+
     it("should include archived accounts with non-zero balance in totals", async () => {
       const accounts = [
         {

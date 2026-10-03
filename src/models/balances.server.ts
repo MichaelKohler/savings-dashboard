@@ -219,7 +219,7 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
 
     for (const accId in lastKnownBalances) {
       const account = accountsMap.get(accId);
-      if (account) {
+      if (account?.showInGraphs) {
         accountsMapForMonth[accId] = {
           type: account.type?.id || "",
           group: account.group?.id || "",
