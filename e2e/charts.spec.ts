@@ -92,6 +92,9 @@ test("Entities unchecked in charts filter by default", async ({
   await createBalance(page, "2025-01-01", groupedAccount, "3000");
 
   await page.getByRole("link", { name: "Charts" }).click();
+  await expect(
+    page.locator('astro-island[component-url$="/Charts.tsx"]')
+  ).not.toHaveAttribute("ssr", "");
 
   // Initial state follows the defaults
   await openDropdown(page, "Accounts");
