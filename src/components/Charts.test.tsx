@@ -175,15 +175,15 @@ describe("Charts", () => {
       date: "2024-01",
       total: 5000,
       byAccount: { a1: 3000, a2: 2000 },
-      byGroup: { g1: 3000, "": 2000 },
-      byType: { t1: 3000, "": 2000 },
+      byGroup: { g1: 3000, unassigned: 2000 },
+      byType: { t1: 3000, unassigned: 2000 },
     },
     {
       date: "2024-02",
       total: 6000,
       byAccount: { a1: 3500, a2: 2500 },
-      byGroup: { g1: 3500, "": 2500 },
-      byType: { t1: 3500, "": 2500 },
+      byGroup: { g1: 3500, unassigned: 2500 },
+      byType: { t1: 3500, unassigned: 2500 },
     },
   ];
 
@@ -377,6 +377,74 @@ describe("Charts", () => {
       />
     );
     expect(screen.getByTestId("bar-Savings")).toBeInTheDocument();
+  });
+
+  it("renders a bar for accounts without group or type", () => {
+    render(
+      <Charts
+        accounts={mockAccounts}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={mockPredictions}
+      />
+    );
+    expect(screen.getByTestId("bar-No group")).toHaveAttribute(
+      "data-datakey",
+      "byGroup.unassigned"
+    );
+    expect(screen.getByTestId("bar-No type")).toHaveAttribute(
+      "data-datakey",
+      "byType.unassigned"
+    );
+
+    const groupChart = screen.getAllByTestId("bar-chart")[1];
+    const groupData = JSON.parse(
+      groupChart.getAttribute("data-chart-data") ?? "[]"
+    );
+    expect(groupData[0].byGroup).toEqual({ g1: 3000, unassigned: 2000 });
+  });
+
+  it("omits the unassigned bar when every account has a group and type", () => {
+    render(
+      <Charts
+        accounts={[mockAccounts[0]]}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={mockPredictions}
+      />
+    );
+    expect(screen.queryByTestId("bar-No group")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("bar-No type")).not.toBeInTheDocument();
+  });
+
+  it("excluding the unassigned group hides accounts without a group", () => {
+    render(
+      <Charts
+        accounts={mockAccounts}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={mockPredictions}
+      />
+    );
+
+    clickLegend(screen.getAllByTestId("legend")[3], "byGroup.unassigned");
+
+    expect(screen.getByTestId("bar-No group")).toHaveAttribute(
+      "data-hidden",
+      "true"
+    );
+    expect(screen.getByTestId("line-Checking")).toHaveAttribute(
+      "data-hidden",
+      "true"
+    );
+    const totalData = JSON.parse(
+      screen.getAllByTestId("line-chart")[0].getAttribute("data-chart-data") ??
+        "[]"
+    );
+    expect(totalData[0].total).toBe(3000);
   });
 
   it("toggles prediction line visibility when legend is clicked", () => {

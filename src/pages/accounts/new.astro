@@ -6,8 +6,10 @@ import { getGroups } from "~/models/groups.server";
 import { getTypes } from "~/models/types.server";
 
 const userId = await requireUserId(Astro.cookies);
-const groups = await getGroups({ userId });
-const types = await getTypes({ userId });
+const [groups, types] = await Promise.all([
+  getGroups({ userId }),
+  getTypes({ userId }),
+]);
 ---
 
 <Layout title="New Account">

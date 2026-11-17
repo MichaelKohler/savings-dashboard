@@ -13,14 +13,15 @@ if (!accountId) {
   return Astro.redirect("/accounts");
 }
 
-const account = await getAccount({ id: accountId, userId });
+const [account, groups, types] = await Promise.all([
+  getAccount({ id: accountId, userId }),
+  getGroups({ userId }),
+  getTypes({ userId }),
+]);
 
 if (!account) {
   return new Response(null, { status: 404, statusText: "Not found" });
 }
-
-const groups = await getGroups({ userId });
-const types = await getTypes({ userId });
 ---
 
 <Layout title="Edit Account">

@@ -5,6 +5,7 @@ import {
   getDefaultExclusions,
   isAccountExcluded,
   getFilteredChartData,
+  UNASSIGNED_KEY,
   getFilteredPredictions,
   getPredictionPercentages,
   type FilterableAccount,
@@ -87,6 +88,27 @@ describe("isAccountExcluded", () => {
       type: null,
     });
     expect(isAccountExcluded(account, exclusions)).toBe(false);
+  });
+
+  it("returns true for an account without group or type when the unassigned bucket is excluded", () => {
+    const account = makeAccount({
+      groupId: null,
+      typeId: null,
+      group: null,
+      type: null,
+    });
+    expect(
+      isAccountExcluded(
+        account,
+        makeExclusions({ excludedGroupIds: new Set([UNASSIGNED_KEY]) })
+      )
+    ).toBe(true);
+    expect(
+      isAccountExcluded(
+        account,
+        makeExclusions({ excludedTypeIds: new Set([UNASSIGNED_KEY]) })
+      )
+    ).toBe(true);
   });
 });
 
@@ -199,6 +221,25 @@ describe("getFilteredChartData", () => {
     expect(result[0].total).toBe(300);
     expect(result[0].byGroup.g2).toBe(200);
     expect(result[0].byType.t1).toBe(300);
+  });
+
+  it("buckets accounts without group or type under the unassigned key", () => {
+    const unassigned = makeAccount({
+      id: "a5",
+      groupId: null,
+      typeId: null,
+      group: null,
+      type: null,
+    });
+    const result = getFilteredChartData(
+      [{ ...balances[0], byAccount: { a1: 100, a5: 40 } }],
+      [...accounts, unassigned],
+      makeExclusions()
+    );
+
+    expect(result[0].total).toBe(140);
+    expect(result[0].byGroup).toEqual({ g1: 100, [UNASSIGNED_KEY]: 40 });
+    expect(result[0].byType).toEqual({ t1: 100, [UNASSIGNED_KEY]: 40 });
   });
 });
 
