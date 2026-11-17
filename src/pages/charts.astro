@@ -8,10 +8,14 @@ import { getGroups } from "~/models/groups.server";
 import { getTypes } from "~/models/types.server";
 
 var userId = await requireUserId(Astro.cookies);
-var allAccounts = await getAccounts({ userId });
-var { balances, predictions } = await getBalancesForCharts({ userId });
-var groups = await getGroups({ userId });
-var types = await getTypes({ userId });
+var [allAccounts, { balances, predictions }, groups, types] = await Promise.all(
+  [
+    getAccounts({ userId }),
+    getBalancesForCharts({ userId }),
+    getGroups({ userId }),
+    getTypes({ userId }),
+  ]
+);
 
 // Filter accounts to only include those that appear in balance data
 var accountsInBalances = new Set<string>();

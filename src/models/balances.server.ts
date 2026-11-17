@@ -199,6 +199,17 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
     accounts.map((acc: AccountForChart) => [acc.id, acc])
   );
 
+  const balancesByMonth = new Map<string, typeof allBalances>();
+  for (const balance of allBalances) {
+    const balMonthKey = getMonthKey(balance.date);
+    const monthBalances = balancesByMonth.get(balMonthKey);
+    if (monthBalances) {
+      monthBalances.push(balance);
+    } else {
+      balancesByMonth.set(balMonthKey, [balance]);
+    }
+  }
+
   while (monthCursor <= currentMonth) {
     const monthKey = getMonthKey(monthCursor);
     const accountsMapForMonth: Record<
@@ -211,11 +222,8 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
       }
     > = {};
 
-    for (const balance of allBalances) {
-      const balMonthKey = getMonthKey(balance.date);
-      if (balMonthKey === monthKey) {
-        lastKnownBalances[balance.accountId] = balance.balance;
-      }
+    for (const balance of balancesByMonth.get(monthKey) ?? []) {
+      lastKnownBalances[balance.accountId] = balance.balance;
     }
 
     for (const accId in lastKnownBalances) {
