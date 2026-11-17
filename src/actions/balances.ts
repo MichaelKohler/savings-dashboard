@@ -1,5 +1,6 @@
 import { defineAction, ActionError } from "astro:actions";
 import { z } from "zod";
+import { balanceInputSchema, dateInputSchema } from "~/lib/balanceInput";
 import { requireUserId } from "~/lib/session.server";
 import {
   createBalance,
@@ -10,8 +11,8 @@ import {
 export const createBalanceAction = defineAction({
   accept: "form",
   input: z.object({
-    balance: z.string().min(1, "Balance is required"),
-    date: z.string().min(1, "Date is required"),
+    balance: balanceInputSchema,
+    date: dateInputSchema,
     accountId: z.string().min(1, "Account ID is required"),
   }),
   handler: async (input, context) => {
@@ -20,8 +21,8 @@ export const createBalanceAction = defineAction({
 
       await createBalance(
         {
-          balance: parseFloat(input.balance),
-          date: new Date(input.date),
+          balance: input.balance,
+          date: input.date,
           accountId: input.accountId,
         },
         userId
@@ -41,8 +42,8 @@ export const updateBalanceAction = defineAction({
   accept: "form",
   input: z.object({
     balanceId: z.string().min(1, "Balance ID is required"),
-    balance: z.string().min(1, "Balance is required"),
-    date: z.string().min(1, "Date is required"),
+    balance: balanceInputSchema,
+    date: dateInputSchema,
     accountId: z.string().min(1, "Account ID is required"),
   }),
   handler: async (input, context) => {
@@ -51,8 +52,8 @@ export const updateBalanceAction = defineAction({
 
       await updateBalance({
         id: input.balanceId,
-        balance: parseFloat(input.balance),
-        date: new Date(input.date),
+        balance: input.balance,
+        date: input.date,
         accountId: input.accountId,
         userId,
       });
