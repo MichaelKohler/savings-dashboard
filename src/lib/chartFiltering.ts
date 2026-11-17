@@ -119,15 +119,24 @@ export function getFilteredChartData(
   });
 }
 
+export function getPredictionPercentages(
+  predictions: PredictionEntry[]
+): number[] {
+  if (predictions.length === 0) return [];
+
+  return Object.keys(predictions[0])
+    .filter((key) => key !== "year")
+    .map(Number)
+    .sort((a, b) => a - b);
+}
+
 export function getFilteredPredictions(
   predictions: PredictionEntry[],
   currentTotal: number
 ): PredictionEntry[] {
   if (predictions.length === 0) return [];
 
-  const percentages = Object.keys(predictions[0])
-    .filter((key) => key !== "year")
-    .map(Number);
+  const percentages = getPredictionPercentages(predictions);
 
   const computed = computePredictedBalances(
     currentTotal,

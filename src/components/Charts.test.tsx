@@ -419,6 +419,25 @@ describe("Charts", () => {
     expect(screen.getByTestId("line-7%")).toBeInTheDocument();
   });
 
+  it("renders only the prediction lines contained in the data", () => {
+    render(
+      <Charts
+        accounts={mockAccounts}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={[
+          { year: 2024, 2: 5100, 4: 5200 },
+          { year: 2025, 2: 5202, 4: 5408 },
+        ]}
+      />
+    );
+    expect(screen.getByTestId("line-2%")).toHaveAttribute("data-datakey", "2");
+    expect(screen.getByTestId("line-4%")).toHaveAttribute("data-datakey", "4");
+    expect(screen.queryByTestId("line-1%")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("line-7%")).not.toBeInTheDocument();
+  });
+
   it("handles empty data gracefully", () => {
     render(
       <Charts
