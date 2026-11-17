@@ -1,6 +1,14 @@
 import type { AstroCookies } from "astro";
+import { ActionError } from "astro:actions";
 
-import { createUserSession, getUserId, logout } from "./session.server";
+import type { User } from "~/models/user.server";
+
+import {
+  createUserSession,
+  getUserId,
+  logout,
+  requireActionUserId,
+} from "./session.server";
 
 interface StoredCookie {
   value: string;
@@ -95,5 +103,17 @@ describe("logout", () => {
       value: "",
       options: expect.objectContaining({ maxAge: 0 }),
     });
+  });
+});
+
+describe("requireActionUserId", () => {
+  it("returns the ID of the user resolved by the middleware", () => {
+    const user = { id: "user-1" } as User;
+
+    expect(requireActionUserId({ user })).toBe("user-1");
+  });
+
+  it("throws an action error when no user was resolved", () => {
+    expect(() => requireActionUserId({ user: null })).toThrow(ActionError);
   });
 });

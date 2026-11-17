@@ -1,6 +1,6 @@
 import { defineAction, ActionError } from "astro:actions";
 import { z } from "zod";
-import { requireUserId } from "~/lib/session.server";
+import { requireActionUserId } from "~/lib/session.server";
 import { createGroup, updateGroup, deleteGroup } from "~/models/groups.server";
 
 export const createGroupAction = defineAction({
@@ -10,9 +10,9 @@ export const createGroupAction = defineAction({
     uncheckedInChartsByDefault: z.string().optional(),
   }),
   handler: async (input, context) => {
-    try {
-      const userId = await requireUserId(context.cookies);
+    const userId = requireActionUserId(context.locals);
 
+    try {
       await createGroup({
         name: input.name,
         uncheckedInChartsByDefault: input.uncheckedInChartsByDefault === "on",
@@ -37,9 +37,9 @@ export const updateGroupAction = defineAction({
     uncheckedInChartsByDefault: z.string().optional(),
   }),
   handler: async (input, context) => {
-    try {
-      const userId = await requireUserId(context.cookies);
+    const userId = requireActionUserId(context.locals);
 
+    try {
       await updateGroup({
         id: input.groupId,
         name: input.name,
@@ -63,9 +63,9 @@ export const deleteGroupAction = defineAction({
     groupId: z.string().min(1, "Group ID is required"),
   }),
   handler: async (input, context) => {
-    try {
-      const userId = await requireUserId(context.cookies);
+    const userId = requireActionUserId(context.locals);
 
+    try {
       await deleteGroup({ id: input.groupId, userId });
 
       return { success: true };

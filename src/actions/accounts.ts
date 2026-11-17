@@ -1,6 +1,6 @@
 import { defineAction, ActionError } from "astro:actions";
 import { z } from "zod";
-import { requireUserId } from "~/lib/session.server";
+import { requireActionUserId } from "~/lib/session.server";
 import {
   createAccount,
   updateAccount,
@@ -19,9 +19,9 @@ export const createAccountAction = defineAction({
     uncheckedInChartsByDefault: z.string().optional(),
   }),
   handler: async (input, context) => {
-    try {
-      const userId = await requireUserId(context.cookies);
+    const userId = requireActionUserId(context.locals);
 
+    try {
       await createAccount(
         {
           name: input.name,
@@ -58,9 +58,9 @@ export const updateAccountAction = defineAction({
     uncheckedInChartsByDefault: z.string().optional(),
   }),
   handler: async (input, context) => {
-    try {
-      const userId = await requireUserId(context.cookies);
+    const userId = requireActionUserId(context.locals);
 
+    try {
       await updateAccount({
         id: input.accountId,
         name: input.name,
@@ -89,9 +89,9 @@ export const deleteAccountAction = defineAction({
     accountId: z.string().min(1, "Account ID is required"),
   }),
   handler: async (input, context) => {
-    try {
-      const userId = await requireUserId(context.cookies);
+    const userId = requireActionUserId(context.locals);
 
+    try {
       await deleteAccount({ id: input.accountId, userId });
 
       return { success: true };

@@ -1,7 +1,7 @@
 import { defineAction, ActionError } from "astro:actions";
 import { z } from "zod";
 import { balanceInputSchema, dateInputSchema } from "~/lib/balanceInput";
-import { requireUserId } from "~/lib/session.server";
+import { requireActionUserId } from "~/lib/session.server";
 import {
   createBalance,
   updateBalance,
@@ -16,9 +16,9 @@ export const createBalanceAction = defineAction({
     accountId: z.string().min(1, "Account ID is required"),
   }),
   handler: async (input, context) => {
-    try {
-      const userId = await requireUserId(context.cookies);
+    const userId = requireActionUserId(context.locals);
 
+    try {
       await createBalance(
         {
           balance: input.balance,
@@ -47,9 +47,9 @@ export const updateBalanceAction = defineAction({
     accountId: z.string().min(1, "Account ID is required"),
   }),
   handler: async (input, context) => {
-    try {
-      const userId = await requireUserId(context.cookies);
+    const userId = requireActionUserId(context.locals);
 
+    try {
       await updateBalance({
         id: input.balanceId,
         balance: input.balance,
@@ -74,9 +74,9 @@ export const deleteBalanceAction = defineAction({
     balanceId: z.string().min(1, "Balance ID is required"),
   }),
   handler: async (input, context) => {
-    try {
-      const userId = await requireUserId(context.cookies);
+    const userId = requireActionUserId(context.locals);
 
+    try {
       await deleteBalance({ id: input.balanceId, userId });
 
       return { success: true };
