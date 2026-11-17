@@ -11,10 +11,35 @@ interface SessionData {
   userId?: string;
 }
 
+const BROWSER_SESSION_TTL_SECONDS = 60 * 60 * 24;
+const REMEMBER_ME_TTL_SECONDS = 60 * 60 * 24 * 7;
+
+interface SessionLifetime {
+  ttl: number;
+  persistentCookie: boolean;
+}
+
+/**
+ * Removes `maxAge` so the browser treats the cookie as a session cookie,
+ * while keeping `maxAge: 0`, which iron-session uses to clear cookies.
+ */
+function toSessionCookieOptions(
+  options: Record<string, unknown>
+): Record<string, unknown> {
+  if (options.maxAge === 0) return options;
+  const { maxAge, ...sessionCookieOptions } = options;
+  return sessionCookieOptions;
+}
+
 export async function getSession(
   cookies: AstroCookies,
-  maxAge?: number
+  lifetime?: SessionLifetime
 ): Promise<IronSession<SessionData>> {
+  const applyLifetime = (options: Record<string, unknown>) =>
+    lifetime?.persistentCookie === false
+      ? toSessionCookieOptions(options)
+      : options;
+
   // Convert AstroCookies to a format iron-session can work with
   const cookieStore = {
     get: (name: string) => {
@@ -33,18 +58,10 @@ export async function getSession(
       if (typeof nameOrOptions === "object") {
         // Called with ResponseCookie object
         const { name, value, ...cookieOptions } = nameOrOptions;
-        const mergedOptions = { ...cookieOptions };
-        if (maxAge !== undefined) {
-          mergedOptions.maxAge = maxAge;
-        }
-        cookies.set(name, value, mergedOptions);
+        cookies.set(name, value, applyLifetime(cookieOptions));
       } else {
         // Called with name, value, options
-        const cookieOptions: Record<string, unknown> = { ...(options || {}) };
-        if (maxAge !== undefined) {
-          cookieOptions.maxAge = maxAge;
-        }
-        cookies.set(nameOrOptions, value!, cookieOptions);
+        cookies.set(nameOrOptions, value!, applyLifetime(options || {}));
       }
     },
   };
@@ -52,6 +69,7 @@ export async function getSession(
   return getIronSession(cookieStore, {
     password: process.env.SESSION_SECRET!,
     cookieName: "__session",
+    ...(lifetime && { ttl: lifetime.ttl }),
     cookieOptions: {
       httpOnly: true,
       path: "/",
@@ -102,8 +120,10 @@ export async function createUserSession({
   remember: boolean;
   redirectTo: string;
 }) {
-  const maxAge = remember ? 60 * 60 * 24 * 7 : undefined;
-  const session = await getSession(cookies, maxAge);
+  const lifetime: SessionLifetime = remember
+    ? { ttl: REMEMBER_ME_TTL_SECONDS, persistentCookie: true }
+    : { ttl: BROWSER_SESSION_TTL_SECONDS, persistentCookie: false };
+  const session = await getSession(cookies, lifetime);
   session.userId = userId;
   await session.save();
 
