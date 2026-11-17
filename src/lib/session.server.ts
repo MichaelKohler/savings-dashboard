@@ -1,5 +1,6 @@
 import { getIronSession, type IronSession } from "iron-session";
 import type { AstroCookies } from "astro";
+import { ActionError } from "astro:actions";
 import invariant from "tiny-invariant";
 
 import type { User } from "~/models/user.server";
@@ -107,6 +108,16 @@ export async function requireUserId(
     throw new Error();
   }
   return userId;
+}
+
+export function requireActionUserId(locals: App.Locals): User["id"] {
+  if (!locals.user) {
+    throw new ActionError({
+      code: "UNAUTHORIZED",
+      message: "Your session has expired. Please log in again.",
+    });
+  }
+  return locals.user.id;
 }
 
 export async function createUserSession({

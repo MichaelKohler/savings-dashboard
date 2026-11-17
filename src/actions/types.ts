@@ -1,6 +1,6 @@
 import { defineAction, ActionError } from "astro:actions";
 import { z } from "zod";
-import { requireUserId } from "~/lib/session.server";
+import { requireActionUserId } from "~/lib/session.server";
 import { createType, updateType, deleteType } from "~/models/types.server";
 
 export const createTypeAction = defineAction({
@@ -10,9 +10,9 @@ export const createTypeAction = defineAction({
     uncheckedInChartsByDefault: z.string().optional(),
   }),
   handler: async (input, context) => {
-    try {
-      const userId = await requireUserId(context.cookies);
+    const userId = requireActionUserId(context.locals);
 
+    try {
       await createType({
         name: input.name,
         uncheckedInChartsByDefault: input.uncheckedInChartsByDefault === "on",
@@ -37,9 +37,9 @@ export const updateTypeAction = defineAction({
     uncheckedInChartsByDefault: z.string().optional(),
   }),
   handler: async (input, context) => {
-    try {
-      const userId = await requireUserId(context.cookies);
+    const userId = requireActionUserId(context.locals);
 
+    try {
       await updateType({
         id: input.typeId,
         name: input.name,
@@ -63,9 +63,9 @@ export const deleteTypeAction = defineAction({
     typeId: z.string().min(1, "Type ID is required"),
   }),
   handler: async (input, context) => {
-    try {
-      const userId = await requireUserId(context.cookies);
+    const userId = requireActionUserId(context.locals);
 
+    try {
       await deleteType({ id: input.typeId, userId });
 
       return { success: true };
