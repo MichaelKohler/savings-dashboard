@@ -8,6 +8,7 @@ import type {
 } from "recharts/types/component/DefaultTooltipContent";
 
 import Charts from "~/components/Charts";
+import { formatBalance } from "~/lib/utils";
 
 type MockTooltipContentProps = TooltipContentProps<ValueType, NameType>;
 
@@ -78,8 +79,10 @@ vi.mock("recharts", () => ({
   YAxis: () => <div data-testid="y-axis" />,
   Tooltip: ({
     content,
+    formatter,
   }: {
     content?: React.ReactElement<MockTooltipContentProps>;
+    formatter?: (value: ValueType) => React.ReactNode;
   }) => (
     <div data-testid="tooltip">
       {content
@@ -106,7 +109,7 @@ vi.mock("recharts", () => ({
               },
             ],
           })
-        : null}
+        : formatter?.(1234567)}
     </div>
   ),
   CartesianGrid: () => <div data-testid="grid" />,
@@ -494,11 +497,24 @@ describe("Charts", () => {
       />
     );
     const tooltips = screen.getAllByTestId("tooltip");
-    // Total and Predictions charts have no content prop (Predictions sums
+    // Total and Predictions charts use the default content (Predictions sums
     // alternative growth scenarios, which isn't a meaningful total).
     // Per Account, Stacked, Per Group, and Per Type do.
     expect(tooltips).toHaveLength(6);
     expect(screen.getAllByText("Total: 300").length).toBe(4);
+  });
+
+  it("formats amounts in the Total and Predictions tooltips", () => {
+    render(
+      <Charts
+        accounts={mockAccounts}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={mockPredictions}
+      />
+    );
+    expect(screen.getAllByText(formatBalance(1234567))).toHaveLength(2);
   });
 
   it("applies margin-top to chart headings after first", () => {
