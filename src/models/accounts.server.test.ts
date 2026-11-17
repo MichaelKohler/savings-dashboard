@@ -146,6 +146,37 @@ describe("account models", () => {
         },
       });
     });
+
+    it("should include the given account regardless of the archived filter", async () => {
+      const archivedAccount = { ...account, id: "2", archived: true };
+      mockPrisma.account.findMany.mockResolvedValue([account, archivedAccount]);
+
+      const result = await getAccounts({
+        userId: user.id,
+        archived: false,
+        includeAccountId: archivedAccount.id,
+      });
+
+      expect(result).toEqual([account, archivedAccount]);
+      expect(mockPrisma.account.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            userId: user.id,
+            OR: [{ archived: false }, { id: archivedAccount.id }],
+          },
+        })
+      );
+    });
+
+    it("should ignore includeAccountId when no archived filter is given", async () => {
+      mockPrisma.account.findMany.mockResolvedValue([account]);
+
+      await getAccounts({ userId: user.id, includeAccountId: "2" });
+
+      expect(mockPrisma.account.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { userId: user.id } })
+      );
+    });
   });
 
   describe("createAccount", () => {
