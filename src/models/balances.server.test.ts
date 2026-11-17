@@ -262,6 +262,34 @@ describe("balance models", () => {
       expect(result[1].total).toBe(150);
     });
 
+    it("should use the latest balance per month and carry it forward through months without balances", async () => {
+      const accounts = [
+        {
+          id: "1",
+          showInGraphs: true,
+          archived: false,
+          type: { id: "t1" },
+          group: { id: "g1" },
+        },
+      ];
+      const balances = [
+        { accountId: "1", date: new Date("2023-01-05"), balance: 100 },
+        { accountId: "1", date: new Date("2023-01-25"), balance: 120 },
+        { accountId: "1", date: new Date("2023-03-15"), balance: 300 },
+      ];
+
+      mockPrisma.account.findMany.mockResolvedValue(accounts);
+      mockPrisma.balance.findMany.mockResolvedValue(balances);
+
+      const { balances: result } = await getBalancesForCharts({
+        userId: user.id,
+      });
+
+      expect(result.slice(0, 3).map((entry) => entry.total)).toEqual([
+        120, 120, 300,
+      ]);
+    });
+
     it("should exclude accounts not shown in graphs from all series", async () => {
       const accounts = [
         {
