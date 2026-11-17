@@ -1,6 +1,8 @@
 import type { User, Account } from "~/generated/prisma/client";
 
 import { prisma } from "~/lib/db.server";
+import { getGroup } from "~/models/groups.server";
+import { getType } from "~/models/types.server";
 
 export type { Account } from "~/generated/prisma/client";
 
@@ -77,7 +79,21 @@ export async function getAccounts({
   return accounts;
 }
 
-export function createAccount(
+async function assertGroupAndTypeOwnership({
+  groupId,
+  typeId,
+  userId,
+}: Pick<Account, "groupId" | "typeId"> & { userId: User["id"] }) {
+  if (groupId && !(await getGroup({ id: groupId, userId }))) {
+    throw new Error("GROUP_NOT_FOUND");
+  }
+
+  if (typeId && !(await getType({ id: typeId, userId }))) {
+    throw new Error("TYPE_NOT_FOUND");
+  }
+}
+
+export async function createAccount(
   account: Pick<
     Account,
     | "name"
@@ -90,6 +106,12 @@ export function createAccount(
   >,
   userId: User["id"]
 ) {
+  await assertGroupAndTypeOwnership({
+    groupId: account.groupId,
+    typeId: account.typeId,
+    userId,
+  });
+
   return prisma.account.create({
     data: {
       name: account.name,
@@ -151,6 +173,8 @@ export async function updateAccount({
   if (!account) {
     throw new Error("ACCOUNT_NOT_FOUND");
   }
+
+  await assertGroupAndTypeOwnership({ groupId, typeId, userId });
 
   return prisma.account.update({
     where: { id },

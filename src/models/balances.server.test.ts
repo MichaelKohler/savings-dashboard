@@ -118,6 +118,7 @@ describe("balance models", () => {
       vi.clearAllMocks();
     });
     it("should create a new balance", async () => {
+      mockPrisma.account.findFirst.mockResolvedValue({ id: balance.accountId });
       mockPrisma.balance.create.mockResolvedValue(balance);
 
       const result = await createBalance(
@@ -146,6 +147,27 @@ describe("balance models", () => {
           },
         },
       });
+      expect(mockPrisma.account.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: balance.accountId, userId: user.id },
+        })
+      );
+    });
+
+    it("should reject an account owned by another user", async () => {
+      mockPrisma.account.findFirst.mockResolvedValue(null);
+
+      await expect(
+        createBalance(
+          {
+            date: balance.date,
+            accountId: balance.accountId,
+            balance: balance.balance,
+          },
+          user.id
+        )
+      ).rejects.toThrow("ACCOUNT_NOT_FOUND");
+      expect(mockPrisma.balance.create).not.toHaveBeenCalled();
     });
   });
 
@@ -155,6 +177,7 @@ describe("balance models", () => {
     });
     it("should update a balance", async () => {
       mockPrisma.balance.findFirst.mockResolvedValue(balance);
+      mockPrisma.account.findFirst.mockResolvedValue({ id: balance.accountId });
       mockPrisma.balance.update.mockResolvedValue(balance);
 
       const result = await updateBalance(balance);
@@ -173,6 +196,14 @@ describe("balance models", () => {
     it("should throw an error if balance is not found", async () => {
       mockPrisma.balance.findFirst.mockResolvedValue(null);
       await expect(updateBalance(balance)).rejects.toThrow("BALANCE_NOT_FOUND");
+    });
+
+    it("should reject moving a balance to an account owned by another user", async () => {
+      mockPrisma.balance.findFirst.mockResolvedValue(balance);
+      mockPrisma.account.findFirst.mockResolvedValue(null);
+
+      await expect(updateBalance(balance)).rejects.toThrow("ACCOUNT_NOT_FOUND");
+      expect(mockPrisma.balance.update).not.toHaveBeenCalled();
     });
   });
 
