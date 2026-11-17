@@ -345,9 +345,22 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
   return { balances: result, predictions };
 }
 
+export function parsePredictionPercentages(value: string | undefined) {
+  const percentages = (value ?? "")
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter((entry) => entry !== "")
+    .map(Number)
+    .filter((percentage) => Number.isFinite(percentage));
+
+  return [...new Set(percentages)];
+}
+
 export function getPredictedBalances(currentTotal: number) {
-  const predictionPercentages = process.env.PREDICTION_PERCENTAGES ?? "";
-  const percentages = predictionPercentages?.split(",").map(Number);
+  const percentages = parsePredictionPercentages(
+    process.env.PREDICTION_PERCENTAGES
+  );
+  if (percentages.length === 0) return [];
 
   return computePredictedBalances(currentTotal, percentages, 40);
 }
