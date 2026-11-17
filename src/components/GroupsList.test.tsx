@@ -113,8 +113,7 @@ describe("GroupsList", () => {
     });
   });
 
-  it("handles delete error gracefully", async () => {
-    const consoleErrorSpy = vi.spyOn(console, "error");
+  it("shows an error message and leaves confirm mode when deletion fails", async () => {
     vi.mocked(actions.deleteGroup).mockResolvedValue({
       data: undefined,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -124,18 +123,35 @@ describe("GroupsList", () => {
     render(<GroupsList groups={mockGroups} />);
     const deleteButtons = screen.getAllByRole("button", { name: "X" });
     fireEvent.click(deleteButtons[0]);
+    fireEvent.click(screen.getByRole("button", { name: "X?" }));
 
-    const confirmButton = screen.getByRole("button", { name: "X?" });
-    fireEvent.click(confirmButton);
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Failed to delete group"
+    );
+    expect(
+      screen.queryByRole("button", { name: "X?" })
+    ).not.toBeInTheDocument();
+  });
 
-    await waitFor(() => {
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Failed to delete group",
-        expect.anything()
-      );
+  it("shows the server error message when deletion fails", async () => {
+    vi.mocked(actions.deleteGroup).mockResolvedValue({
+      data: undefined,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      error: { message: "Server unavailable" } as any,
     });
 
-    consoleErrorSpy.mockRestore();
+    render(<GroupsList groups={mockGroups} />);
+    fireEvent.click(screen.getAllByRole("button", { name: "X" })[0]);
+    fireEvent.click(screen.getByRole("button", { name: "X?" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Server unavailable"
+    );
+  });
+
+  it("does not show an error message before any deletion fails", () => {
+    render(<GroupsList groups={mockGroups} />);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("does not reload page on failed deletion", async () => {

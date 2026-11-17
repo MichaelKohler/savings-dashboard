@@ -32,18 +32,23 @@ export default function AccountsList({
     Record<string, boolean>
   >({});
 
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
   const markForDeletion = (id: string) => () => {
     setMarkedForDeletion((prev) => ({ ...prev, [id]: true }));
   };
 
   const handleDelete = async (id: string) => {
+    setDeleteError(null);
+
     const formData = new FormData();
     formData.append("accountId", id);
 
     const { data, error } = await actions.deleteAccount(formData);
 
     if (error) {
-      console.error("Failed to delete account", error);
+      setDeleteError(error.message || "Failed to delete account");
+      setMarkedForDeletion((prev) => ({ ...prev, [id]: false }));
       return;
     }
 
@@ -57,6 +62,12 @@ export default function AccountsList({
       <a href="/accounts/new">
         <Button>+ New Account</Button>
       </a>
+
+      {deleteError && (
+        <div role="alert" className="text-mkerror mt-4">
+          {deleteError}
+        </div>
+      )}
 
       <h2 className="mt-8 mb-4 text-xl font-semibold">Active Accounts</h2>
       <table className="min-w-full">

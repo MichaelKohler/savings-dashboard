@@ -12,18 +12,23 @@ export default function TypesList({ types }: TypesListProps) {
     Record<string, boolean>
   >({});
 
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
   const markForDeletion = (id: string) => () => {
     setMarkedForDeletion((prev) => ({ ...prev, [id]: true }));
   };
 
   const handleDelete = async (id: string) => {
+    setDeleteError(null);
+
     const formData = new FormData();
     formData.append("typeId", id);
 
     const { data, error } = await actions.deleteType(formData);
 
     if (error) {
-      console.error("Failed to delete type", error);
+      setDeleteError(error.message || "Failed to delete type");
+      setMarkedForDeletion((prev) => ({ ...prev, [id]: false }));
       return;
     }
 
@@ -37,6 +42,12 @@ export default function TypesList({ types }: TypesListProps) {
       <a href="/types/new">
         <Button>+ New Type</Button>
       </a>
+
+      {deleteError && (
+        <div role="alert" className="text-mkerror mt-4">
+          {deleteError}
+        </div>
+      )}
 
       <table className="mt-5 min-w-full">
         <thead className="border-b border-gray-300 text-left">
