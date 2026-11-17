@@ -30,31 +30,17 @@ export function getAccount({
   });
 }
 
-/**
- * Returns the user's accounts, optionally filtered by archived state.
- * `includeAccountId` keeps that account in the result regardless of the
- * archived filter, e.g. the current account of a balance being edited.
- */
 export async function getAccounts({
   userId,
   archived,
-  includeAccountId,
 }: {
   userId: User["id"];
   archived?: Account["archived"];
-  includeAccountId?: Account["id"];
 }) {
-  const archivedFilter =
-    typeof archived === "undefined"
-      ? {}
-      : includeAccountId
-        ? { OR: [{ archived }, { id: includeAccountId }] }
-        : { archived };
-
   const accounts = await prisma.account.findMany({
     where: {
       userId,
-      ...archivedFilter,
+      ...(typeof archived !== "undefined" ? { archived } : {}),
     },
     orderBy: { createdAt: "desc" },
     select: {
