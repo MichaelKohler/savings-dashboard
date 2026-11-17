@@ -145,38 +145,37 @@ function reduceToTypeBalance(
 }
 
 export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
-  // Single query to get all accounts with their related data
-  const accounts = await prisma.account.findMany({
-    where: { userId },
-    select: {
-      id: true,
-      showInGraphs: true,
-      archived: true,
-      group: {
-        select: {
-          id: true,
+  const [accounts, allBalances] = await Promise.all([
+    prisma.account.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        showInGraphs: true,
+        archived: true,
+        group: {
+          select: {
+            id: true,
+          },
+        },
+        type: {
+          select: {
+            id: true,
+          },
         },
       },
-      type: {
-        select: {
-          id: true,
-        },
+    }),
+    prisma.balance.findMany({
+      where: { userId },
+      select: {
+        balance: true,
+        date: true,
+        accountId: true,
       },
-    },
-  });
+      orderBy: { date: "asc" },
+    }),
+  ]);
 
   type AccountForChart = (typeof accounts)[number];
-
-  // Single optimized query to get all balances with minimal data
-  const allBalances = await prisma.balance.findMany({
-    where: { userId },
-    select: {
-      balance: true,
-      date: true,
-      accountId: true,
-    },
-    orderBy: { date: "asc" },
-  });
 
   if (!allBalances.length) {
     return { balances: [], predictions: [] };
