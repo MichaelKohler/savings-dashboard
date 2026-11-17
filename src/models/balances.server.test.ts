@@ -9,6 +9,7 @@ import {
   deleteBalance,
   getBalancesForCharts,
   getPredictedBalances,
+  parsePredictionPercentages,
 } from "./balances.server";
 
 describe("balance models", () => {
@@ -588,6 +589,30 @@ describe("balance models", () => {
       expect(result[0].year).toBe(new Date().getFullYear() + 1);
       expect(result[0][5]).toBe(1050);
       expect(result[0][10]).toBe(1100);
+    });
+
+    it("should return no predictions when PREDICTION_PERCENTAGES is unset", () => {
+      delete process.env.PREDICTION_PERCENTAGES;
+      expect(getPredictedBalances(1000)).toEqual([]);
+    });
+
+    it("should return no predictions when PREDICTION_PERCENTAGES is empty", () => {
+      process.env.PREDICTION_PERCENTAGES = " ";
+      expect(getPredictedBalances(1000)).toEqual([]);
+    });
+  });
+
+  describe("parsePredictionPercentages", () => {
+    it("ignores empty entries from trailing or doubled commas", () => {
+      expect(parsePredictionPercentages("1,,3,")).toEqual([1, 3]);
+    });
+
+    it("ignores entries that are not numbers", () => {
+      expect(parsePredictionPercentages("1,abc,5")).toEqual([1, 5]);
+    });
+
+    it("trims whitespace, keeps explicit zero and removes duplicates", () => {
+      expect(parsePredictionPercentages(" 0, 2.5 ,2.5")).toEqual([0, 2.5]);
     });
   });
 });
