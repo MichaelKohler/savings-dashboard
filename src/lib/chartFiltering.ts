@@ -15,6 +15,8 @@ export interface FilterableAccount {
   type?: { id: string; name: string } | null;
 }
 
+export const UNASSIGNED_KEY = "unassigned";
+
 export interface ChartExclusions {
   excludedAccountIds: Set<string>;
   excludedGroupIds: Set<string>;
@@ -77,9 +79,8 @@ export function isAccountExcluded(
 ): boolean {
   return (
     exclusions.excludedAccountIds.has(account.id) ||
-    (account.groupId !== null &&
-      exclusions.excludedGroupIds.has(account.groupId)) ||
-    (account.typeId !== null && exclusions.excludedTypeIds.has(account.typeId))
+    exclusions.excludedGroupIds.has(account.groupId ?? UNASSIGNED_KEY) ||
+    exclusions.excludedTypeIds.has(account.typeId ?? UNASSIGNED_KEY)
   );
 }
 
@@ -108,10 +109,10 @@ export function getFilteredChartData(
         total += rawBalance;
       }
 
-      const groupKey = account.groupId ?? "";
+      const groupKey = account.groupId ?? UNASSIGNED_KEY;
       byGroup[groupKey] = (byGroup[groupKey] ?? 0) + rawBalance;
 
-      const typeKey = account.typeId ?? "";
+      const typeKey = account.typeId ?? UNASSIGNED_KEY;
       byType[typeKey] = (byType[typeKey] ?? 0) + rawBalance;
     }
 

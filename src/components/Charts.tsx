@@ -24,6 +24,7 @@ import {
   getFilteredPredictions,
   getPredictionPercentages,
   isAccountExcluded,
+  UNASSIGNED_KEY,
   type FilterableAccount,
   type ChartExclusions,
 } from "~/lib/chartFiltering";
@@ -75,6 +76,21 @@ const COLORS = [
   "#abd2ec",
   "#c1e7ff",
 ];
+
+interface BarSeries {
+  id: string;
+  name: string;
+}
+
+function withUnassignedSeries(
+  series: BarSeries[],
+  hasUnassigned: boolean,
+  unassignedName: string
+): BarSeries[] {
+  return hasUnassigned
+    ? [...series, { id: UNASSIGNED_KEY, name: unassignedName }]
+    : series;
+}
 
 function formatTick(value: string) {
   const parsedValue = parseInt(value);
@@ -135,8 +151,8 @@ export default function Charts({
     const account = accounts.find(({ id }) => id === accountId);
     if (
       !account ||
-      (account.groupId !== null && excludedGroupIds.has(account.groupId)) ||
-      (account.typeId !== null && excludedTypeIds.has(account.typeId))
+      excludedGroupIds.has(account.groupId ?? UNASSIGNED_KEY) ||
+      excludedTypeIds.has(account.typeId ?? UNASSIGNED_KEY)
     ) {
       return;
     }
@@ -165,6 +181,26 @@ export default function Charts({
   const predictionPercentages = useMemo(
     () => getPredictionPercentages(predictions),
     [predictions]
+  );
+
+  const groupSeries = useMemo(
+    () =>
+      withUnassignedSeries(
+        groups,
+        accounts.some(({ groupId }) => groupId === null),
+        "No group"
+      ),
+    [groups, accounts]
+  );
+
+  const typeSeries = useMemo(
+    () =>
+      withUnassignedSeries(
+        types,
+        accounts.some(({ typeId }) => typeId === null),
+        "No type"
+      ),
+    [types, accounts]
   );
 
   const isExcluded = (account: FilterableAccount) =>
@@ -302,7 +338,7 @@ export default function Charts({
           <CartesianGrid strokeDasharray="1 1" />
           <XAxis dataKey="date" />
           <YAxis tickFormatter={formatTick} />
-          {groups.map((group, index) => {
+          {groupSeries.map((group, index) => {
             const dataKey = `byGroup.${group.id}`;
             return (
               <Bar
@@ -331,7 +367,7 @@ export default function Charts({
           <CartesianGrid strokeDasharray="1 1" />
           <XAxis dataKey="date" />
           <YAxis tickFormatter={formatTick} />
-          {types.map((type, index) => {
+          {typeSeries.map((type, index) => {
             const dataKey = `byType.${type.id}`;
             return (
               <Bar
