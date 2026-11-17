@@ -6,6 +6,7 @@ import {
   isAccountExcluded,
   getFilteredChartData,
   getFilteredPredictions,
+  getPredictionPercentages,
   type FilterableAccount,
   type ChartExclusions,
 } from "~/lib/chartFiltering";
@@ -198,6 +199,20 @@ describe("getFilteredChartData", () => {
     expect(result[0].total).toBe(300);
     expect(result[0].byGroup.g2).toBe(200);
     expect(result[0].byType.t1).toBe(300);
+  });
+});
+
+describe("getPredictionPercentages", () => {
+  it("returns an empty array for empty input", () => {
+    expect(getPredictionPercentages([])).toEqual([]);
+  });
+
+  it("returns the percentages sorted ascending without the year", () => {
+    const predictions: PredictionEntry[] = [
+      { year: 2030, 10: 1100, 2.5: 1025, 5: 1050 },
+    ];
+
+    expect(getPredictionPercentages(predictions)).toEqual([2.5, 5, 10]);
   });
 });
 

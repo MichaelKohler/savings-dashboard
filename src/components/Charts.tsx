@@ -22,6 +22,7 @@ import {
   getDefaultExclusions,
   getFilteredChartData,
   getFilteredPredictions,
+  getPredictionPercentages,
   isAccountExcluded,
   type FilterableAccount,
   type ChartExclusions,
@@ -161,6 +162,11 @@ export default function Charts({
     [predictions, filteredLastTotal]
   );
 
+  const predictionPercentages = useMemo(
+    () => getPredictionPercentages(predictions),
+    [predictions]
+  );
+
   const isExcluded = (account: FilterableAccount) =>
     isAccountExcluded(account, exclusions);
 
@@ -215,34 +221,19 @@ export default function Charts({
           <CartesianGrid strokeDasharray="1 1" />
           <XAxis dataKey="year" />
           <YAxis tickFormatter={formatTick} />
-          <Line
-            name="1%"
-            type="monotoneX"
-            dataKey="1"
-            stroke={COLORS[0]}
-            hide={hiddenPredictions.includes("1")}
-          />
-          <Line
-            name="3%"
-            type="monotoneX"
-            dataKey="3"
-            stroke={COLORS[1]}
-            hide={hiddenPredictions.includes("3")}
-          />
-          <Line
-            name="5%"
-            type="monotoneX"
-            dataKey="5"
-            stroke={COLORS[2]}
-            hide={hiddenPredictions.includes("5")}
-          />
-          <Line
-            name="7%"
-            type="monotoneX"
-            dataKey="7"
-            stroke={COLORS[3]}
-            hide={hiddenPredictions.includes("7")}
-          />
+          {predictionPercentages.map((percentage, index) => {
+            const dataKey = String(percentage);
+            return (
+              <Line
+                key={dataKey}
+                name={`${percentage}%`}
+                type="monotoneX"
+                dataKey={dataKey}
+                stroke={COLORS[index % COLORS.length]}
+                hide={hiddenPredictions.includes(dataKey)}
+              />
+            );
+          })}
           <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
           <Legend onClick={handlePredictionsLegendClick} />
         </LineChart>
