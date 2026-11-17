@@ -95,7 +95,7 @@ export async function getBalances({
 }
 
 function getMonthKey(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(
     2,
     "0"
   )}`;
@@ -183,12 +183,16 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
   }
 
   const earliestDate = new Date(
-    allBalances[0].date.getFullYear(),
-    allBalances[0].date.getMonth(),
-    1
+    Date.UTC(
+      allBalances[0].date.getUTCFullYear(),
+      allBalances[0].date.getUTCMonth(),
+      1
+    )
   );
   const today = new Date();
-  const currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const currentMonth = new Date(
+    Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1)
+  );
 
   const result: ChartDataEntry[] = [];
   const monthCursor = new Date(earliestDate);
@@ -266,7 +270,7 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
       ),
     });
 
-    monthCursor.setMonth(monthCursor.getMonth() + 1);
+    monthCursor.setUTCMonth(monthCursor.getUTCMonth() + 1);
   }
 
   const removeEntriesAmount = parseInt(

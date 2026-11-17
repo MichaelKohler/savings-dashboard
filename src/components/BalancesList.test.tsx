@@ -93,6 +93,27 @@ describe("BalancesList", () => {
     expect(screen.getByText("2/20/2024")).toBeInTheDocument();
   });
 
+  it("shows first-of-month balances in their stored month for users west of UTC", () => {
+    vi.stubEnv("TZ", "America/New_York");
+    render(
+      <BalancesList
+        balances={[
+          {
+            ...mockBalances[0],
+            date: new Date("2024-03-01"),
+            updatedAt: new Date("2024-03-01T10:00:00"),
+          },
+        ]}
+      />
+    );
+    vi.unstubAllEnvs();
+
+    expect(
+      screen.getByRole("heading", { name: "2024-03", level: 2 })
+    ).toBeInTheDocument();
+    expect(screen.getByText("3/1/2024")).toBeInTheDocument();
+  });
+
   it("renders edit button for each balance", () => {
     render(<BalancesList balances={mockBalances} />);
 

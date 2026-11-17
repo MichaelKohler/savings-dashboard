@@ -26,7 +26,7 @@ interface BalancesListProps {
 
 function getMonthKey(date: Date): string {
   const d = new Date(date);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
 }
 
 function groupBalancesByMonth(
@@ -129,7 +129,9 @@ export default function BalancesList({ balances }: BalancesListProps) {
                 {monthBalances.map((balance) => (
                   <tr className="border-b border-gray-300" key={balance.id}>
                     <td className="pr-2">
-                      {new Date(balance.date).toLocaleDateString()}
+                      {new Date(balance.date).toLocaleDateString(undefined, {
+                        timeZone: "UTC",
+                      })}
                     </td>
                     <td className="pr-2">
                       <span className="block">{balance.account.name}</span>
