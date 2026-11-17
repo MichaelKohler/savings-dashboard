@@ -281,8 +281,7 @@ describe("AccountsList", () => {
     });
   });
 
-  it("handles delete error gracefully", async () => {
-    const consoleErrorSpy = vi.spyOn(console, "error");
+  it("shows an error message and leaves confirm mode when deletion fails", async () => {
     vi.mocked(actions.deleteAccount).mockResolvedValue({
       data: undefined,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -297,18 +296,45 @@ describe("AccountsList", () => {
     );
     const deleteButtons = screen.getAllByRole("button", { name: "X" });
     fireEvent.click(deleteButtons[0]);
+    fireEvent.click(screen.getByRole("button", { name: "X?" }));
 
-    const confirmButton = screen.getByRole("button", { name: "X?" });
-    fireEvent.click(confirmButton);
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Failed to delete account"
+    );
+    expect(
+      screen.queryByRole("button", { name: "X?" })
+    ).not.toBeInTheDocument();
+  });
 
-    await waitFor(() => {
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Failed to delete account",
-        expect.anything()
-      );
+  it("shows the server error message when deletion fails", async () => {
+    vi.mocked(actions.deleteAccount).mockResolvedValue({
+      data: undefined,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      error: { message: "Server unavailable" } as any,
     });
 
-    consoleErrorSpy.mockRestore();
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
+    fireEvent.click(screen.getAllByRole("button", { name: "X" })[0]);
+    fireEvent.click(screen.getByRole("button", { name: "X?" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Server unavailable"
+    );
+  });
+
+  it("does not show an error message before any deletion fails", () => {
+    render(
+      <AccountsList
+        activeAccounts={mockActiveAccounts}
+        archivedAccounts={mockArchivedAccounts}
+      />
+    );
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("renders empty table when there are no accounts", () => {
