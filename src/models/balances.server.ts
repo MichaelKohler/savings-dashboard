@@ -1,6 +1,7 @@
 import type { User, Account, Balance } from "~/generated/prisma/client";
 
 import { prisma } from "~/lib/db.server";
+import { getAccount } from "~/models/accounts.server";
 import { computePredictedBalances } from "~/lib/predictions";
 import { isAccountBalanceCountedInTotal } from "~/lib/accountTotals";
 
@@ -343,10 +344,21 @@ export function getPredictedBalances(currentTotal: number) {
   return computePredictedBalances(currentTotal, percentages, 40);
 }
 
-export function createBalance(
+async function assertAccountOwnership({
+  accountId,
+  userId,
+}: Pick<Balance, "accountId"> & { userId: User["id"] }) {
+  if (!(await getAccount({ id: accountId, userId }))) {
+    throw new Error("ACCOUNT_NOT_FOUND");
+  }
+}
+
+export async function createBalance(
   balance: Pick<Balance, "date" | "accountId" | "balance">,
   userId: User["id"]
 ) {
+  await assertAccountOwnership({ accountId: balance.accountId, userId });
+
   return prisma.balance.create({
     data: {
       date: balance.date,
@@ -377,6 +389,8 @@ export async function updateBalance({
   if (!existingBalance) {
     throw new Error("BALANCE_NOT_FOUND");
   }
+
+  await assertAccountOwnership({ accountId, userId });
 
   return prisma.balance.update({
     where: { id },

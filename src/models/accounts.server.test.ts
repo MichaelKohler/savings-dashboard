@@ -150,6 +150,8 @@ describe("account models", () => {
 
   describe("createAccount", () => {
     it("should create a new account", async () => {
+      mockPrisma.group.findUnique.mockResolvedValue({ id: account.groupId });
+      mockPrisma.type.findUnique.mockResolvedValue({ id: account.typeId });
       mockPrisma.account.create.mockResolvedValue(account);
 
       const result = await createAccount(
@@ -190,11 +192,64 @@ describe("account models", () => {
           },
         },
       });
+      expect(mockPrisma.group.findUnique).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: account.groupId, userId: user.id },
+        })
+      );
+      expect(mockPrisma.type.findUnique).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: account.typeId, userId: user.id },
+        })
+      );
+    });
+
+    it("should create an account without group and type", async () => {
+      mockPrisma.account.create.mockResolvedValue(account);
+
+      await createAccount(
+        {
+          name: account.name,
+          color: account.color,
+          showInGraphs: account.showInGraphs,
+          archived: account.archived,
+          uncheckedInChartsByDefault: account.uncheckedInChartsByDefault,
+          groupId: null,
+          typeId: null,
+        },
+        user.id
+      );
+
+      expect(mockPrisma.group.findUnique).not.toHaveBeenCalled();
+      expect(mockPrisma.type.findUnique).not.toHaveBeenCalled();
+      expect(mockPrisma.account.create).toHaveBeenCalled();
+    });
+
+    it("should reject a group owned by another user", async () => {
+      mockPrisma.group.findUnique.mockResolvedValue(null);
+      mockPrisma.type.findUnique.mockResolvedValue({ id: account.typeId });
+
+      await expect(createAccount(account, user.id)).rejects.toThrow(
+        "GROUP_NOT_FOUND"
+      );
+      expect(mockPrisma.account.create).not.toHaveBeenCalled();
+    });
+
+    it("should reject a type owned by another user", async () => {
+      mockPrisma.group.findUnique.mockResolvedValue({ id: account.groupId });
+      mockPrisma.type.findUnique.mockResolvedValue(null);
+
+      await expect(createAccount(account, user.id)).rejects.toThrow(
+        "TYPE_NOT_FOUND"
+      );
+      expect(mockPrisma.account.create).not.toHaveBeenCalled();
     });
   });
 
   describe("updateAccount", () => {
     it("should update an account", async () => {
+      mockPrisma.group.findUnique.mockResolvedValue({ id: account.groupId });
+      mockPrisma.type.findUnique.mockResolvedValue({ id: account.typeId });
       mockPrisma.account.findFirst.mockResolvedValue(account);
       mockPrisma.account.update.mockResolvedValue(account);
 
@@ -218,6 +273,23 @@ describe("account models", () => {
     it("should throw an error if account is not found", async () => {
       mockPrisma.account.findFirst.mockResolvedValue(null);
       await expect(updateAccount(account)).rejects.toThrow("ACCOUNT_NOT_FOUND");
+    });
+
+    it("should reject a group owned by another user", async () => {
+      mockPrisma.account.findFirst.mockResolvedValue(account);
+      mockPrisma.group.findUnique.mockResolvedValue(null);
+
+      await expect(updateAccount(account)).rejects.toThrow("GROUP_NOT_FOUND");
+      expect(mockPrisma.account.update).not.toHaveBeenCalled();
+    });
+
+    it("should reject a type owned by another user", async () => {
+      mockPrisma.account.findFirst.mockResolvedValue(account);
+      mockPrisma.group.findUnique.mockResolvedValue({ id: account.groupId });
+      mockPrisma.type.findUnique.mockResolvedValue(null);
+
+      await expect(updateAccount(account)).rejects.toThrow("TYPE_NOT_FOUND");
+      expect(mockPrisma.account.update).not.toHaveBeenCalled();
     });
   });
 
