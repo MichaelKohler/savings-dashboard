@@ -94,6 +94,18 @@ describe("BalanceForm", () => {
     expect(accountSelect.value).toBe("a1");
   });
 
+  it("preselects and labels an archived account in edit mode", () => {
+    const accounts = [{ ...mockAccounts[0], archived: true }, mockAccounts[1]];
+    render(<BalanceForm balance={mockBalance} accounts={accounts} />);
+    const accountSelect = screen.getByLabelText(
+      /Account:/
+    ) as HTMLSelectElement;
+    expect(accountSelect.value).toBe("a1");
+    expect(
+      screen.getByRole("option", { name: "Savings Account (archived)" })
+    ).toBeInTheDocument();
+  });
+
   it("renders save button", () => {
     render(<BalanceForm accounts={mockAccounts} />);
     expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();

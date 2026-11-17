@@ -119,7 +119,9 @@ export default function BalanceForm({ balance, accounts }: BalanceFormProps) {
               <optgroup key={groupName} label={groupName}>
                 {groupedAccounts[groupName].map((account) => (
                   <option key={account.id} value={account.id}>
-                    {account.name}
+                    {account.archived
+                      ? `${account.name} (archived)`
+                      : account.name}
                   </option>
                 ))}
               </optgroup>
