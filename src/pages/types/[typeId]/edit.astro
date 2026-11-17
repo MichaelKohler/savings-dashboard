@@ -12,6 +12,10 @@ if (!typeId) {
 }
 
 const type = await getType({ id: typeId, userId });
+
+if (!type) {
+  return new Response(null, { status: 404, statusText: "Not found" });
+}
 ---
 
 <Layout title="Edit Type">

@@ -12,6 +12,10 @@ if (!groupId) {
 }
 
 const group = await getGroup({ id: groupId, userId });
+
+if (!group) {
+  return new Response(null, { status: 404, statusText: "Not found" });
+}
 ---
 
 <Layout title="Edit Group">
