@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { LegendPayload } from "recharts/types/component/DefaultLegendContent";
+import type { ValueType } from "recharts/types/component/DefaultTooltipContent";
 import {
   BarChart,
   Bar,
@@ -28,6 +29,7 @@ import {
   type FilterableAccount,
   type ChartExclusions,
 } from "~/lib/chartFiltering";
+import { formatBalance } from "~/lib/utils";
 
 interface ChartsProps {
   accounts: FilterableAccount[];
@@ -76,6 +78,10 @@ const COLORS = [
   "#abd2ec",
   "#c1e7ff",
 ];
+
+function formatTooltipValue(value: ValueType | undefined) {
+  return typeof value === "number" ? formatBalance(value) : value;
+}
 
 interface BarSeries {
   id: string;
@@ -247,7 +253,11 @@ export default function Charts({
             dataKey="total"
             stroke={COLORS[0]}
           />
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
+          <Tooltip
+            cursor={false}
+            wrapperStyle={{ zIndex: 20 }}
+            formatter={formatTooltipValue}
+          />
         </LineChart>
       </ResponsiveContainer>
 
@@ -270,7 +280,11 @@ export default function Charts({
               />
             );
           })}
-          <Tooltip cursor={false} wrapperStyle={{ zIndex: 20 }} />
+          <Tooltip
+            cursor={false}
+            wrapperStyle={{ zIndex: 20 }}
+            formatter={formatTooltipValue}
+          />
           <Legend onClick={handlePredictionsLegendClick} />
         </LineChart>
       </ResponsiveContainer>
