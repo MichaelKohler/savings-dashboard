@@ -77,6 +77,14 @@ describe("safeRedirect", () => {
     );
   });
 
+  test("returns default redirect for paths browsers normalize to another host", () => {
+    expect(safeRedirect("/\\evil.com")).equal("/");
+    expect(safeRedirect("/\\/evil.com")).equal("/");
+    expect(safeRedirect("\\\\evil.com")).equal("/");
+    expect(safeRedirect("/\t/evil.com")).equal("/");
+    expect(safeRedirect("/\n/evil.com")).equal("/");
+  });
+
   test("returns custom default redirect for unsafe paths", () => {
     expect(safeRedirect("//evil.com", "/safe")).equal("/safe");
     expect(safeRedirect("http://evil.com", "/dashboard")).equal("/dashboard");

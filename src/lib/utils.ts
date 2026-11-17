@@ -17,7 +17,15 @@ export function safeRedirect(
     return defaultRedirect;
   }
 
-  if (!to.startsWith("/") || to.startsWith("//")) {
+  if (!to.startsWith("/")) {
+    return defaultRedirect;
+  }
+
+  // Browsers treat "\" like "/" and strip tabs/newlines, so "/\evil.com" or
+  // "/\t/evil.com" become protocol-relative. Resolve the path the same way a
+  // browser would and reject anything that leaves our origin.
+  const base = new URL("http://localhost");
+  if (new URL(to, base).origin !== base.origin) {
     return defaultRedirect;
   }
 
