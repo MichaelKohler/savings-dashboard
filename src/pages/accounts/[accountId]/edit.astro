@@ -14,6 +14,11 @@ if (!accountId) {
 }
 
 const account = await getAccount({ id: accountId, userId });
+
+if (!account) {
+  return new Response(null, { status: 404, statusText: "Not found" });
+}
+
 const groups = await getGroups({ userId });
 const types = await getTypes({ userId });
 ---
