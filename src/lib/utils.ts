@@ -54,5 +54,10 @@ const balanceFormatter = new Intl.NumberFormat("de-CH", {
  * without forcing decimal places (e.g. no trailing ".00").
  */
 export function formatBalance(balance: number): string {
-  return balanceFormatter.format(balance);
+  // The de-CH group separator glyph differs between ICU versions (e.g. Node vs.
+  // the browser), which would cause hydration mismatches, so normalize it.
+  return balanceFormatter
+    .formatToParts(balance)
+    .map((part) => (part.type === "group" ? "'" : part.value))
+    .join("");
 }

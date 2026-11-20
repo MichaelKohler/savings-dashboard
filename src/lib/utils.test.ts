@@ -114,11 +114,16 @@ describe("safeRedirect", () => {
 });
 
 describe("formatBalance", () => {
-  // The de-CH thousands separator glyph (an apostrophe variant) can differ
-  // by ICU/runtime version, so derive it instead of hardcoding a character.
-  const groupSeparator = new Intl.NumberFormat("de-CH")
-    .formatToParts(1000)
-    .find((part) => part.type === "group")!.value;
+  const groupSeparator = "'";
+
+  test("uses an ASCII apostrophe regardless of the ICU group separator", () => {
+    vi.spyOn(Intl.NumberFormat.prototype, "formatToParts").mockReturnValueOnce([
+      { type: "integer", value: "1" },
+      { type: "group", value: "’" },
+      { type: "integer", value: "000" },
+    ]);
+    expect(formatBalance(1000)).equal("1'000");
+  });
 
   test("separates thousands (and millions) into groups", () => {
     expect(formatBalance(1000)).equal(`1${groupSeparator}000`);

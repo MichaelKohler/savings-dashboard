@@ -5,7 +5,7 @@ const INT32_MAX = 2_147_483_647;
 
 /**
  * Removes the thousands separators users may type, including the de-CH
- * apostrophe variants produced by `formatBalance` (e.g. "12'500" or "12’500").
+ * apostrophe variants (e.g. "12'500" or "12’500").
  */
 export function stripThousandsSeparators(value: string): string {
   return value.replace(/[\s'’ʼ]/g, "");
