@@ -24,10 +24,10 @@ export const isInputError = vi.fn().mockReturnValue(false);
 export const isActionError = vi.fn().mockReturnValue(false);
 
 export class ActionError extends Error {
-  constructor(
-    public code: string,
-    message: string
-  ) {
+  code: string;
+
+  constructor({ code, message }: { code: string; message?: string }) {
     super(message);
+    this.code = code;
   }
 }

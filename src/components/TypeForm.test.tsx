@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import TypeForm from "~/components/TypeForm";
-import { actions, isInputError } from "astro:actions";
+import { ActionError, actions, isInputError } from "astro:actions";
 
 describe("TypeForm", () => {
   const mockType = {
@@ -52,8 +52,7 @@ describe("TypeForm", () => {
 
   it("disables save button when submitting", async () => {
     vi.mocked(actions.createType).mockImplementation(
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      () => new Promise(() => {}) // Never resolves
+      () => new Promise(() => undefined) // Never resolves
     );
 
     render(<TypeForm />);
@@ -90,8 +89,7 @@ describe("TypeForm", () => {
 
   it("shows spinner when submitting", async () => {
     vi.mocked(actions.createType).mockImplementation(
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      () => new Promise(() => {}) // Never resolves
+      () => new Promise(() => undefined) // Never resolves
     );
 
     render(<TypeForm />);
@@ -171,7 +169,9 @@ describe("TypeForm", () => {
   });
 
   it("displays name error when returned from API", async () => {
-    const mockError = { fields: { name: ["Name is required"] } };
+    const mockError = Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+      fields: { name: ["Name is required"] },
+    });
 
     vi.mocked(actions.createType).mockResolvedValue({
       data: undefined,
@@ -194,8 +194,7 @@ describe("TypeForm", () => {
   it("displays generic error on network failure", async () => {
     vi.mocked(actions.createType).mockResolvedValue({
       data: undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: {} as any,
+      error: new ActionError({ code: "INTERNAL_SERVER_ERROR" }),
     });
     vi.mocked(isInputError).mockReturnValue(false);
 
@@ -212,7 +211,9 @@ describe("TypeForm", () => {
   });
 
   it("focuses name input when name error occurs", async () => {
-    const mockError = { fields: { name: ["Name is required"] } };
+    const mockError = Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+      fields: { name: ["Name is required"] },
+    });
 
     vi.mocked(actions.createType).mockResolvedValue({
       data: undefined,
@@ -233,7 +234,9 @@ describe("TypeForm", () => {
   });
 
   it("sets correct aria attributes when name error exists", async () => {
-    const mockError = { fields: { name: ["Name is required"] } };
+    const mockError = Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+      fields: { name: ["Name is required"] },
+    });
 
     vi.mocked(actions.createType).mockResolvedValue({
       data: undefined,
@@ -255,10 +258,11 @@ describe("TypeForm", () => {
   });
 
   it("clears errors on new submission", async () => {
-    const mockError = { fields: { name: ["Name is required"] } };
+    const mockError = Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+      fields: { name: ["Name is required"] },
+    });
     vi.mocked(actions.createType)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .mockResolvedValueOnce({ data: undefined, error: mockError as any })
+      .mockResolvedValueOnce({ data: undefined, error: mockError })
       .mockResolvedValueOnce({ data: { success: true }, error: undefined });
     vi.mocked(isInputError)
       .mockReturnValueOnce(true)
@@ -284,7 +288,9 @@ describe("TypeForm", () => {
   });
 
   it("re-enables submit button after error", async () => {
-    const mockError = { fields: { name: ["Name is required"] } };
+    const mockError = Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+      fields: { name: ["Name is required"] },
+    });
 
     vi.mocked(actions.createType).mockResolvedValue({
       data: undefined,

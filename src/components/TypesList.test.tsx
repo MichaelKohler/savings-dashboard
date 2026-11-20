@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import TypesList from "~/components/TypesList";
-import { actions } from "astro:actions";
+import { ActionError, actions } from "astro:actions";
 
 describe("TypesList", () => {
   const mockTypes = [
@@ -116,8 +116,7 @@ describe("TypesList", () => {
   it("shows an error message and leaves confirm mode when deletion fails", async () => {
     vi.mocked(actions.deleteType).mockResolvedValue({
       data: undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: {} as any,
+      error: new ActionError({ code: "INTERNAL_SERVER_ERROR" }),
     });
 
     render(<TypesList types={mockTypes} />);
@@ -136,8 +135,10 @@ describe("TypesList", () => {
   it("shows the server error message when deletion fails", async () => {
     vi.mocked(actions.deleteType).mockResolvedValue({
       data: undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: { message: "Server unavailable" } as any,
+      error: new ActionError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Server unavailable",
+      }),
     });
 
     render(<TypesList types={mockTypes} />);
@@ -157,8 +158,7 @@ describe("TypesList", () => {
   it("does not reload page on failed deletion", async () => {
     vi.mocked(actions.deleteType).mockResolvedValue({
       data: undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: {} as any,
+      error: new ActionError({ code: "INTERNAL_SERVER_ERROR" }),
     });
 
     render(<TypesList types={mockTypes} />);

@@ -32,9 +32,13 @@ export function safeRedirect(
   return to;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isUser(user: any): user is User {
-  return user && typeof user === "object" && typeof user.email === "string";
+export function isUser(user: unknown): user is User {
+  return (
+    typeof user === "object" &&
+    user !== null &&
+    "email" in user &&
+    typeof user.email === "string"
+  );
 }
 
 export function validateEmail(email: unknown): email is string {

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import BalancesList from "~/components/BalancesList";
-import { actions } from "astro:actions";
+import { ActionError, actions } from "astro:actions";
 import { formatBalance } from "~/lib/utils";
 
 describe("BalancesList", () => {
@@ -180,8 +180,7 @@ describe("BalancesList", () => {
   it("shows an error message and leaves confirm mode when deletion fails", async () => {
     vi.mocked(actions.deleteBalance).mockResolvedValue({
       data: undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: {} as any,
+      error: new ActionError({ code: "INTERNAL_SERVER_ERROR" }),
     });
 
     render(<BalancesList balances={mockBalances} />);
@@ -200,8 +199,10 @@ describe("BalancesList", () => {
   it("shows the server error message when deletion fails", async () => {
     vi.mocked(actions.deleteBalance).mockResolvedValue({
       data: undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: { message: "Server unavailable" } as any,
+      error: new ActionError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Server unavailable",
+      }),
     });
 
     render(<BalancesList balances={mockBalances} />);
@@ -221,8 +222,7 @@ describe("BalancesList", () => {
   it("does not reload page on failed deletion", async () => {
     vi.mocked(actions.deleteBalance).mockResolvedValue({
       data: undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: {} as any,
+      error: new ActionError({ code: "INTERNAL_SERVER_ERROR" }),
     });
 
     render(<BalancesList balances={mockBalances} />);
