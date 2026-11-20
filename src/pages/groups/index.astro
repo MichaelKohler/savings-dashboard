@@ -4,7 +4,7 @@ import GroupsList from "~/components/GroupsList";
 import { requireUserId } from "~/lib/session.server";
 import { getGroups } from "~/models/groups.server";
 
-const userId = await requireUserId(Astro.cookies);
+const userId = requireUserId(Astro.locals);
 const groups = await getGroups({ userId });
 ---
 

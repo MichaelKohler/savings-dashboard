@@ -5,7 +5,7 @@ import { requireUserId } from "~/lib/session.server";
 import { getGroups } from "~/models/groups.server";
 import { getTypes } from "~/models/types.server";
 
-const userId = await requireUserId(Astro.cookies);
+const userId = requireUserId(Astro.locals);
 const [groups, types] = await Promise.all([
   getGroups({ userId }),
   getTypes({ userId }),

@@ -8,6 +8,7 @@ import {
   getUserId,
   logout,
   requireActionUserId,
+  requireUserId,
 } from "./session.server";
 
 interface StoredCookie {
@@ -115,5 +116,19 @@ describe("requireActionUserId", () => {
 
   it("throws an action error when no user was resolved", () => {
     expect(() => requireActionUserId({ user: null })).toThrow(ActionError);
+  });
+});
+
+describe("requireUserId", () => {
+  it("returns the ID of the user resolved by the middleware", () => {
+    const user = { id: "user-1" } as User;
+
+    expect(requireUserId({ user })).toBe("user-1");
+  });
+
+  it("throws when no user was resolved", () => {
+    expect(() => requireUserId({ user: null })).toThrow(
+      "No authenticated user found for this request"
+    );
   });
 });

@@ -4,7 +4,7 @@ import TypeForm from "~/components/TypeForm";
 import { requireUserId } from "~/lib/session.server";
 import { getType } from "~/models/types.server";
 
-const userId = await requireUserId(Astro.cookies);
+const userId = requireUserId(Astro.locals);
 const { typeId } = Astro.params;
 
 if (!typeId) {

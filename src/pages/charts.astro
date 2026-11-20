@@ -7,7 +7,7 @@ import { getBalancesForCharts } from "~/models/balances.server";
 import { getGroups } from "~/models/groups.server";
 import { getTypes } from "~/models/types.server";
 
-var userId = await requireUserId(Astro.cookies);
+var userId = requireUserId(Astro.locals);
 var [allAccounts, { balances, predictions }, groups, types] = await Promise.all(
   [
     getAccounts({ userId }),
