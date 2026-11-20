@@ -23,12 +23,18 @@ async function createAccount(
 ) {
   await page.getByRole("link", { name: "Accounts" }).click();
   await page.getByRole("button", { name: "+ New Account" }).click();
+  await expect(
+    page.locator('astro-island[component-url$="/AccountForm.tsx"]')
+  ).not.toHaveAttribute("ssr", "");
   await page.getByLabel("Name:").fill(name);
   await page.getByLabel("Type:").selectOption({ label: typeName });
   if (groupName) {
     await page.getByLabel("Group:").selectOption({ label: groupName });
   }
 
+  await expect(page.getByLabel("Show in graphs")).toBeChecked();
+  await expect(page.getByLabel(UNCHECKED_BY_DEFAULT_LABEL)).toBeEnabled();
+  await page.getByLabel("Show in graphs").uncheck();
   await expect(page.getByLabel(UNCHECKED_BY_DEFAULT_LABEL)).toBeDisabled();
   await page.getByLabel("Show in graphs").check();
   await expect(page.getByLabel(UNCHECKED_BY_DEFAULT_LABEL)).toBeEnabled();

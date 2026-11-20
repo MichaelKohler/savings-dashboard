@@ -27,7 +27,7 @@ export default function AccountForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
   const [showInGraphs, setShowInGraphs] = useState(
-    account?.showInGraphs ?? false
+    account?.showInGraphs ?? true
   );
   const [uncheckedInChartsByDefault, setUncheckedInChartsByDefault] = useState(
     account?.uncheckedInChartsByDefault ?? false
