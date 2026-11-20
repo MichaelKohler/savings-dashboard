@@ -180,7 +180,7 @@ describe("LoginForm", () => {
     vi.mocked(actions.login).mockResolvedValue({
       data: undefined,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: { fields: { email: "Invalid email" } } as any,
+      error: { fields: { email: ["Invalid email"] } } as any,
     });
 
     render(<LoginForm redirectTo="/" />);
@@ -202,7 +202,7 @@ describe("LoginForm", () => {
     vi.mocked(actions.login).mockResolvedValue({
       data: undefined,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: { fields: { password: "Invalid password" } } as any,
+      error: { fields: { password: ["Invalid password"] } } as any,
     });
 
     render(<LoginForm redirectTo="/" />);
@@ -250,7 +250,7 @@ describe("LoginForm", () => {
     vi.mocked(actions.login).mockResolvedValue({
       data: undefined,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: { fields: { email: "Invalid email" } } as any,
+      error: { fields: { email: ["Invalid email"] } } as any,
     });
 
     render(<LoginForm redirectTo="/" />);
@@ -273,7 +273,7 @@ describe("LoginForm", () => {
     vi.mocked(actions.login).mockResolvedValue({
       data: undefined,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: { fields: { password: "Invalid password" } } as any,
+      error: { fields: { password: ["Invalid password"] } } as any,
     });
 
     render(<LoginForm redirectTo="/" />);
@@ -296,7 +296,7 @@ describe("LoginForm", () => {
     vi.mocked(actions.login).mockResolvedValue({
       data: undefined,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: { fields: { email: "Invalid email" } } as any,
+      error: { fields: { email: ["Invalid email"] } } as any,
     });
 
     render(<LoginForm redirectTo="/" />);
@@ -320,7 +320,7 @@ describe("LoginForm", () => {
     vi.mocked(actions.login).mockResolvedValue({
       data: undefined,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: { fields: { password: "Invalid password" } } as any,
+      error: { fields: { password: ["Invalid password"] } } as any,
     });
 
     render(<LoginForm redirectTo="/" />);
@@ -350,7 +350,7 @@ describe("LoginForm", () => {
       .mockResolvedValueOnce({
         data: undefined,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        error: { fields: { email: "Invalid email" } } as any,
+        error: { fields: { email: ["Invalid email"] } } as any,
       })
       .mockResolvedValueOnce({
         data: { success: true, redirect: "/" },
@@ -384,7 +384,7 @@ describe("LoginForm", () => {
     vi.mocked(actions.login).mockResolvedValue({
       data: undefined,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: { fields: { email: "Invalid email" } } as any,
+      error: { fields: { email: ["Invalid email"] } } as any,
     });
 
     render(<LoginForm redirectTo="/" />);

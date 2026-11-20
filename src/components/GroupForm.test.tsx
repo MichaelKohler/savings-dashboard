@@ -172,7 +172,7 @@ describe("GroupForm", () => {
   });
 
   it("displays name error when returned from API", async () => {
-    const mockError = { fields: { name: "Name is required" } };
+    const mockError = { fields: { name: ["Name is required"] } };
 
     vi.mocked(actions.createGroup).mockResolvedValue({
       data: undefined,
@@ -213,7 +213,7 @@ describe("GroupForm", () => {
   });
 
   it("focuses name input when name error occurs", async () => {
-    const mockError = { fields: { name: "Name is required" } };
+    const mockError = { fields: { name: ["Name is required"] } };
 
     vi.mocked(actions.createGroup).mockResolvedValue({
       data: undefined,
@@ -234,7 +234,7 @@ describe("GroupForm", () => {
   });
 
   it("sets correct aria attributes when name error exists", async () => {
-    const mockError = { fields: { name: "Name is required" } };
+    const mockError = { fields: { name: ["Name is required"] } };
 
     vi.mocked(actions.createGroup).mockResolvedValue({
       data: undefined,
@@ -256,7 +256,7 @@ describe("GroupForm", () => {
   });
 
   it("clears errors on new submission", async () => {
-    const mockError = { fields: { name: "Name is required" } };
+    const mockError = { fields: { name: ["Name is required"] } };
     vi.mocked(actions.createGroup)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .mockResolvedValueOnce({ data: undefined, error: mockError as any })
@@ -285,7 +285,7 @@ describe("GroupForm", () => {
   });
 
   it("re-enables submit button after error", async () => {
-    const mockError = { fields: { name: "Name is required" } };
+    const mockError = { fields: { name: ["Name is required"] } };
 
     vi.mocked(actions.createGroup).mockResolvedValue({
       data: undefined,

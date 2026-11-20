@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import { actions, isInputError } from "astro:actions";
 import Button from "~/components/button";
+import { toFieldErrors } from "~/lib/fieldErrors";
 import type { Account } from "~/models/accounts.server";
 import type { Group } from "~/models/groups.server";
 import type { Type } from "~/models/types.server";
@@ -71,7 +72,7 @@ export default function AccountForm({
 
     if (error) {
       if (isInputError(error)) {
-        setErrors(error.fields as typeof errors);
+        setErrors(toFieldErrors(error.fields));
       } else {
         setErrors({ generic: error.message || "Failed to save account" });
       }
