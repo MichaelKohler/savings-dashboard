@@ -4,7 +4,7 @@ import BalancesList from "~/components/BalancesList";
 import { requireUserId } from "~/lib/session.server";
 import { getBalances } from "~/models/balances.server";
 
-const userId = await requireUserId(Astro.cookies);
+const userId = requireUserId(Astro.locals);
 const balances = await getBalances({ userId });
 ---
 

@@ -4,7 +4,7 @@ import BalanceForm from "~/components/BalanceForm";
 import { requireUserId } from "~/lib/session.server";
 import { getAccounts } from "~/models/accounts.server";
 
-const userId = await requireUserId(Astro.cookies);
+const userId = requireUserId(Astro.locals);
 const accounts = await getAccounts({ userId, archived: false });
 ---
 

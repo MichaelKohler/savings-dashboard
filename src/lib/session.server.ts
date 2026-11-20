@@ -100,14 +100,15 @@ export async function getUser(cookies: AstroCookies) {
   return null;
 }
 
-export async function requireUserId(
-  cookies: AstroCookies
-): Promise<User["id"]> {
-  const userId = await getUserId(cookies);
-  if (!userId) {
-    throw new Error();
+/**
+ * Returns the ID of the user the middleware resolved for this request.
+ * The middleware already redirects unauthenticated page requests to the login page.
+ */
+export function requireUserId(locals: App.Locals): User["id"] {
+  if (!locals.user) {
+    throw new Error("No authenticated user found for this request");
   }
-  return userId;
+  return locals.user.id;
 }
 
 export function requireActionUserId(locals: App.Locals): User["id"] {
