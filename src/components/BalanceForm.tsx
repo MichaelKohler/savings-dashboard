@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import { actions, isInputError } from "astro:actions";
 import Button from "~/components/button";
+import { toFieldErrors } from "~/lib/fieldErrors";
 import type { Balance } from "~/models/balances.server";
 import type { getAccounts } from "~/models/accounts.server";
 
@@ -78,7 +79,7 @@ export default function BalanceForm({ balance, accounts }: BalanceFormProps) {
 
     if (error) {
       if (isInputError(error)) {
-        setErrors(error.fields as typeof errors);
+        setErrors(toFieldErrors(error.fields));
       } else {
         setErrors({ generic: error.message || "Failed to save balance" });
       }

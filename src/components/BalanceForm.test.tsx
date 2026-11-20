@@ -231,7 +231,7 @@ describe("BalanceForm", () => {
   });
 
   it("displays balance error when returned from API", async () => {
-    const mockError = { fields: { balance: "Balance is required" } };
+    const mockError = { fields: { balance: ["Balance is required"] } };
 
     vi.mocked(actions.createBalance).mockResolvedValue({
       data: undefined,
@@ -256,8 +256,41 @@ describe("BalanceForm", () => {
     });
   });
 
+  it("separates multiple balance errors returned from API", async () => {
+    const mockError = {
+      fields: {
+        balance: ["Balance is required", "Balance must be a whole number"],
+      },
+    };
+
+    vi.mocked(actions.createBalance).mockResolvedValue({
+      data: undefined,
+      error: mockError as never,
+    });
+    vi.mocked(isInputError).mockReturnValue(true);
+
+    render(<BalanceForm accounts={mockAccounts} />);
+    fireEvent.change(screen.getByLabelText(/Account:/), {
+      target: { value: "a1" },
+    });
+    fireEvent.change(screen.getByLabelText(/Date:/), {
+      target: { value: "2024-01-15" },
+    });
+    fireEvent.change(screen.getByLabelText(/Balance:/), {
+      target: { value: "500" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Balance is required. Balance must be a whole number")
+      ).toBeInTheDocument();
+    });
+  });
+
   it("displays date error when returned from API", async () => {
-    const mockError = { fields: { date: "Date is required" } };
+    const mockError = { fields: { date: ["Date is required"] } };
 
     vi.mocked(actions.createBalance).mockResolvedValue({
       data: undefined,
@@ -283,7 +316,7 @@ describe("BalanceForm", () => {
   });
 
   it("displays accountId error when returned from API", async () => {
-    const mockError = { fields: { accountId: "Account is required" } };
+    const mockError = { fields: { accountId: ["Account is required"] } };
 
     vi.mocked(actions.createBalance).mockResolvedValue({
       data: undefined,
@@ -334,7 +367,7 @@ describe("BalanceForm", () => {
   });
 
   it("focuses balance input when balance error occurs", async () => {
-    const mockError = { fields: { balance: "Balance is required" } };
+    const mockError = { fields: { balance: ["Balance is required"] } };
 
     vi.mocked(actions.createBalance).mockResolvedValue({
       data: undefined,
@@ -360,7 +393,7 @@ describe("BalanceForm", () => {
   });
 
   it("focuses date input when date error occurs", async () => {
-    const mockError = { fields: { date: "Date is required" } };
+    const mockError = { fields: { date: ["Date is required"] } };
 
     vi.mocked(actions.createBalance).mockResolvedValue({
       data: undefined,
@@ -386,7 +419,7 @@ describe("BalanceForm", () => {
   });
 
   it("sets correct aria attributes when balance error exists", async () => {
-    const mockError = { fields: { balance: "Balance is required" } };
+    const mockError = { fields: { balance: ["Balance is required"] } };
 
     vi.mocked(actions.createBalance).mockResolvedValue({
       data: undefined,
@@ -416,7 +449,7 @@ describe("BalanceForm", () => {
   });
 
   it("sets correct aria attributes when date error exists", async () => {
-    const mockError = { fields: { date: "Date is required" } };
+    const mockError = { fields: { date: ["Date is required"] } };
 
     vi.mocked(actions.createBalance).mockResolvedValue({
       data: undefined,
@@ -461,7 +494,7 @@ describe("BalanceForm", () => {
   });
 
   it("clears errors on new submission", async () => {
-    const mockError = { fields: { balance: "Balance is required" } };
+    const mockError = { fields: { balance: ["Balance is required"] } };
     vi.mocked(actions.createBalance)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .mockResolvedValueOnce({ data: undefined, error: mockError as any })

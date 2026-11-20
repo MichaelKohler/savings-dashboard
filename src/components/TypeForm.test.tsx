@@ -171,7 +171,7 @@ describe("TypeForm", () => {
   });
 
   it("displays name error when returned from API", async () => {
-    const mockError = { fields: { name: "Name is required" } };
+    const mockError = { fields: { name: ["Name is required"] } };
 
     vi.mocked(actions.createType).mockResolvedValue({
       data: undefined,
@@ -212,7 +212,7 @@ describe("TypeForm", () => {
   });
 
   it("focuses name input when name error occurs", async () => {
-    const mockError = { fields: { name: "Name is required" } };
+    const mockError = { fields: { name: ["Name is required"] } };
 
     vi.mocked(actions.createType).mockResolvedValue({
       data: undefined,
@@ -233,7 +233,7 @@ describe("TypeForm", () => {
   });
 
   it("sets correct aria attributes when name error exists", async () => {
-    const mockError = { fields: { name: "Name is required" } };
+    const mockError = { fields: { name: ["Name is required"] } };
 
     vi.mocked(actions.createType).mockResolvedValue({
       data: undefined,
@@ -255,7 +255,7 @@ describe("TypeForm", () => {
   });
 
   it("clears errors on new submission", async () => {
-    const mockError = { fields: { name: "Name is required" } };
+    const mockError = { fields: { name: ["Name is required"] } };
     vi.mocked(actions.createType)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .mockResolvedValueOnce({ data: undefined, error: mockError as any })
@@ -284,7 +284,7 @@ describe("TypeForm", () => {
   });
 
   it("re-enables submit button after error", async () => {
-    const mockError = { fields: { name: "Name is required" } };
+    const mockError = { fields: { name: ["Name is required"] } };
 
     vi.mocked(actions.createType).mockResolvedValue({
       data: undefined,

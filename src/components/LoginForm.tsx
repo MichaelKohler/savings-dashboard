@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import Button from "~/components/button";
+import { toFieldErrors } from "~/lib/fieldErrors";
 import { actions, isInputError } from "astro:actions";
 
 interface LoginFormProps {
@@ -44,7 +45,7 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
 
     if (error) {
       if (isInputError(error)) {
-        setErrors(error.fields as { email?: string; password?: string });
+        setErrors(toFieldErrors(error.fields));
       } else {
         setErrors({
           email: error.message || "An error occurred. Please try again.",

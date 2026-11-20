@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import { actions, isInputError } from "astro:actions";
 import Button from "~/components/button";
+import { toFieldErrors } from "~/lib/fieldErrors";
 import type { Type } from "~/models/types.server";
 
 interface TypeFormProps {
@@ -51,7 +52,7 @@ export default function TypeForm({ type }: TypeFormProps) {
 
     if (error) {
       if (isInputError(error)) {
-        setErrors(error.fields as typeof errors);
+        setErrors(toFieldErrors(error.fields));
       } else {
         setErrors({ generic: error.message || "Failed to save type" });
       }

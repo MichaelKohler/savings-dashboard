@@ -309,7 +309,7 @@ describe("AccountForm", () => {
   });
 
   it("displays name error when returned from API", async () => {
-    const mockError = { fields: { name: "Name is required" } };
+    const mockError = { fields: { name: ["Name is required"] } };
 
     vi.mocked(actions.createAccount).mockResolvedValue({
       data: undefined,
@@ -330,7 +330,7 @@ describe("AccountForm", () => {
   });
 
   it("displays color error when returned from API", async () => {
-    const mockError = { fields: { color: "Invalid color" } };
+    const mockError = { fields: { color: ["Invalid color"] } };
 
     vi.mocked(actions.createAccount).mockResolvedValue({
       data: undefined,
@@ -371,7 +371,7 @@ describe("AccountForm", () => {
   });
 
   it("focuses name input when name error occurs", async () => {
-    const mockError = { fields: { name: "Name is required" } };
+    const mockError = { fields: { name: ["Name is required"] } };
 
     vi.mocked(actions.createAccount).mockResolvedValue({
       data: undefined,
@@ -392,7 +392,7 @@ describe("AccountForm", () => {
   });
 
   it("focuses color input when color error occurs", async () => {
-    const mockError = { fields: { color: "Invalid color" } };
+    const mockError = { fields: { color: ["Invalid color"] } };
 
     vi.mocked(actions.createAccount).mockResolvedValue({
       data: undefined,
@@ -414,7 +414,7 @@ describe("AccountForm", () => {
   });
 
   it("sets correct aria attributes when name error exists", async () => {
-    const mockError = { fields: { name: "Name is required" } };
+    const mockError = { fields: { name: ["Name is required"] } };
 
     vi.mocked(actions.createAccount).mockResolvedValue({
       data: undefined,
@@ -436,7 +436,7 @@ describe("AccountForm", () => {
   });
 
   it("sets correct aria attributes when color error exists", async () => {
-    const mockError = { fields: { color: "Invalid color" } };
+    const mockError = { fields: { color: ["Invalid color"] } };
 
     vi.mocked(actions.createAccount).mockResolvedValue({
       data: undefined,
@@ -459,7 +459,7 @@ describe("AccountForm", () => {
   });
 
   it("clears errors on new submission", async () => {
-    const mockError = { fields: { name: "Name is required" } };
+    const mockError = { fields: { name: ["Name is required"] } };
     vi.mocked(actions.createAccount)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .mockResolvedValueOnce({ data: undefined, error: mockError as any })
