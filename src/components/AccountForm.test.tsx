@@ -132,6 +132,22 @@ describe("AccountForm", () => {
     expect(screen.getByLabelText(/Archived/)).toBeChecked();
   });
 
+  it("checks 'Show in graphs' by default when creating an account", () => {
+    render(<AccountForm groups={mockGroups} types={mockTypes} />);
+    expect(screen.getByLabelText("Show in graphs")).toBeChecked();
+  });
+
+  it("shows 'Show in graphs' as unchecked when editing a hidden account", () => {
+    render(
+      <AccountForm
+        account={{ ...mockAccount, showInGraphs: false }}
+        groups={mockGroups}
+        types={mockTypes}
+      />
+    );
+    expect(screen.getByLabelText("Show in graphs")).not.toBeChecked();
+  });
+
   it("shows the unchecked in charts checkbox reflecting the stored value", () => {
     render(
       <AccountForm
