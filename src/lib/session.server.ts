@@ -49,9 +49,7 @@ export async function getSession(
     },
     set: (
       nameOrOptions:
-        | string
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        | { name: string; value: string; [key: string]: any },
+        string | { name: string; value: string; [key: string]: unknown },
       value?: string,
       options?: Record<string, unknown>
     ) => {

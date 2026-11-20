@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import BalanceForm from "~/components/BalanceForm";
-import { actions, isInputError } from "astro:actions";
+import { ActionError, actions, isInputError } from "astro:actions";
 
 describe("BalanceForm", () => {
   const mockAccounts = [
@@ -113,8 +113,7 @@ describe("BalanceForm", () => {
 
   it("disables save button when submitting", async () => {
     vi.mocked(actions.createBalance).mockImplementation(
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      () => new Promise(() => {}) // Never resolves
+      () => new Promise(() => undefined) // Never resolves
     );
 
     render(<BalanceForm accounts={mockAccounts} />);
@@ -160,8 +159,7 @@ describe("BalanceForm", () => {
 
   it("shows spinner when submitting", async () => {
     vi.mocked(actions.createBalance).mockImplementation(
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      () => new Promise(() => {}) // Never resolves
+      () => new Promise(() => undefined) // Never resolves
     );
 
     render(<BalanceForm accounts={mockAccounts} />);
@@ -231,7 +229,9 @@ describe("BalanceForm", () => {
   });
 
   it("displays balance error when returned from API", async () => {
-    const mockError = { fields: { balance: ["Balance is required"] } };
+    const mockError = Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+      fields: { balance: ["Balance is required"] },
+    });
 
     vi.mocked(actions.createBalance).mockResolvedValue({
       data: undefined,
@@ -290,7 +290,9 @@ describe("BalanceForm", () => {
   });
 
   it("displays date error when returned from API", async () => {
-    const mockError = { fields: { date: ["Date is required"] } };
+    const mockError = Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+      fields: { date: ["Date is required"] },
+    });
 
     vi.mocked(actions.createBalance).mockResolvedValue({
       data: undefined,
@@ -316,7 +318,9 @@ describe("BalanceForm", () => {
   });
 
   it("displays accountId error when returned from API", async () => {
-    const mockError = { fields: { accountId: ["Account is required"] } };
+    const mockError = Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+      fields: { accountId: ["Account is required"] },
+    });
 
     vi.mocked(actions.createBalance).mockResolvedValue({
       data: undefined,
@@ -344,8 +348,7 @@ describe("BalanceForm", () => {
   it("displays generic error on network failure", async () => {
     vi.mocked(actions.createBalance).mockResolvedValue({
       data: undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: {} as any,
+      error: new ActionError({ code: "INTERNAL_SERVER_ERROR" }),
     });
     vi.mocked(isInputError).mockReturnValue(false);
 
@@ -367,7 +370,9 @@ describe("BalanceForm", () => {
   });
 
   it("focuses balance input when balance error occurs", async () => {
-    const mockError = { fields: { balance: ["Balance is required"] } };
+    const mockError = Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+      fields: { balance: ["Balance is required"] },
+    });
 
     vi.mocked(actions.createBalance).mockResolvedValue({
       data: undefined,
@@ -393,7 +398,9 @@ describe("BalanceForm", () => {
   });
 
   it("focuses date input when date error occurs", async () => {
-    const mockError = { fields: { date: ["Date is required"] } };
+    const mockError = Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+      fields: { date: ["Date is required"] },
+    });
 
     vi.mocked(actions.createBalance).mockResolvedValue({
       data: undefined,
@@ -419,7 +426,9 @@ describe("BalanceForm", () => {
   });
 
   it("sets correct aria attributes when balance error exists", async () => {
-    const mockError = { fields: { balance: ["Balance is required"] } };
+    const mockError = Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+      fields: { balance: ["Balance is required"] },
+    });
 
     vi.mocked(actions.createBalance).mockResolvedValue({
       data: undefined,
@@ -449,7 +458,9 @@ describe("BalanceForm", () => {
   });
 
   it("sets correct aria attributes when date error exists", async () => {
-    const mockError = { fields: { date: ["Date is required"] } };
+    const mockError = Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+      fields: { date: ["Date is required"] },
+    });
 
     vi.mocked(actions.createBalance).mockResolvedValue({
       data: undefined,
@@ -494,10 +505,11 @@ describe("BalanceForm", () => {
   });
 
   it("clears errors on new submission", async () => {
-    const mockError = { fields: { balance: ["Balance is required"] } };
+    const mockError = Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+      fields: { balance: ["Balance is required"] },
+    });
     vi.mocked(actions.createBalance)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .mockResolvedValueOnce({ data: undefined, error: mockError as any })
+      .mockResolvedValueOnce({ data: undefined, error: mockError })
       .mockResolvedValueOnce({ data: { success: true }, error: undefined });
     vi.mocked(isInputError)
       .mockReturnValueOnce(true)

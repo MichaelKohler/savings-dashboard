@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import LoginForm from "~/components/LoginForm";
-import { actions, isInputError } from "astro:actions";
+import { ActionError, actions, isInputError } from "astro:actions";
 
 describe("LoginForm", () => {
   beforeEach(() => {
@@ -70,8 +70,7 @@ describe("LoginForm", () => {
 
   it("disables submit button when submitting", async () => {
     vi.mocked(actions.login).mockImplementation(
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      () => new Promise(() => {}) // Never resolves
+      () => new Promise(() => undefined) // Never resolves
     );
 
     render(<LoginForm redirectTo="/" />);
@@ -94,8 +93,7 @@ describe("LoginForm", () => {
 
   it("shows 'Logging in...' text when submitting", async () => {
     vi.mocked(actions.login).mockImplementation(
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      () => new Promise(() => {}) // Never resolves
+      () => new Promise(() => undefined) // Never resolves
     );
 
     render(<LoginForm redirectTo="/" />);
@@ -179,8 +177,9 @@ describe("LoginForm", () => {
     vi.mocked(isInputError).mockReturnValue(true);
     vi.mocked(actions.login).mockResolvedValue({
       data: undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: { fields: { email: ["Invalid email"] } } as any,
+      error: Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+        fields: { email: ["Invalid email"] },
+      }),
     });
 
     render(<LoginForm redirectTo="/" />);
@@ -201,8 +200,9 @@ describe("LoginForm", () => {
     vi.mocked(isInputError).mockReturnValue(true);
     vi.mocked(actions.login).mockResolvedValue({
       data: undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: { fields: { password: ["Invalid password"] } } as any,
+      error: Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+        fields: { password: ["Invalid password"] },
+      }),
     });
 
     render(<LoginForm redirectTo="/" />);
@@ -224,8 +224,10 @@ describe("LoginForm", () => {
     vi.mocked(isInputError).mockReturnValue(false);
     vi.mocked(actions.login).mockResolvedValue({
       data: undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: { message: "An error occurred. Please try again." } as any,
+      error: new ActionError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "An error occurred. Please try again.",
+      }),
     });
 
     render(<LoginForm redirectTo="/" />);
@@ -249,8 +251,9 @@ describe("LoginForm", () => {
     vi.mocked(isInputError).mockReturnValue(true);
     vi.mocked(actions.login).mockResolvedValue({
       data: undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: { fields: { email: ["Invalid email"] } } as any,
+      error: Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+        fields: { email: ["Invalid email"] },
+      }),
     });
 
     render(<LoginForm redirectTo="/" />);
@@ -272,8 +275,9 @@ describe("LoginForm", () => {
     vi.mocked(isInputError).mockReturnValue(true);
     vi.mocked(actions.login).mockResolvedValue({
       data: undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: { fields: { password: ["Invalid password"] } } as any,
+      error: Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+        fields: { password: ["Invalid password"] },
+      }),
     });
 
     render(<LoginForm redirectTo="/" />);
@@ -295,8 +299,9 @@ describe("LoginForm", () => {
     vi.mocked(isInputError).mockReturnValue(true);
     vi.mocked(actions.login).mockResolvedValue({
       data: undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: { fields: { email: ["Invalid email"] } } as any,
+      error: Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+        fields: { email: ["Invalid email"] },
+      }),
     });
 
     render(<LoginForm redirectTo="/" />);
@@ -319,8 +324,9 @@ describe("LoginForm", () => {
     vi.mocked(isInputError).mockReturnValue(true);
     vi.mocked(actions.login).mockResolvedValue({
       data: undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: { fields: { password: ["Invalid password"] } } as any,
+      error: Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+        fields: { password: ["Invalid password"] },
+      }),
     });
 
     render(<LoginForm redirectTo="/" />);
@@ -349,8 +355,9 @@ describe("LoginForm", () => {
     vi.mocked(actions.login)
       .mockResolvedValueOnce({
         data: undefined,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        error: { fields: { email: ["Invalid email"] } } as any,
+        error: Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+          fields: { email: ["Invalid email"] },
+        }),
       })
       .mockResolvedValueOnce({
         data: { success: true, redirect: "/" },
@@ -383,8 +390,9 @@ describe("LoginForm", () => {
     vi.mocked(isInputError).mockReset().mockReturnValue(true);
     vi.mocked(actions.login).mockResolvedValue({
       data: undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: { fields: { email: ["Invalid email"] } } as any,
+      error: Object.assign(new ActionError({ code: "BAD_REQUEST" }), {
+        fields: { email: ["Invalid email"] },
+      }),
     });
 
     render(<LoginForm redirectTo="/" />);
