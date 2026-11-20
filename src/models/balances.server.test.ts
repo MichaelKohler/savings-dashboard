@@ -234,15 +234,15 @@ describe("balance models", () => {
           id: "1",
           showInGraphs: true,
           archived: false,
-          type: { id: "t1" },
-          group: { id: "g1" },
+          typeId: "t1",
+          groupId: "g1",
         },
         {
           id: "2",
           showInGraphs: false,
           archived: false,
-          type: { id: "t2" },
-          group: { id: "g2" },
+          typeId: "t2",
+          groupId: "g2",
         },
       ];
       const balances = [
@@ -258,9 +258,8 @@ describe("balance models", () => {
         userId: user.id,
       });
 
-      expect(result.length).toBeGreaterThan(0);
-      expect(result[0].total).toBe(100);
-      expect(result[1].total).toBe(150);
+      expect(result[0].byAccount).toEqual({ "1": 100 });
+      expect(result[1].byAccount).toEqual({ "1": 150 });
     });
 
     it("should use the latest balance per month and carry it forward through months without balances", async () => {
@@ -269,8 +268,8 @@ describe("balance models", () => {
           id: "1",
           showInGraphs: true,
           archived: false,
-          type: { id: "t1" },
-          group: { id: "g1" },
+          typeId: "t1",
+          groupId: "g1",
         },
       ];
       const balances = [
@@ -286,7 +285,7 @@ describe("balance models", () => {
         userId: user.id,
       });
 
-      expect(result.slice(0, 3).map((entry) => entry.total)).toEqual([
+      expect(result.slice(0, 3).map((entry) => entry.byAccount["1"])).toEqual([
         120, 120, 300,
       ]);
     });
@@ -298,8 +297,8 @@ describe("balance models", () => {
           id: "1",
           showInGraphs: true,
           archived: false,
-          type: { id: "t1" },
-          group: { id: "g1" },
+          typeId: "t1",
+          groupId: "g1",
         },
       ];
       const balances = [
@@ -316,10 +315,10 @@ describe("balance models", () => {
       vi.unstubAllEnvs();
 
       expect(
-        result.slice(0, 2).map(({ date, total }) => ({ date, total }))
+        result.slice(0, 2).map(({ date, byAccount }) => ({ date, byAccount }))
       ).toEqual([
-        { date: "2023-02", total: 100 },
-        { date: "2023-03", total: 300 },
+        { date: "2023-02", byAccount: { "1": 100 } },
+        { date: "2023-03", byAccount: { "1": 300 } },
       ]);
     });
 
@@ -329,15 +328,15 @@ describe("balance models", () => {
           id: "1",
           showInGraphs: true,
           archived: false,
-          type: { id: "t1" },
-          group: { id: "g1" },
+          typeId: "t1",
+          groupId: "g1",
         },
         {
           id: "2",
           showInGraphs: false,
           archived: false,
-          type: { id: "t1" },
-          group: { id: "g2" },
+          typeId: "t1",
+          groupId: "g2",
         },
       ];
       const balances = [
@@ -353,25 +352,24 @@ describe("balance models", () => {
       });
 
       expect(result[0].byAccount).toEqual({ "1": 100 });
-      expect(result[0].byGroup).toEqual({ g1: 100 });
-      expect(result[0].byType).toEqual({ t1: 100 });
     });
 
-    it("should include archived accounts with non-zero balance in totals", async () => {
+    it("should base predictions on a total including archived accounts with non-zero balance", async () => {
+      process.env.PREDICTION_PERCENTAGES = "0";
       const accounts = [
         {
           id: "1",
           showInGraphs: true,
           archived: false,
-          type: { id: "t1" },
-          group: { id: "g1" },
+          typeId: "t1",
+          groupId: "g1",
         },
         {
           id: "2",
           showInGraphs: true,
           archived: true,
-          type: { id: "t2" },
-          group: { id: "g2" },
+          typeId: "t2",
+          groupId: "g2",
         },
       ];
       const balances = [
@@ -382,28 +380,30 @@ describe("balance models", () => {
       mockPrisma.account.findMany.mockResolvedValue(accounts);
       mockPrisma.balance.findMany.mockResolvedValue(balances);
 
-      const { balances: result } = await getBalancesForCharts({
+      const { predictions } = await getBalancesForCharts({
         userId: user.id,
       });
+      delete process.env.PREDICTION_PERCENTAGES;
 
-      expect(result[0].total).toBe(300);
+      expect(predictions[0][0]).toBe(300);
     });
 
-    it("should exclude archived accounts with zero balance from totals", async () => {
+    it("should base predictions on a total excluding archived accounts with zero balance", async () => {
+      process.env.PREDICTION_PERCENTAGES = "0";
       const accounts = [
         {
           id: "1",
           showInGraphs: true,
           archived: false,
-          type: { id: "t1" },
-          group: { id: "g1" },
+          typeId: "t1",
+          groupId: "g1",
         },
         {
           id: "2",
           showInGraphs: true,
           archived: true,
-          type: { id: "t2" },
-          group: { id: "g2" },
+          typeId: "t2",
+          groupId: "g2",
         },
       ];
       const balances = [
@@ -414,11 +414,12 @@ describe("balance models", () => {
       mockPrisma.account.findMany.mockResolvedValue(accounts);
       mockPrisma.balance.findMany.mockResolvedValue(balances);
 
-      const { balances: result } = await getBalancesForCharts({
+      const { predictions } = await getBalancesForCharts({
         userId: user.id,
       });
+      delete process.env.PREDICTION_PERCENTAGES;
 
-      expect(result[0].total).toBe(100);
+      expect(predictions[0][0]).toBe(100);
     });
 
     it("should return empty array if no balances", async () => {
@@ -427,8 +428,8 @@ describe("balance models", () => {
           id: "1",
           showInGraphs: true,
           archived: false,
-          type: { id: "t1" },
-          group: { id: "g1" },
+          typeId: "t1",
+          groupId: "g1",
         },
       ]);
       mockPrisma.balance.findMany.mockResolvedValue([]);
@@ -445,15 +446,15 @@ describe("balance models", () => {
           id: "1",
           showInGraphs: true,
           archived: false,
-          type: { id: "t1" },
-          group: { id: "g1" },
+          typeId: "t1",
+          groupId: "g1",
         },
         {
           id: "2",
           showInGraphs: true,
           archived: true,
-          type: { id: "t2" },
-          group: { id: "g2" },
+          typeId: "t2",
+          groupId: "g2",
         },
       ];
       const balances = [
@@ -485,15 +486,15 @@ describe("balance models", () => {
           id: "1",
           showInGraphs: true,
           archived: false,
-          type: { id: "t1" },
-          group: { id: "g1" },
+          typeId: "t1",
+          groupId: "g1",
         },
         {
           id: "2",
           showInGraphs: true,
           archived: true,
-          type: { id: "t2" },
-          group: { id: "g2" },
+          typeId: "t2",
+          groupId: "g2",
         },
       ];
       const balances = [
@@ -521,15 +522,15 @@ describe("balance models", () => {
           id: "1",
           showInGraphs: true,
           archived: false,
-          type: { id: "t1" },
-          group: { id: "g1" },
+          typeId: "t1",
+          groupId: "g1",
         },
         {
           id: "2",
           showInGraphs: true,
           archived: true,
-          type: { id: "t2" },
-          group: { id: "g2" },
+          typeId: "t2",
+          groupId: "g2",
         },
       ];
       const balances = [
@@ -544,7 +545,6 @@ describe("balance models", () => {
         userId: user.id,
       });
 
-      expect(result[0].total).toBe(50);
       expect(result[0].byAccount["2"]).toBe(-50);
     });
 
@@ -569,15 +569,15 @@ describe("balance models", () => {
           id: "1",
           showInGraphs: true,
           archived: false,
-          type: { id: "t1" },
-          group: { id: "g1" },
+          typeId: "t1",
+          groupId: "g1",
         },
         {
           id: "2",
           showInGraphs: true,
           archived: true,
-          type: { id: "t2" },
-          group: { id: "g2" },
+          typeId: "t2",
+          groupId: "g2",
         },
       ];
       const balances = [

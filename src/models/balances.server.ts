@@ -3,16 +3,13 @@ import type { User, Account, Balance } from "~/generated/prisma/client";
 import { prisma } from "~/lib/db.server";
 import { getAccount } from "~/models/accounts.server";
 import { computePredictedBalances } from "~/lib/predictions";
-import { isAccountBalanceCountedInTotal } from "~/lib/accountTotals";
+import { aggregateChartEntry } from "~/lib/chartFiltering";
 
 export type { Balance } from "~/generated/prisma/client";
 
 export interface ChartDataEntry {
-  byAccount: Record<string, Balance["balance"] | string>;
-  byGroup: Record<string, Balance["balance"] | string>;
-  byType: Record<string, Balance["balance"] | string>;
+  byAccount: Record<string, Balance["balance"]>;
   date: string;
-  total: number;
 }
 
 export interface PredictionEntry {
@@ -101,49 +98,6 @@ function getMonthKey(date: Date) {
   )}`;
 }
 
-interface BalanceReducerTempType {
-  balance: number;
-  type: string;
-  group: string;
-  archived: boolean;
-}
-
-function reduceToBalance(
-  byAccount: Record<string, number>,
-  [accountId, account]: [string, BalanceReducerTempType]
-) {
-  byAccount[accountId] = account.balance;
-  return byAccount;
-}
-
-function reduceToGroupBalance(
-  byGroup: Record<string, number>,
-  [_, account]: [string, BalanceReducerTempType]
-) {
-  const group = account.group;
-
-  if (!byGroup[group]) {
-    byGroup[group] = 0;
-  }
-
-  byGroup[group] += account.balance;
-  return byGroup;
-}
-
-function reduceToTypeBalance(
-  byType: Record<string, number>,
-  [_, account]: [string, BalanceReducerTempType]
-) {
-  const type = account.type;
-
-  if (!byType[type]) {
-    byType[type] = 0;
-  }
-
-  byType[type] += account.balance;
-  return byType;
-}
-
 export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
   const [accounts, allBalances] = await Promise.all([
     prisma.account.findMany({
@@ -152,16 +106,8 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
         id: true,
         showInGraphs: true,
         archived: true,
-        group: {
-          select: {
-            id: true,
-          },
-        },
-        type: {
-          select: {
-            id: true,
-          },
-        },
+        groupId: true,
+        typeId: true,
       },
     }),
     prisma.balance.findMany({
@@ -174,8 +120,6 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
       orderBy: { date: "asc" },
     }),
   ]);
-
-  type AccountForChart = (typeof accounts)[number];
 
   if (!allBalances.length) {
     return { balances: [], predictions: [] };
@@ -197,10 +141,7 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
   const monthCursor = new Date(earliestDate);
   const lastKnownBalances: Record<string, number> = {};
 
-  // Create lookup maps for better performance
-  const accountsMap = new Map(
-    accounts.map((acc: AccountForChart) => [acc.id, acc])
-  );
+  const accountsMap = new Map(accounts.map((account) => [account.id, account]));
 
   const balancesByMonth = new Map<string, typeof allBalances>();
   for (const balance of allBalances) {
@@ -215,59 +156,19 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
 
   while (monthCursor <= currentMonth) {
     const monthKey = getMonthKey(monthCursor);
-    const accountsMapForMonth: Record<
-      string,
-      {
-        balance: number;
-        type: string;
-        group: string;
-        archived: boolean;
-      }
-    > = {};
 
     for (const balance of balancesByMonth.get(monthKey) ?? []) {
       lastKnownBalances[balance.accountId] = balance.balance;
     }
 
-    for (const accId in lastKnownBalances) {
-      const account = accountsMap.get(accId);
-      if (account?.showInGraphs) {
-        accountsMapForMonth[accId] = {
-          type: account.type?.id || "",
-          group: account.group?.id || "",
-          balance: lastKnownBalances[accId],
-          archived: account.archived,
-        };
+    const byAccount: ChartDataEntry["byAccount"] = {};
+    for (const accountId in lastKnownBalances) {
+      if (accountsMap.get(accountId)?.showInGraphs) {
+        byAccount[accountId] = lastKnownBalances[accountId];
       }
     }
 
-    const total = Object.entries(accountsMapForMonth)
-      .filter(([accountId, account]) => {
-        const fullAccount = accountsMap.get(accountId);
-        return (
-          fullAccount !== undefined &&
-          isAccountBalanceCountedInTotal(fullAccount, account.balance)
-        );
-      })
-      .map(([, account]) => account.balance)
-      .reduce((a, b) => a + b, 0);
-
-    result.push({
-      date: monthKey,
-      total,
-      byAccount: Object.entries(accountsMapForMonth).reduce(
-        reduceToBalance,
-        {}
-      ),
-      byGroup: Object.entries(accountsMapForMonth).reduce(
-        reduceToGroupBalance,
-        {}
-      ),
-      byType: Object.entries(accountsMapForMonth).reduce(
-        reduceToTypeBalance,
-        {}
-      ),
-    });
+    result.push({ date: monthKey, byAccount });
 
     monthCursor.setUTCMonth(monthCursor.getUTCMonth() + 1);
   }
@@ -282,67 +183,23 @@ export async function getBalancesForCharts({ userId }: { userId: User["id"] }) {
     return { balances: [], predictions: [] };
   }
 
-  // Identify archived accounts with all zero balances in remaining data
-  const archivedAccountIds = new Set(
-    accounts.filter((acc: AccountForChart) => acc.archived).map((acc) => acc.id)
-  );
-
-  const archivedAccountsToRemove = new Set<string>();
-  for (const accountId of archivedAccountIds) {
-    const hasNonZeroBalance = result.some(
-      (entry) =>
-        entry.byAccount[accountId] &&
-        typeof entry.byAccount[accountId] === "number" &&
-        entry.byAccount[accountId] !== 0
+  const archivedAccountsToRemove = accounts
+    .filter((account) => account.archived)
+    .map((account) => account.id)
+    .filter((accountId) =>
+      result.every((entry) => !entry.byAccount[accountId])
     );
-    if (!hasNonZeroBalance) {
-      archivedAccountsToRemove.add(accountId);
+
+  for (const entry of result) {
+    for (const accountId of archivedAccountsToRemove) {
+      delete entry.byAccount[accountId];
     }
   }
 
-  // Remove archived accounts with all zero balances from all data entries
-  if (archivedAccountsToRemove.size > 0) {
-    for (const entry of result) {
-      // Remove from byAccount
-      for (const accountId of archivedAccountsToRemove) {
-        delete entry.byAccount[accountId];
-      }
-
-      // Recalculate byGroup and byType from remaining accounts
-      const remainingAccountsForEntry: Record<
-        string,
-        {
-          balance: number;
-          type: string;
-          group: string;
-          archived: boolean;
-        }
-      > = {};
-
-      for (const [accountId, balance] of Object.entries(entry.byAccount)) {
-        const account = accountsMap.get(accountId);
-        if (account && typeof balance === "number") {
-          remainingAccountsForEntry[accountId] = {
-            balance,
-            type: account.type?.id || "",
-            group: account.group?.id || "",
-            archived: account.archived,
-          };
-        }
-      }
-
-      entry.byGroup = Object.entries(remainingAccountsForEntry).reduce(
-        reduceToGroupBalance,
-        {}
-      );
-      entry.byType = Object.entries(remainingAccountsForEntry).reduce(
-        reduceToTypeBalance,
-        {}
-      );
-    }
-  }
-
-  const lastTotal = result[result.length - 1].total;
+  const { total: lastTotal } = aggregateChartEntry(
+    result[result.length - 1],
+    accountsMap
+  );
   const predictions = getPredictedBalances(lastTotal);
 
   return { balances: result, predictions };

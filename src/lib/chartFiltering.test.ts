@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  aggregateChartEntry,
   areExclusionsEqual,
   formatAccountLabel,
   getDefaultExclusions,
@@ -219,21 +220,15 @@ describe("getFilteredChartData", () => {
   const balances: ChartDataEntry[] = [
     {
       date: "2024-01",
-      total: 0,
       byAccount: { a1: 100, a2: 200, a3: 0, a4: 999 },
-      byGroup: {},
-      byType: {},
     },
     {
       date: "2024-02",
-      total: 0,
       byAccount: { a1: 150, a2: 250, a3: 50, a4: 999 },
-      byGroup: {},
-      byType: {},
     },
   ];
 
-  it("with no exclusions, matches the server reducer logic", () => {
+  it("with no exclusions, aggregates every account shown in graphs", () => {
     const result = getFilteredChartData(balances, accounts, makeExclusions());
 
     // total: a3 excluded in month 1 (archived, balance 0) but included in month 2 (archived, balance !== 0)
@@ -297,6 +292,28 @@ describe("getFilteredChartData", () => {
     expect(result[0].total).toBe(140);
     expect(result[0].byGroup).toEqual({ g1: 100, [UNASSIGNED_KEY]: 40 });
     expect(result[0].byType).toEqual({ t1: 100, [UNASSIGNED_KEY]: 40 });
+  });
+});
+
+describe("aggregateChartEntry", () => {
+  it("applies no chart filters when no exclusions are given", () => {
+    const accounts = [
+      makeAccount({ id: "a1", uncheckedInChartsByDefault: true }),
+      makeAccount({ id: "a2", groupId: null, typeId: null }),
+    ];
+
+    const result = aggregateChartEntry(
+      { date: "2024-01", byAccount: { a1: 100, a2: 40 } },
+      new Map(accounts.map((account) => [account.id, account]))
+    );
+
+    expect(result).toEqual({
+      date: "2024-01",
+      byAccount: { a1: 100, a2: 40 },
+      total: 140,
+      byGroup: { g1: 100, [UNASSIGNED_KEY]: 40 },
+      byType: { t1: 100, [UNASSIGNED_KEY]: 40 },
+    });
   });
 });
 
