@@ -15,6 +15,17 @@ export interface FilterableAccount {
   type?: { id: string; name: string } | null;
 }
 
+export type ChartAccount = Pick<
+  FilterableAccount,
+  "id" | "groupId" | "typeId" | "showInGraphs" | "archived"
+>;
+
+export interface AggregatedChartEntry extends ChartDataEntry {
+  total: number;
+  byGroup: Record<string, number>;
+  byType: Record<string, number>;
+}
+
 export const UNASSIGNED_KEY = "unassigned";
 
 export interface ChartSeries {
@@ -92,6 +103,12 @@ export function isAccountHiddenByGroupOrType(
   );
 }
 
+const NO_EXCLUSIONS: ChartExclusions = {
+  excludedAccountIds: new Set(),
+  excludedGroupIds: new Set(),
+  excludedTypeIds: new Set(),
+};
+
 export function isAccountExcluded(
   account: Pick<FilterableAccount, "id" | "groupId" | "typeId">,
   exclusions: ChartExclusions
@@ -102,40 +119,51 @@ export function isAccountExcluded(
   );
 }
 
+/**
+ * Derives the total, per-group and per-type figures of a month from its
+ * per-account balances, skipping accounts hidden from graphs or excluded by
+ * the chart filters.
+ */
+export function aggregateChartEntry(
+  entry: ChartDataEntry,
+  accountsById: Map<string, ChartAccount>,
+  exclusions: ChartExclusions = NO_EXCLUSIONS
+): AggregatedChartEntry {
+  let total = 0;
+  const byGroup: Record<string, number> = {};
+  const byType: Record<string, number> = {};
+
+  for (const [accountId, balance] of Object.entries(entry.byAccount)) {
+    const account = accountsById.get(accountId);
+    if (!account?.showInGraphs) continue;
+    if (isAccountExcluded(account, exclusions)) continue;
+
+    if (isAccountBalanceCountedInTotal(account, balance)) {
+      total += balance;
+    }
+
+    const groupKey = account.groupId ?? UNASSIGNED_KEY;
+    byGroup[groupKey] = (byGroup[groupKey] ?? 0) + balance;
+
+    const typeKey = account.typeId ?? UNASSIGNED_KEY;
+    byType[typeKey] = (byType[typeKey] ?? 0) + balance;
+  }
+
+  return { ...entry, total, byGroup, byType };
+}
+
 export function getFilteredChartData(
   balances: ChartDataEntry[],
-  accounts: FilterableAccount[],
+  accounts: ChartAccount[],
   exclusions: ChartExclusions
-): ChartDataEntry[] {
+): AggregatedChartEntry[] {
   const accountsById = new Map(
     accounts.map((account) => [account.id, account])
   );
 
-  return balances.map((entry) => {
-    let total = 0;
-    const byGroup: Record<string, number> = {};
-    const byType: Record<string, number> = {};
-
-    for (const [accountId, rawBalance] of Object.entries(entry.byAccount)) {
-      if (typeof rawBalance !== "number") continue;
-
-      const account = accountsById.get(accountId);
-      if (!account?.showInGraphs) continue;
-      if (isAccountExcluded(account, exclusions)) continue;
-
-      if (isAccountBalanceCountedInTotal(account, rawBalance)) {
-        total += rawBalance;
-      }
-
-      const groupKey = account.groupId ?? UNASSIGNED_KEY;
-      byGroup[groupKey] = (byGroup[groupKey] ?? 0) + rawBalance;
-
-      const typeKey = account.typeId ?? UNASSIGNED_KEY;
-      byType[typeKey] = (byType[typeKey] ?? 0) + rawBalance;
-    }
-
-    return { ...entry, total, byGroup, byType };
-  });
+  return balances.map((entry) =>
+    aggregateChartEntry(entry, accountsById, exclusions)
+  );
 }
 
 export function getPredictionPercentages(

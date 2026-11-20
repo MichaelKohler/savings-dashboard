@@ -174,17 +174,11 @@ describe("Charts", () => {
   const mockBalances = [
     {
       date: "2024-01",
-      total: 5000,
       byAccount: { a1: 3000, a2: 2000 },
-      byGroup: { g1: 3000, unassigned: 2000 },
-      byType: { t1: 3000, unassigned: 2000 },
     },
     {
       date: "2024-02",
-      total: 6000,
       byAccount: { a1: 3500, a2: 2500 },
-      byGroup: { g1: 3500, unassigned: 2500 },
-      byType: { t1: 3500, unassigned: 2500 },
     },
   ];
 
