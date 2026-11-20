@@ -4,6 +4,7 @@ import {
   formatAccountLabel,
   getDefaultExclusions,
   isAccountExcluded,
+  isAccountHiddenByGroupOrType,
   getFilteredChartData,
   UNASSIGNED_KEY,
   getFilteredPredictions,
@@ -109,6 +110,62 @@ describe("isAccountExcluded", () => {
         makeExclusions({ excludedTypeIds: new Set([UNASSIGNED_KEY]) })
       )
     ).toBe(true);
+  });
+});
+
+describe("isAccountHiddenByGroupOrType", () => {
+  const unassignedAccount = makeAccount({
+    groupId: null,
+    typeId: null,
+    group: null,
+    type: null,
+  });
+
+  it("ignores direct account exclusions", () => {
+    const exclusions = makeExclusions({ excludedAccountIds: new Set(["a1"]) });
+    expect(isAccountHiddenByGroupOrType(makeAccount({}), exclusions)).toBe(
+      false
+    );
+  });
+
+  it("returns true when the account's group or type is excluded", () => {
+    expect(
+      isAccountHiddenByGroupOrType(
+        makeAccount({}),
+        makeExclusions({ excludedGroupIds: new Set(["g1"]) })
+      )
+    ).toBe(true);
+    expect(
+      isAccountHiddenByGroupOrType(
+        makeAccount({}),
+        makeExclusions({ excludedTypeIds: new Set(["t1"]) })
+      )
+    ).toBe(true);
+  });
+
+  it("returns true for an account without group or type when the unassigned bucket is excluded", () => {
+    expect(
+      isAccountHiddenByGroupOrType(
+        unassignedAccount,
+        makeExclusions({ excludedGroupIds: new Set([UNASSIGNED_KEY]) })
+      )
+    ).toBe(true);
+    expect(
+      isAccountHiddenByGroupOrType(
+        unassignedAccount,
+        makeExclusions({ excludedTypeIds: new Set([UNASSIGNED_KEY]) })
+      )
+    ).toBe(true);
+  });
+
+  it("returns false for an assigned account when only the unassigned bucket is excluded", () => {
+    const exclusions = makeExclusions({
+      excludedGroupIds: new Set([UNASSIGNED_KEY]),
+      excludedTypeIds: new Set([UNASSIGNED_KEY]),
+    });
+    expect(isAccountHiddenByGroupOrType(makeAccount({}), exclusions)).toBe(
+      false
+    );
   });
 });
 

@@ -17,6 +17,11 @@ export interface FilterableAccount {
 
 export const UNASSIGNED_KEY = "unassigned";
 
+export interface ChartSeries {
+  id: string;
+  name: string;
+}
+
 export interface ChartExclusions {
   excludedAccountIds: Set<string>;
   excludedGroupIds: Set<string>;
@@ -73,14 +78,27 @@ export function areExclusionsEqual(
   );
 }
 
+/**
+ * Whether the account is hidden because its group or type (including the
+ * "unassigned" bucket for accounts without one) is excluded.
+ */
+export function isAccountHiddenByGroupOrType(
+  account: Pick<FilterableAccount, "groupId" | "typeId">,
+  exclusions: Pick<ChartExclusions, "excludedGroupIds" | "excludedTypeIds">
+): boolean {
+  return (
+    exclusions.excludedGroupIds.has(account.groupId ?? UNASSIGNED_KEY) ||
+    exclusions.excludedTypeIds.has(account.typeId ?? UNASSIGNED_KEY)
+  );
+}
+
 export function isAccountExcluded(
   account: Pick<FilterableAccount, "id" | "groupId" | "typeId">,
   exclusions: ChartExclusions
 ): boolean {
   return (
     exclusions.excludedAccountIds.has(account.id) ||
-    exclusions.excludedGroupIds.has(account.groupId ?? UNASSIGNED_KEY) ||
-    exclusions.excludedTypeIds.has(account.typeId ?? UNASSIGNED_KEY)
+    isAccountHiddenByGroupOrType(account, exclusions)
   );
 }
 
