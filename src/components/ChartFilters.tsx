@@ -1,19 +1,19 @@
 import Button from "~/components/button";
 import MultiSelectDropdown from "~/components/MultiSelectDropdown";
-import type { Group } from "~/models/groups.server";
-import type { Type } from "~/models/types.server";
 import {
   areExclusionsEqual,
   formatAccountLabel,
   isAccountExcluded,
+  isAccountHiddenByGroupOrType,
   type ChartExclusions,
+  type ChartSeries,
   type FilterableAccount,
 } from "~/lib/chartFiltering";
 
 interface ChartFiltersProps {
   accounts: FilterableAccount[];
-  groups: Group[];
-  types: Type[];
+  groups: ChartSeries[];
+  types: ChartSeries[];
   excludedAccountIds: Set<string>;
   excludedGroupIds: Set<string>;
   excludedTypeIds: Set<string>;
@@ -76,11 +76,7 @@ export default function ChartFilters({
   // no-op'ing on toggle/"Select all" (their state is owned by another panel).
   const accountCascadeExcludedIds = new Set(
     accounts
-      .filter(
-        (account) =>
-          (account.groupId !== null && excludedGroupIds.has(account.groupId)) ||
-          (account.typeId !== null && excludedTypeIds.has(account.typeId))
-      )
+      .filter((account) => isAccountHiddenByGroupOrType(account, exclusions))
       .map((account) => account.id)
   );
 

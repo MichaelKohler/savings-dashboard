@@ -8,6 +8,7 @@ import type {
 } from "recharts/types/component/DefaultTooltipContent";
 
 import Charts from "~/components/Charts";
+import { UNASSIGNED_KEY } from "~/lib/chartFiltering";
 import { formatBalance } from "~/lib/utils";
 
 type MockTooltipContentProps = TooltipContentProps<ValueType, NameType>;
@@ -445,6 +446,40 @@ describe("Charts", () => {
         "[]"
     );
     expect(totalData[0].total).toBe(3000);
+  });
+
+  it("reflects a hidden unassigned group in the filter dropdowns and lets it be re-enabled there", () => {
+    render(
+      <Charts
+        accounts={mockAccounts}
+        balances={mockBalances}
+        groups={mockGroups}
+        types={mockTypes}
+        predictions={mockPredictions}
+      />
+    );
+
+    clickLegend(screen.getAllByTestId("legend")[3], "byGroup.unassigned");
+
+    fireEvent.click(screen.getByTestId("filter-account-toggle"));
+    expect(screen.getByTestId("filter-account-a2")).not.toBeChecked();
+    expect(screen.getByTestId("filter-account-a2")).toBeDisabled();
+
+    fireEvent.click(screen.getByTestId("filter-group-toggle"));
+    const noGroupCheckbox = screen.getByTestId(
+      `filter-group-${UNASSIGNED_KEY}`
+    );
+    expect(noGroupCheckbox).not.toBeChecked();
+    expect(noGroupCheckbox.closest("label")).toHaveTextContent("No group");
+
+    fireEvent.click(noGroupCheckbox);
+
+    expect(screen.getByTestId("line-Checking")).toHaveAttribute(
+      "data-hidden",
+      "false"
+    );
+    expect(screen.getByTestId("filter-account-a2")).toBeChecked();
+    expect(screen.getByTestId("filter-account-a2")).toBeEnabled();
   });
 
   it("toggles prediction line visibility when legend is clicked", () => {

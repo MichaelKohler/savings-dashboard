@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import ChartFilters from "~/components/ChartFilters";
-import type { FilterableAccount } from "~/lib/chartFiltering";
+import { UNASSIGNED_KEY, type FilterableAccount } from "~/lib/chartFiltering";
 
 describe("ChartFilters", () => {
   const accounts: FilterableAccount[] = [
@@ -193,6 +193,54 @@ describe("ChartFilters", () => {
     openDropdown("filter-account");
 
     expect(screen.getByTestId("filter-account-a1")).toBeDisabled();
+  });
+
+  it("treats accounts without a group as hidden when the unassigned group is excluded", () => {
+    const { onToggleAccount } = renderFilters({
+      excludedGroupIds: new Set([UNASSIGNED_KEY]),
+    });
+    openDropdown("filter-account");
+
+    const cascadeExcluded = screen.getByTestId("filter-account-a2");
+    expect(cascadeExcluded).not.toBeChecked();
+    expect(cascadeExcluded).toBeDisabled();
+
+    fireEvent.click(screen.getByTestId("filter-account-select-none"));
+
+    expect(onToggleAccount).toHaveBeenCalledTimes(1);
+    expect(onToggleAccount).toHaveBeenCalledWith("a1");
+  });
+
+  it("treats accounts without a type as hidden when the unassigned type is excluded", () => {
+    renderFilters({ excludedTypeIds: new Set([UNASSIGNED_KEY]) });
+    openDropdown("filter-account");
+
+    expect(screen.getByTestId("filter-account-a2")).toBeDisabled();
+    expect(screen.getByTestId("filter-account-a1")).toBeEnabled();
+  });
+
+  it("lists the unassigned group and type as toggleable options", () => {
+    const { onToggleGroup, onToggleType } = renderFilters({
+      groups: [...groups, { id: UNASSIGNED_KEY, name: "No group" }],
+      types: [...types, { id: UNASSIGNED_KEY, name: "No type" }],
+      excludedGroupIds: new Set([UNASSIGNED_KEY]),
+    });
+
+    expect(screen.getByTestId("filter-group-toggle")).toHaveTextContent("1/2");
+
+    openDropdown("filter-group");
+    openDropdown("filter-type");
+
+    const noGroup = screen.getByTestId(`filter-group-${UNASSIGNED_KEY}`);
+    expect(noGroup).not.toBeChecked();
+    expect(noGroup.closest("label")).toHaveTextContent("No group");
+    expect(screen.getByTestId(`filter-type-${UNASSIGNED_KEY}`)).toBeChecked();
+
+    fireEvent.click(noGroup);
+    fireEvent.click(screen.getByTestId(`filter-type-${UNASSIGNED_KEY}`));
+
+    expect(onToggleGroup).toHaveBeenCalledWith(UNASSIGNED_KEY);
+    expect(onToggleType).toHaveBeenCalledWith(UNASSIGNED_KEY);
   });
 
   it("'Select all' in the Accounts dropdown does not touch accounts excluded via group/type", () => {

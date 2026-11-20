@@ -25,9 +25,11 @@ import {
   getFilteredPredictions,
   getPredictionPercentages,
   isAccountExcluded,
+  isAccountHiddenByGroupOrType,
   UNASSIGNED_KEY,
-  type FilterableAccount,
   type ChartExclusions,
+  type ChartSeries,
+  type FilterableAccount,
 } from "~/lib/chartFiltering";
 import { formatBalance } from "~/lib/utils";
 
@@ -83,16 +85,11 @@ function formatTooltipValue(value: ValueType | undefined) {
   return typeof value === "number" ? formatBalance(value) : value;
 }
 
-interface BarSeries {
-  id: string;
-  name: string;
-}
-
 function withUnassignedSeries(
-  series: BarSeries[],
+  series: ChartSeries[],
   hasUnassigned: boolean,
   unassignedName: string
-): BarSeries[] {
+): ChartSeries[] {
   return hasUnassigned
     ? [...series, { id: UNASSIGNED_KEY, name: unassignedName }]
     : series;
@@ -157,8 +154,10 @@ export default function Charts({
     const account = accounts.find(({ id }) => id === accountId);
     if (
       !account ||
-      excludedGroupIds.has(account.groupId ?? UNASSIGNED_KEY) ||
-      excludedTypeIds.has(account.typeId ?? UNASSIGNED_KEY)
+      isAccountHiddenByGroupOrType(account, {
+        excludedGroupIds,
+        excludedTypeIds,
+      })
     ) {
       return;
     }
@@ -216,8 +215,8 @@ export default function Charts({
     <main className="h-auto w-full">
       <ChartFilters
         accounts={accounts}
-        groups={groups}
-        types={types}
+        groups={groupSeries}
+        types={typeSeries}
         excludedAccountIds={excludedAccountIds}
         excludedGroupIds={excludedGroupIds}
         excludedTypeIds={excludedTypeIds}
